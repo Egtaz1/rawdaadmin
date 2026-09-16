@@ -28,6 +28,7 @@
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     
     <style>
         :root { --sidebar:#0f172a; --sidebar2:#111f2e; --brand:#059669; --brand-dark:#064e3b; --surface:#ffffff; --bg:#f4f7f6; --text:#172033; --muted:#64748b; --border:#e2e8f0; }
@@ -91,9 +92,21 @@
             .admin-sidebar{transform:translateX(110%);transition:transform .3s ease;width:min(84vw,310px)}.admin-sidebar.open{transform:none}.admin-main{margin-right:0}.mobile-menu-btn{display:grid}.sidebar-overlay{display:block;position:fixed;inset:0;background:rgba(2,6,23,.54);z-index:70;opacity:0;pointer-events:none;transition:.25s}.sidebar-overlay.show{opacity:1;pointer-events:auto}.content-wrap{padding:20px 15px 80px}.hero-admin{padding:22px}.stat-grid{grid-template-columns:repeat(2,1fr)}
         }
         @media(max-width:560px){.stat-grid{grid-template-columns:repeat(2,1fr);gap:10px}.stat-card{padding:14px}.stat-number{font-size:23px}.quick-grid{grid-template-columns:1fr}.content-wrap{padding-inline:11px}.hero-admin{border-radius:22px}.panel{border-radius:20px;padding:17px}.topbar h2{font-size:17px!important}.topbar p{display:none}}
+        .admin-auth-gate{position:fixed;inset:0;z-index:99999;background:radial-gradient(circle at 20% 20%,rgba(16,185,129,.16),transparent 32%),linear-gradient(135deg,#07111f,#062f2a);display:flex;align-items:center;justify-content:center;padding:18px}.admin-auth-card{width:min(440px,100%);background:#fff;border-radius:28px;padding:28px;box-shadow:0 30px 90px rgba(0,0,0,.35)}.admin-auth-gate.hidden{display:none}.admin-dark .admin-auth-card{background:#111c1a;color:#e5e7eb}.admin-dark .admin-auth-card input{background:#13231f!important;border-color:#31443e!important;color:#e5e7eb!important}
+
     </style>
 </head>
 <body>
+    <div id="admin-auth-gate" class="admin-auth-gate">
+        <div class="admin-auth-card">
+            <div class="text-center mb-6"><div class="brand-mark mx-auto mb-4"><i class="fas fa-shield-halved text-xl"></i></div><h1 class="text-2xl font-black text-slate-900 dark-adapt">دخول إدارة المنصة</h1><p class="text-sm font-bold text-slate-400 mt-2 leading-7">استخدم حساب Firebase المعيّن له دور <span dir="ltr">admin</span>.</p></div>
+            <label class="block text-sm font-black text-slate-600 mb-2">البريد الإلكتروني</label><input id="admin-auth-email" type="email" dir="ltr" class="w-full border-2 border-slate-200 rounded-xl p-3.5 font-bold mb-4 text-left" placeholder="admin@example.com">
+            <label class="block text-sm font-black text-slate-600 mb-2">كلمة المرور</label><input id="admin-auth-password" type="password" dir="ltr" class="w-full border-2 border-slate-200 rounded-xl p-3.5 font-bold mb-4 text-left" placeholder="••••••••">
+            <div id="admin-auth-message" class="hidden mb-4 p-3 rounded-xl bg-red-50 border border-red-100 text-red-600 font-bold text-sm"></div>
+            <button id="admin-auth-submit" onclick="admin.login()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3.5 rounded-2xl font-black shadow-lg"><i class="fas fa-right-to-bracket ml-2"></i>دخول لوحة الإدارة</button>
+            <p class="text-[11px] font-bold text-slate-400 leading-6 text-center mt-5">لأول إعداد: أنشئ حسابًا من واجهة الطالب ثم اجعل <span dir="ltr">profile/role = admin</span> لهذا الحساب من Firebase Console.</p>
+        </div>
+    </div>
     <div id="toast-notification" class="fixed top-5 left-1/2 z-[9999] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl text-white font-bold min-w-[300px] justify-center bg-islamic-600">
         <i id="toast-icon" class="text-xl fas fa-check-circle"></i><span id="toast-msg">تم الإجراء بنجاح</span>
     </div>
@@ -110,6 +123,7 @@
         <button data-tab="manage-content" onclick="admin.switchTab('manage-content', this)" class="tab-btn"><i class="fas fa-magnifying-glass"></i><span>إدارة وبحث شامل</span></button>
         <button data-tab="add-content" onclick="admin.switchTab('add-content', this)" class="tab-btn"><i class="fas fa-file-circle-plus"></i><span>إضافة المحتوى</span></button>
         <button data-tab="add-quizzes" onclick="admin.switchTab('add-quizzes', this)" class="tab-btn"><i class="fas fa-clipboard-question"></i><span>الاختبارات والأسئلة</span></button>
+        <button data-tab="students" onclick="admin.switchTab('students', this)" class="tab-btn"><i class="fas fa-users"></i><span>الطلاب والحسابات</span></button>
         <button data-tab="announcements" onclick="admin.switchTab('announcements', this)" class="tab-btn"><i class="fas fa-bullhorn"></i><span>مركز الإعلانات</span></button>
         <button data-tab="settings" onclick="admin.switchTab('settings', this)" class="tab-btn"><i class="fas fa-sliders"></i><span>الإعدادات</span></button>
         <div class="sidebar-footer">
@@ -126,6 +140,7 @@
                     <h2 id="page-title" class="font-black text-xl text-slate-900 dark-adapt">نظرة عامة</h2>
                     <p id="page-subtitle" class="text-xs md:text-sm font-bold text-slate-400 mt-1 truncate">ملخص سريع عن محتوى المنصة ونشاطها</p>
                 </div>
+                <button onclick="admin.logout()" class="top-icon-btn" title="تسجيل الخروج"><i class="fas fa-right-from-bracket"></i></button>
                 <button onclick="admin.toggleTheme()" class="top-icon-btn" title="الوضع الليلي"><i id="theme-icon" class="fas fa-moon"></i></button>
                 <button onclick="admin.switchTab('manage-content', document.querySelector('.tab-btn[data-tab=\'manage-content\']'))" class="top-icon-btn" title="بحث سريع"><i class="fas fa-search"></i></button>
             </div>
@@ -145,7 +160,7 @@
                     <div class="stat-card"><div class="stat-icon indigo"><i class="fas fa-file-lines"></i></div><div id="dash-lessons" class="stat-number">0</div><div class="stat-name">الدروس</div></div>
                     <div class="stat-card"><div class="stat-icon rose"><i class="fas fa-clipboard-question"></i></div><div id="dash-quizzes" class="stat-number">0</div><div class="stat-name">الاختبارات</div></div>
                     <div class="stat-card"><div class="stat-icon amber"><i class="fas fa-circle-question"></i></div><div id="dash-questions" class="stat-number">0</div><div class="stat-name">إجمالي الأسئلة</div></div>
-                    <div class="stat-card"><div class="stat-icon slate"><i class="fas fa-eye"></i></div><div id="dash-visitors" class="stat-number">0</div><div class="stat-name">الزيارات</div></div>
+                    <div class="stat-card"><div class="stat-icon slate"><i class="fas fa-users"></i></div><div id="dash-students" class="stat-number">0</div><div class="stat-name">حسابات الطلاب</div></div>
                 </div>
                 <div class="dashboard-grid">
                     <div class="panel"><div class="panel-title"><div><h4 class="font-black text-xl text-slate-800 dark-adapt">أحدث المحتوى</h4><p class="text-xs font-bold text-slate-400 mt-1">آخر العناصر المضافة حسب معرفاتها الزمنية</p></div><button onclick="admin.switchTab('manage-content', document.querySelector('.tab-btn[data-tab=\'manage-content\']'))" class="text-emerald-600 font-black text-sm">عرض الكل</button></div><div id="recent-content-list"></div></div>
@@ -177,6 +192,17 @@
             <section id="tab-add-quizzes" class="adm-tab space-y-6">
                 <div class="grid grid-cols-1 xl:grid-cols-3 gap-5"><div class="page-card p-6 border-r-4 border-rose-500"><h3 class="font-black text-lg mb-4 text-rose-800 dark-adapt"><i class="fas fa-plus-circle ml-2"></i>إنشاء اختبار فارغ</h3><input id="quiz-name" placeholder="مثال: اختبار الوضوء" class="w-full border-2 p-3 rounded-xl font-bold mb-4 outline-none focus:border-rose-500"><button onclick="admin.createQuiz()" class="w-full bg-rose-600 text-white py-3 rounded-xl font-black hover:bg-rose-700">إنشاء الاختبار</button></div><div class="page-card p-6 border-r-4 border-orange-500 xl:col-span-2"><h3 class="font-black text-lg mb-4 text-orange-800 dark-adapt"><i class="fas fa-pen-to-square ml-2"></i>إضافة سؤال يدوي</h3><select id="q-target-quiz" class="w-full border-2 p-3 rounded-xl font-bold mb-3 bg-orange-50 outline-none focus:border-orange-500"></select><textarea id="q-text" placeholder="نص السؤال..." class="w-full border-2 p-3 rounded-xl font-bold h-24 mb-3 outline-none focus:border-orange-500"></textarea><div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3"><input id="opt-0" placeholder="الإجابة أ" class="border-2 p-3 rounded-lg font-bold"><input id="opt-1" placeholder="الإجابة ب" class="border-2 p-3 rounded-lg font-bold"><input id="opt-2" placeholder="الإجابة ج" class="border-2 p-3 rounded-lg font-bold"><input id="opt-3" placeholder="الإجابة د" class="border-2 p-3 rounded-lg font-bold"></div><div class="flex items-center gap-3 mb-3"><label class="font-bold text-sm">الإجابة الصحيحة:</label><select id="q-correct" class="border-2 p-2 rounded-lg font-bold w-24 text-center"><option value="0">أ</option><option value="1">ب</option><option value="2">ج</option><option value="3">د</option></select></div><button onclick="admin.addManualQuestion()" class="w-full bg-orange-600 text-white py-3 rounded-xl font-black hover:bg-orange-700">إضافة السؤال للاختبار</button></div></div>
                 <div class="bg-slate-900 p-6 md:p-8 rounded-3xl shadow-xl text-white"><div class="flex items-center gap-3 mb-4"><div class="w-11 h-11 rounded-xl bg-emerald-500/15 text-emerald-300 grid place-items-center"><i class="fas fa-code"></i></div><div><h3 class="font-black text-xl text-emerald-300">إضافة أسئلة مجمعة (Bulk JSON)</h3><p class="text-xs text-slate-400 font-bold mt-1">مناسب لرفع عشرات أو مئات الأسئلة دفعة واحدة.</p></div></div><select id="bulk-target-quiz" class="w-full border-none p-3 rounded-xl font-bold mb-4 bg-slate-800 text-white"></select><textarea id="bulk-json" class="w-full bg-slate-800 text-emerald-300 p-4 rounded-xl font-mono text-sm h-56 mb-4 border-none outline-none focus:ring-2 focus:ring-emerald-500" dir="ltr" placeholder='[{"text":"سؤال؟","options":["أ","ب","ج","د"],"correctIndex":0}]'></textarea><button onclick="admin.addBulkQuestions()" class="w-full bg-emerald-600 text-white py-4 rounded-xl font-black hover:bg-emerald-500">رفع الأسئلة المجمعة</button></div>
+            </section>
+
+            <section id="tab-students" class="adm-tab space-y-6">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="stat-card"><div class="stat-icon green"><i class="fas fa-users"></i></div><div id="students-total" class="stat-number">0</div><div class="stat-name">إجمالي الحسابات</div></div>
+                    <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-user-check"></i></div><div id="students-active" class="stat-number">0</div><div class="stat-name">حساب نشط</div></div>
+                    <div class="stat-card"><div class="stat-icon amber"><i class="fas fa-crown"></i></div><div id="students-subscribers" class="stat-number">0</div><div class="stat-name">مشترك</div></div>
+                    <div class="stat-card"><div class="stat-icon rose"><i class="fas fa-ban"></i></div><div id="students-blocked" class="stat-number">0</div><div class="stat-name">موقوف</div></div>
+                </div>
+                <div class="page-card p-4 md:p-5 relative"><i class="fas fa-search absolute top-1/2 -translate-y-1/2 right-8 text-emerald-500 text-xl"></i><input id="students-search" onkeyup="admin.renderStudents()" placeholder="ابحث باسم الطالب أو البريد الإلكتروني..." class="w-full bg-slate-50 border-2 border-slate-200 p-4 pr-14 rounded-2xl font-black text-slate-700 focus:border-emerald-500 focus:outline-none"></div>
+                <div class="page-card p-4 md:p-6"><div class="flex items-center justify-between gap-4 mb-5"><div><h3 class="font-black text-xl text-slate-800 dark-adapt">حسابات الطلاب</h3><p class="text-xs font-bold text-slate-400 mt-1">متابعة التقدم والنتائج وحالة الحساب.</p></div><span class="text-xs font-black text-slate-400">التحديث مباشر من Firebase</span></div><div id="students-list" class="space-y-3"></div></div>
             </section>
 
             <section id="tab-announcements" class="adm-tab space-y-6">
@@ -310,15 +336,49 @@
         };
         firebase.initializeApp(firebaseConfig);
         const dbRef = firebase.database().ref('sharia_platform');
+        const usersRef = firebase.database().ref('sharia_platform_users');
 
         let dbData = { categories: {}, chapters: {}, lessons: {}, quizzes: {}, settings: {}, stats: {} };
+        let usersData = {};
+        let adminDataStarted = false;
+        let currentAdminUser = null;
         let selLessons = new Set(); 
         let selQuizzes = new Set();
 
         const admin = {
-            // التهيئة وقراءة البيانات
-            init: () => {
+            // التهيئة والمصادقة
+            bootstrap: () => {
                 admin.applySavedTheme();
+                firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{});
+                firebase.auth().onAuthStateChanged(async user => {
+                    currentAdminUser = user || null;
+                    if (!user) { admin.showLoginGate(); return; }
+                    try {
+                        const snap = await usersRef.child(`${user.uid}/profile`).once('value');
+                        const profile = snap.val() || {};
+                        if (profile.role !== 'admin') {
+                            await firebase.auth().signOut();
+                            admin.showLoginGate('هذا الحساب ليس لديه صلاحية مدير.');
+                            return;
+                        }
+                        admin.hideLoginGate();
+                        if (!adminDataStarted) { adminDataStarted = true; admin.initData(); }
+                    } catch(e) { admin.showLoginGate('تعذر التحقق من صلاحية المدير.'); }
+                });
+            },
+            login: async () => {
+                const email=(document.getElementById('admin-auth-email')?.value||'').trim();
+                const password=document.getElementById('admin-auth-password')?.value||'';
+                if(!email||!password) return admin.showLoginGate('اكتب البريد وكلمة المرور.');
+                const btn=document.getElementById('admin-auth-submit'); if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-circle-notch fa-spin ml-2"></i>جاري الدخول...';}
+                try { await firebase.auth().signInWithEmailAndPassword(email,password); }
+                catch(e){ admin.showLoginGate(e?.code==='auth/operation-not-allowed'?'فعّل Email/Password في Firebase Authentication أولًا.':'بيانات الدخول غير صحيحة أو تعذر الاتصال.'); }
+                finally { if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-right-to-bracket ml-2"></i>دخول لوحة الإدارة';} }
+            },
+            logout: async () => { try { dbRef.off(); usersRef.off(); adminDataStarted=false; await firebase.auth().signOut(); } catch(e){} },
+            showLoginGate: (msg='') => { const gate=document.getElementById('admin-auth-gate'); if(gate) gate.classList.remove('hidden'); const box=document.getElementById('admin-auth-message'); if(box){ if(msg){box.innerText=msg;box.classList.remove('hidden')}else box.classList.add('hidden'); } },
+            hideLoginGate: () => { document.getElementById('admin-auth-gate')?.classList.add('hidden'); document.getElementById('admin-auth-message')?.classList.add('hidden'); },
+            initData: () => {
                 dbRef.on('value', snap => {
                     dbData = snap.val() || { categories: {}, chapters: {}, lessons: {}, quizzes: {}, settings: {}, stats: {} };
                     
@@ -335,6 +395,11 @@
                     admin.renderDhikrList();
                     admin.renderDashboard();
                     admin.renderAnnouncementSettings();
+                });
+                usersRef.on('value', snap => {
+                    usersData = snap.val() || {};
+                    admin.renderStudents();
+                    admin.renderDashboard();
                 });
             },
 
@@ -360,6 +425,7 @@
                     'manage-content': ['إدارة المحتوى', 'بحث وتعديل الأقسام والأبواب والدروس والاختبارات'],
                     'add-content': ['إضافة محتوى', 'إنشاء أقسام وأبواب ودروس جديدة'],
                     'add-quizzes': ['إدارة الاختبارات', 'إنشاء الاختبارات وإضافة الأسئلة يدويًا أو دفعة واحدة'],
+                    students: ['الطلاب والحسابات', 'متابعة حسابات الطلاب وتقدمهم ونتائجهم'],
                     announcements: ['مركز الإعلانات', 'إنشاء تنبيه يظهر لطلاب المنصة'],
                     settings: ['الإعدادات', 'الأذكار والنسخ الاحتياطي وتفضيلات اللوحة']
                 };
@@ -402,10 +468,11 @@
                 const quizzes = Object.values(dbData.quizzes || {});
                 const questions = quizzes.reduce((sum, q) => sum + ((q.questions || []).length), 0);
                 const visits = dbData.stats?.visitors || 0;
+                const users = Object.values(usersData || {});
                 const stats = {
                     'dash-categories': cats.length, 'dash-chapters': chaps.length,
                     'dash-lessons': lessons.length, 'dash-quizzes': quizzes.length,
-                    'dash-questions': questions, 'dash-visitors': visits
+                    'dash-questions': questions, 'dash-students': users.length
                 };
                 Object.entries(stats).forEach(([id, val]) => { const el = document.getElementById(id); if(el) el.innerText = val.toLocaleString('ar-EG'); });
                 const linkedLessons = lessons.filter(l => l.quizId).length;
@@ -427,6 +494,34 @@
                         <div class="recent-icon ${item.tint}"><i class="fas ${item.icon}"></i></div>
                         <div class="min-w-0 flex-1"><div class="font-black text-slate-800 dark-adapt truncate">${admin.escapeHtml(item.label || '')}</div><div class="text-xs font-bold text-slate-400 mt-1">${item.type}</div></div>
                     </div>`).join('') : '<div class="empty-state">لم تتم إضافة محتوى بعد.</div>';
+            },
+            renderStudents: () => {
+                const entries = Object.entries(usersData || {});
+                const q = (document.getElementById('students-search')?.value || '').trim().toLowerCase();
+                const normalized = entries.map(([uid,u]) => ({ uid, ...(u || {}), profile:(u||{}).profile||{}, progress:(u||{}).progress||{} }));
+                const filtered = normalized.filter(u => !q || (u.profile.name||'').toLowerCase().includes(q) || (u.profile.email||'').toLowerCase().includes(q));
+                const active = normalized.filter(u => u.profile.status !== 'blocked').length;
+                const subscribers = normalized.filter(u => u.profile.plan === 'subscriber').length;
+                const blocked = normalized.filter(u => u.profile.status === 'blocked').length;
+                const set=(id,v)=>{const el=document.getElementById(id);if(el)el.innerText=Number(v).toLocaleString('ar-EG')};
+                set('students-total',normalized.length); set('students-active',active); set('students-subscribers',subscribers); set('students-blocked',blocked);
+                const box=document.getElementById('students-list'); if(!box) return;
+                const formatDate = ts => ts ? new Date(ts).toLocaleString('ar-EG',{dateStyle:'short',timeStyle:'short'}) : '—';
+                box.innerHTML = filtered.length ? filtered.sort((a,b)=>(b.profile.lastActivityAt||b.profile.lastLoginAt||0)-(a.profile.lastActivityAt||a.profile.lastLoginAt||0)).map(u => {
+                    const hist=u.progress.quizHistory||[];
+                    const best=hist.length?Math.max(...hist.map(h=>Number(h.percentage)||0)):null;
+                    const completed=(u.progress.completedLessons||[]).length;
+                    const isBlocked=u.profile.status==='blocked';
+                    return `<div class="border border-slate-200 rounded-2xl p-4 md:p-5 bg-white dark-adapt-bg"><div class="flex flex-col xl:flex-row xl:items-center gap-4"><div class="flex items-center gap-3 flex-1 min-w-0"><span class="w-12 h-12 rounded-2xl ${isBlocked?'bg-red-50 text-red-500':'bg-emerald-50 text-emerald-600'} flex items-center justify-center font-black shrink-0">${admin.escapeHtml(((u.profile.name||'ط').trim()[0]||'ط').toUpperCase())}</span><div class="min-w-0"><div class="flex flex-wrap items-center gap-2"><h4 class="font-black text-slate-800 dark-adapt truncate">${admin.escapeHtml(u.profile.name||'طالب')}</h4><span class="text-[10px] font-black px-2 py-1 rounded-lg ${isBlocked?'bg-red-50 text-red-600':'bg-emerald-50 text-emerald-600'}">${isBlocked?'موقوف':'نشط'}</span></div><p class="text-xs font-bold text-slate-400 truncate mt-1" dir="ltr">${admin.escapeHtml(u.profile.email||'')}</p><p class="text-[10px] font-bold text-slate-400 mt-1">آخر نشاط: ${formatDate(u.profile.lastActivityAt||u.profile.lastLoginAt)}</p></div></div><div class="grid grid-cols-3 gap-2 xl:w-[300px]"><div class="bg-slate-50 rounded-xl p-2 text-center"><strong class="block text-slate-800">${completed}</strong><span class="text-[10px] text-slate-400 font-bold">درس</span></div><div class="bg-slate-50 rounded-xl p-2 text-center"><strong class="block text-slate-800">${hist.length}</strong><span class="text-[10px] text-slate-400 font-bold">اختبار</span></div><div class="bg-slate-50 rounded-xl p-2 text-center"><strong class="block ${best!==null?'text-emerald-600':'text-slate-400'}">${best===null?'—':best+'%'}</strong><span class="text-[10px] text-slate-400 font-bold">الأفضل</span></div></div><div class="flex flex-col sm:flex-row gap-2 xl:w-[330px]"><select onchange="admin.changeStudentPlan('${u.uid}',this.value)" class="flex-1 border-2 border-slate-200 rounded-xl px-3 py-2 font-black text-sm bg-white"><option value="free" ${u.profile.plan!=='subscriber'?'selected':''}>مجاني</option><option value="subscriber" ${u.profile.plan==='subscriber'?'selected':''}>مشترك</option></select><button onclick="admin.toggleStudentStatus('${u.uid}','${isBlocked?'active':'blocked'}')" class="flex-1 ${isBlocked?'bg-emerald-50 text-emerald-700 border-emerald-100':'bg-red-50 text-red-600 border-red-100'} border py-2.5 rounded-xl font-black text-sm">${isBlocked?'تفعيل الحساب':'إيقاف الحساب'}</button></div></div></div>`;
+                }).join('') : '<div class="empty-state">لا توجد حسابات مطابقة.</div>';
+            },
+            toggleStudentStatus: (uid,status) => {
+                const action=status==='blocked'?'إيقاف':'تفعيل';
+                if(!confirm(`هل تريد ${action} هذا الحساب؟`)) return;
+                usersRef.child(`${uid}/profile/status`).set(status).then(()=>admin.notify(`تم ${action} الحساب`));
+            },
+            changeStudentPlan: (uid,plan) => {
+                usersRef.child(`${uid}/profile/plan`).set(plan).then(()=>admin.notify(plan==='subscriber'?'تم تحويل الطالب إلى مشترك':'تم تحويل الطالب إلى مجاني'));
             },
             idTimestamp: (id='') => { const m = String(id).match(/(\d{10,})/); return m ? Number(m[1]) : 0; },
             escapeHtml: (str='') => String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])),
@@ -908,7 +1003,7 @@
         };
 
         // تهيئة اللوحة عند التحميل
-        window.onload = () => { admin.init(); admin.switchTab('dashboard', document.querySelector('.tab-btn[data-tab="dashboard"]')); };
+        window.onload = () => { admin.bootstrap(); admin.switchTab('dashboard', document.querySelector('.tab-btn[data-tab="dashboard"]')); };
     </script>
 
 </body>
