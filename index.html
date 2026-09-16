@@ -185,12 +185,12 @@
                 <div class="page-card p-6 md:p-8 border-t-4 border-indigo-500">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6"><div><h3 class="font-black text-2xl text-indigo-800 dark-adapt"><i class="fas fa-file-lines ml-2"></i>إضافة درس جديد</h3><p class="form-help mt-2">يمكنك معاينة الدرس بالشكل القريب من ظهوره للطالب قبل النشر.</p></div><button onclick="admin.previewNewLesson()" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-5 py-3 rounded-xl font-black hover:bg-indigo-100"><i class="fas fa-eye ml-2"></i>معاينة الدرس</button></div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4"><div><label class="block text-xs font-bold text-slate-500 mb-1">القسم</label><select id="les-cat" onchange="admin.updateChaptersDropdown('les-cat','les-chap')" class="w-full border-2 p-3 rounded-xl font-bold outline-none focus:border-indigo-500 bg-slate-50"></select></div><div><label class="block text-xs font-bold text-slate-500 mb-1">الباب</label><select id="les-chap" class="w-full border-2 p-3 rounded-xl font-bold outline-none focus:border-indigo-500 bg-slate-50"></select></div><div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100"><label class="block text-xs font-black text-indigo-800 mb-1">الاختبار المرتبط</label><input type="text" id="quiz-search-input" onkeyup="admin.filterQuizzes('quiz-search-input','les-quiz')" placeholder="ابحث عن اختبار..." class="w-full border-2 p-2 rounded-lg text-sm font-bold mb-2 outline-none focus:border-indigo-500"><select id="les-quiz" class="w-full border-2 p-2 rounded-lg font-bold outline-none focus:border-indigo-500 bg-white" size="3"></select></div></div>
-                    <input id="les-title" placeholder="عنوان الدرس" class="w-full border-2 p-3 rounded-xl font-bold text-lg mb-4 outline-none focus:border-indigo-500"><textarea id="les-content" placeholder="اكتب محتوى الشرح هنا..." class="w-full border-2 p-4 rounded-xl font-bold h-72 mb-3 outline-none focus:border-indigo-500 leading-loose"></textarea><div class="form-help mb-4">يدعم التنسيقات الحالية مثل: {نص قرآني}، [تنبيه]...[/تنبيه]، [ازرق]...[/ازرق]، **خط عريض**.</div><div class="grid sm:grid-cols-2 gap-3"><button onclick="admin.previewNewLesson()" class="border-2 border-indigo-200 text-indigo-700 py-4 rounded-xl font-black hover:bg-indigo-50"><i class="fas fa-eye ml-2"></i>معاينة قبل النشر</button><button onclick="admin.addLesson()" class="bg-indigo-600 text-white py-4 rounded-xl font-black hover:bg-indigo-700 text-lg"><i class="fas fa-paper-plane ml-2"></i>نشر الدرس</button></div>
+                    <div class="mb-4"><label class="block text-xs font-black text-slate-500 mb-1">نوع إتاحة الدرس</label><select id="les-access" class="w-full border-2 p-3 rounded-xl font-black bg-slate-50"><option value="free">مجاني</option><option value="subscriber">للمشتركين فقط 🔒</option><option value="hidden">مخفي مؤقتًا</option></select></div><input id="les-title" placeholder="عنوان الدرس" class="w-full border-2 p-3 rounded-xl font-bold text-lg mb-4 outline-none focus:border-indigo-500"><textarea id="les-content" placeholder="اكتب محتوى الشرح هنا..." class="w-full border-2 p-4 rounded-xl font-bold h-72 mb-3 outline-none focus:border-indigo-500 leading-loose"></textarea><div class="form-help mb-4">يدعم التنسيقات الحالية مثل: {نص قرآني}، [تنبيه]...[/تنبيه]، [ازرق]...[/ازرق]، **خط عريض**.</div><div class="grid sm:grid-cols-2 gap-3"><button onclick="admin.previewNewLesson()" class="border-2 border-indigo-200 text-indigo-700 py-4 rounded-xl font-black hover:bg-indigo-50"><i class="fas fa-eye ml-2"></i>معاينة قبل النشر</button><button onclick="admin.addLesson()" class="bg-indigo-600 text-white py-4 rounded-xl font-black hover:bg-indigo-700 text-lg"><i class="fas fa-paper-plane ml-2"></i>نشر الدرس</button></div>
                 </div>
             </section>
 
             <section id="tab-add-quizzes" class="adm-tab space-y-6">
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-5"><div class="page-card p-6 border-r-4 border-rose-500"><h3 class="font-black text-lg mb-4 text-rose-800 dark-adapt"><i class="fas fa-plus-circle ml-2"></i>إنشاء اختبار فارغ</h3><input id="quiz-name" placeholder="مثال: اختبار الوضوء" class="w-full border-2 p-3 rounded-xl font-bold mb-4 outline-none focus:border-rose-500"><button onclick="admin.createQuiz()" class="w-full bg-rose-600 text-white py-3 rounded-xl font-black hover:bg-rose-700">إنشاء الاختبار</button></div><div class="page-card p-6 border-r-4 border-orange-500 xl:col-span-2"><h3 class="font-black text-lg mb-4 text-orange-800 dark-adapt"><i class="fas fa-pen-to-square ml-2"></i>إضافة سؤال يدوي</h3><select id="q-target-quiz" class="w-full border-2 p-3 rounded-xl font-bold mb-3 bg-orange-50 outline-none focus:border-orange-500"></select><textarea id="q-text" placeholder="نص السؤال..." class="w-full border-2 p-3 rounded-xl font-bold h-24 mb-3 outline-none focus:border-orange-500"></textarea><div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3"><input id="opt-0" placeholder="الإجابة أ" class="border-2 p-3 rounded-lg font-bold"><input id="opt-1" placeholder="الإجابة ب" class="border-2 p-3 rounded-lg font-bold"><input id="opt-2" placeholder="الإجابة ج" class="border-2 p-3 rounded-lg font-bold"><input id="opt-3" placeholder="الإجابة د" class="border-2 p-3 rounded-lg font-bold"></div><div class="flex items-center gap-3 mb-3"><label class="font-bold text-sm">الإجابة الصحيحة:</label><select id="q-correct" class="border-2 p-2 rounded-lg font-bold w-24 text-center"><option value="0">أ</option><option value="1">ب</option><option value="2">ج</option><option value="3">د</option></select></div><button onclick="admin.addManualQuestion()" class="w-full bg-orange-600 text-white py-3 rounded-xl font-black hover:bg-orange-700">إضافة السؤال للاختبار</button></div></div>
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-5"><div class="page-card p-6 border-r-4 border-rose-500"><h3 class="font-black text-lg mb-4 text-rose-800 dark-adapt"><i class="fas fa-plus-circle ml-2"></i>إنشاء اختبار فارغ</h3><input id="quiz-name" placeholder="مثال: اختبار الوضوء" class="w-full border-2 p-3 rounded-xl font-bold mb-4 outline-none focus:border-rose-500"><select id="quiz-access" class="w-full border-2 p-3 rounded-xl font-black mb-4 bg-slate-50"><option value="free">مجاني</option><option value="subscriber">للمشتركين فقط 🔒</option><option value="hidden">مخفي مؤقتًا</option></select><button onclick="admin.createQuiz()" class="w-full bg-rose-600 text-white py-3 rounded-xl font-black hover:bg-rose-700">إنشاء الاختبار</button></div><div class="page-card p-6 border-r-4 border-orange-500 xl:col-span-2"><h3 class="font-black text-lg mb-4 text-orange-800 dark-adapt"><i class="fas fa-pen-to-square ml-2"></i>إضافة سؤال يدوي</h3><select id="q-target-quiz" class="w-full border-2 p-3 rounded-xl font-bold mb-3 bg-orange-50 outline-none focus:border-orange-500"></select><textarea id="q-text" placeholder="نص السؤال..." class="w-full border-2 p-3 rounded-xl font-bold h-24 mb-3 outline-none focus:border-orange-500"></textarea><div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3"><input id="opt-0" placeholder="الإجابة أ" class="border-2 p-3 rounded-lg font-bold"><input id="opt-1" placeholder="الإجابة ب" class="border-2 p-3 rounded-lg font-bold"><input id="opt-2" placeholder="الإجابة ج" class="border-2 p-3 rounded-lg font-bold"><input id="opt-3" placeholder="الإجابة د" class="border-2 p-3 rounded-lg font-bold"></div><div class="flex items-center gap-3 mb-3"><label class="font-bold text-sm">الإجابة الصحيحة:</label><select id="q-correct" class="border-2 p-2 rounded-lg font-bold w-24 text-center"><option value="0">أ</option><option value="1">ب</option><option value="2">ج</option><option value="3">د</option></select></div><button onclick="admin.addManualQuestion()" class="w-full bg-orange-600 text-white py-3 rounded-xl font-black hover:bg-orange-700">إضافة السؤال للاختبار</button></div></div>
                 <div class="bg-slate-900 p-6 md:p-8 rounded-3xl shadow-xl text-white"><div class="flex items-center gap-3 mb-4"><div class="w-11 h-11 rounded-xl bg-emerald-500/15 text-emerald-300 grid place-items-center"><i class="fas fa-code"></i></div><div><h3 class="font-black text-xl text-emerald-300">إضافة أسئلة مجمعة (Bulk JSON)</h3><p class="text-xs text-slate-400 font-bold mt-1">مناسب لرفع عشرات أو مئات الأسئلة دفعة واحدة.</p></div></div><select id="bulk-target-quiz" class="w-full border-none p-3 rounded-xl font-bold mb-4 bg-slate-800 text-white"></select><textarea id="bulk-json" class="w-full bg-slate-800 text-emerald-300 p-4 rounded-xl font-mono text-sm h-56 mb-4 border-none outline-none focus:ring-2 focus:ring-emerald-500" dir="ltr" placeholder='[{"text":"سؤال؟","options":["أ","ب","ج","د"],"correctIndex":0}]'></textarea><button onclick="admin.addBulkQuestions()" class="w-full bg-emerald-600 text-white py-4 rounded-xl font-black hover:bg-emerald-500">رفع الأسئلة المجمعة</button></div>
             </section>
 
@@ -279,7 +279,7 @@
             <input type="hidden" id="edit-les-id">
             <label class="block text-sm font-bold text-slate-600 mb-1">عنوان الدرس</label>
             <input id="edit-les-title" class="w-full border-2 p-3 rounded-xl font-bold mb-4 outline-none focus:border-indigo-500">
-            <label class="block text-sm font-bold text-slate-600 mb-1">محتوى الدرس</label>
+            <label class="block text-sm font-bold text-slate-600 mb-1">نوع الإتاحة</label><select id="edit-les-access" class="w-full border-2 p-3 rounded-xl font-black mb-4 bg-slate-50"><option value="free">مجاني</option><option value="subscriber">للمشتركين فقط 🔒</option><option value="hidden">مخفي مؤقتًا</option></select><label class="block text-sm font-bold text-slate-600 mb-1">محتوى الدرس</label>
             <textarea id="edit-les-content" class="w-full border-2 p-4 rounded-xl font-bold h-48 mb-4 outline-none focus:border-indigo-500 bg-slate-50 leading-loose"></textarea>
             <div class="bg-indigo-50 p-4 rounded-xl mb-6">
                 <label class="block text-sm font-black text-indigo-800 mb-2">تعديل الاختبار المرتبط بالدرس (بحث)</label>
@@ -318,7 +318,7 @@
             <button onclick="admin.closeModal('edit-quiz-modal')" class="absolute top-4 left-4 text-slate-400"><i class="fas fa-times"></i></button>
             <h3 class="text-lg font-black text-rose-800 mb-4 text-center">تغيير اسم الاختبار</h3>
             <input type="hidden" id="edit-quiz-id">
-            <input id="edit-quiz-name" class="w-full border-2 p-3 rounded-xl font-bold mb-6 text-center">
+            <input id="edit-quiz-name" class="w-full border-2 p-3 rounded-xl font-bold mb-6 text-center"><select id="edit-quiz-access" class="w-full border-2 p-3 rounded-xl font-black mb-6 bg-slate-50"><option value="free">مجاني</option><option value="subscriber">للمشتركين فقط 🔒</option><option value="hidden">مخفي مؤقتًا</option></select>
             <button onclick="admin.saveQuizEdit()" class="w-full bg-rose-600 text-white py-3 rounded-xl font-black hover:bg-rose-700">تحديث الاسم</button>
         </div>
     </div>
@@ -512,7 +512,7 @@
                     const best=hist.length?Math.max(...hist.map(h=>Number(h.percentage)||0)):null;
                     const completed=(u.progress.completedLessons||[]).length;
                     const isBlocked=u.profile.status==='blocked';
-                    return `<div class="border border-slate-200 rounded-2xl p-4 md:p-5 bg-white dark-adapt-bg"><div class="flex flex-col xl:flex-row xl:items-center gap-4"><div class="flex items-center gap-3 flex-1 min-w-0"><span class="w-12 h-12 rounded-2xl ${isBlocked?'bg-red-50 text-red-500':'bg-emerald-50 text-emerald-600'} flex items-center justify-center font-black shrink-0">${admin.escapeHtml(((u.profile.name||'ط').trim()[0]||'ط').toUpperCase())}</span><div class="min-w-0"><div class="flex flex-wrap items-center gap-2"><h4 class="font-black text-slate-800 dark-adapt truncate">${admin.escapeHtml(u.profile.name||'طالب')}</h4><span class="text-[10px] font-black px-2 py-1 rounded-lg ${isBlocked?'bg-red-50 text-red-600':'bg-emerald-50 text-emerald-600'}">${isBlocked?'موقوف':'نشط'}</span></div><p class="text-xs font-bold text-slate-400 truncate mt-1" dir="ltr">${admin.escapeHtml(u.profile.email||'')}</p><p class="text-[10px] font-bold text-slate-400 mt-1">آخر نشاط: ${formatDate(u.profile.lastActivityAt||u.profile.lastLoginAt)}</p></div></div><div class="grid grid-cols-3 gap-2 xl:w-[300px]"><div class="bg-slate-50 rounded-xl p-2 text-center"><strong class="block text-slate-800">${completed}</strong><span class="text-[10px] text-slate-400 font-bold">درس</span></div><div class="bg-slate-50 rounded-xl p-2 text-center"><strong class="block text-slate-800">${hist.length}</strong><span class="text-[10px] text-slate-400 font-bold">اختبار</span></div><div class="bg-slate-50 rounded-xl p-2 text-center"><strong class="block ${best!==null?'text-emerald-600':'text-slate-400'}">${best===null?'—':best+'%'}</strong><span class="text-[10px] text-slate-400 font-bold">الأفضل</span></div></div><div class="flex flex-col sm:flex-row gap-2 xl:w-[330px]"><select onchange="admin.changeStudentPlan('${u.uid}',this.value)" class="flex-1 border-2 border-slate-200 rounded-xl px-3 py-2 font-black text-sm bg-white"><option value="free" ${u.profile.plan!=='subscriber'?'selected':''}>مجاني</option><option value="subscriber" ${u.profile.plan==='subscriber'?'selected':''}>مشترك</option></select><button onclick="admin.toggleStudentStatus('${u.uid}','${isBlocked?'active':'blocked'}')" class="flex-1 ${isBlocked?'bg-emerald-50 text-emerald-700 border-emerald-100':'bg-red-50 text-red-600 border-red-100'} border py-2.5 rounded-xl font-black text-sm">${isBlocked?'تفعيل الحساب':'إيقاف الحساب'}</button></div></div></div>`;
+                    return `<div class="border border-slate-200 rounded-2xl p-4 md:p-5 bg-white dark-adapt-bg"><div class="flex flex-col xl:flex-row xl:items-center gap-4"><div class="flex items-center gap-3 flex-1 min-w-0"><span class="w-12 h-12 rounded-2xl ${isBlocked?'bg-red-50 text-red-500':'bg-emerald-50 text-emerald-600'} flex items-center justify-center font-black shrink-0">${admin.escapeHtml(((u.profile.name||'ط').trim()[0]||'ط').toUpperCase())}</span><div class="min-w-0"><div class="flex flex-wrap items-center gap-2"><h4 class="font-black text-slate-800 dark-adapt truncate">${admin.escapeHtml(u.profile.name||'طالب')}</h4><span class="text-[10px] font-black px-2 py-1 rounded-lg ${isBlocked?'bg-red-50 text-red-600':'bg-emerald-50 text-emerald-600'}">${isBlocked?'موقوف':'نشط'}</span></div><p class="text-xs font-bold text-slate-400 truncate mt-1" dir="ltr">${admin.escapeHtml(u.profile.email||'')}</p><p class="text-[10px] font-bold text-slate-400 mt-1">آخر نشاط: ${formatDate(u.profile.lastActivityAt||u.profile.lastLoginAt)}</p></div></div><div class="grid grid-cols-3 gap-2 xl:w-[300px]"><div class="bg-slate-50 rounded-xl p-2 text-center"><strong class="block text-slate-800">${completed}</strong><span class="text-[10px] text-slate-400 font-bold">درس</span></div><div class="bg-slate-50 rounded-xl p-2 text-center"><strong class="block text-slate-800">${hist.length}</strong><span class="text-[10px] text-slate-400 font-bold">اختبار</span></div><div class="bg-slate-50 rounded-xl p-2 text-center"><strong class="block ${best!==null?'text-emerald-600':'text-slate-400'}">${best===null?'—':best+'%'}</strong><span class="text-[10px] text-slate-400 font-bold">الأفضل</span></div></div><div class="flex flex-col gap-2 xl:w-[360px]"><div class="flex gap-2"><select onchange="admin.changeStudentPlan('${u.uid}',this.value)" class="flex-1 border-2 border-slate-200 rounded-xl px-3 py-2 font-black text-sm bg-white"><option value="free" ${u.profile.plan!=='subscriber'?'selected':''}>مجاني</option><option value="subscriber" ${u.profile.plan==='subscriber'?'selected':''}>مشترك</option></select><button onclick="admin.toggleStudentStatus('${u.uid}','${isBlocked?'active':'blocked'}')" class="flex-1 ${isBlocked?'bg-emerald-50 text-emerald-700 border-emerald-100':'bg-red-50 text-red-600 border-red-100'} border py-2.5 rounded-xl font-black text-sm">${isBlocked?'تفعيل الحساب':'إيقاف الحساب'}</button></div><div class="grid grid-cols-[1fr_auto] gap-2 items-center"><input type="date" value="${u.profile.subscriptionEndsAt?new Date(u.profile.subscriptionEndsAt).toISOString().slice(0,10):''}" onchange="admin.setSubscriptionEnd('${u.uid}',this.value)" class="border-2 border-slate-200 rounded-xl px-3 py-2 font-bold text-xs bg-white"><button onclick="admin.extendSubscription('${u.uid}',30)" class="bg-amber-50 border border-amber-100 text-amber-700 px-3 py-2 rounded-xl font-black text-xs">+30 يوم</button></div><div class="text-[10px] font-bold ${u.profile.plan==='subscriber' && u.profile.subscriptionEndsAt && u.profile.subscriptionEndsAt>Date.now()?'text-emerald-600':'text-slate-400'}">${u.profile.plan==='subscriber'?(u.profile.subscriptionEndsAt?('ينتهي: '+formatDate(u.profile.subscriptionEndsAt)):'مشترك بدون تاريخ انتهاء'):'حساب مجاني'}</div></div></div></div>`;
                 }).join('') : '<div class="empty-state">لا توجد حسابات مطابقة.</div>';
             },
             toggleStudentStatus: (uid,status) => {
@@ -520,9 +520,37 @@
                 if(!confirm(`هل تريد ${action} هذا الحساب؟`)) return;
                 usersRef.child(`${uid}/profile/status`).set(status).then(()=>admin.notify(`تم ${action} الحساب`));
             },
-            changeStudentPlan: (uid,plan) => {
-                usersRef.child(`${uid}/profile/plan`).set(plan).then(()=>admin.notify(plan==='subscriber'?'تم تحويل الطالب إلى مشترك':'تم تحويل الطالب إلى مجاني'));
+            changeStudentPlan: async (uid,plan) => {
+                const ref = usersRef.child(`${uid}/profile`);
+                if (plan === 'subscriber') {
+                    const current = usersData?.[uid]?.profile || {};
+                    const now = Date.now();
+                    const end = current.subscriptionEndsAt && current.subscriptionEndsAt > now ? current.subscriptionEndsAt : now + 30*24*60*60*1000;
+                    await ref.update({ plan:'subscriber', subscriptionStartAt: current.subscriptionStartAt || now, subscriptionEndsAt:end });
+                    admin.notify('تم تفعيل الاشتراك لمدة 30 يومًا ويمكنك تعديل تاريخ الانتهاء');
+                } else {
+                    await ref.update({ plan:'free', subscriptionEndsAt:null });
+                    admin.notify('تم تحويل الطالب إلى مجاني');
+                }
             },
+            setSubscriptionEnd: async (uid,dateValue) => {
+                if(!dateValue) return usersRef.child(`${uid}/profile/subscriptionEndsAt`).remove().then(()=>admin.notify('تم حذف تاريخ الانتهاء'));
+                const end = new Date(dateValue+'T23:59:59').getTime();
+                await usersRef.child(`${uid}/profile`).update({ plan:'subscriber', subscriptionStartAt: usersData?.[uid]?.profile?.subscriptionStartAt || Date.now(), subscriptionEndsAt:end });
+                admin.notify('تم تحديث تاريخ انتهاء الاشتراك');
+            },
+            extendSubscription: async (uid,days=30) => {
+                const current = usersData?.[uid]?.profile?.subscriptionEndsAt || 0;
+                const base = current > Date.now() ? current : Date.now();
+                await usersRef.child(`${uid}/profile`).update({ plan:'subscriber', subscriptionStartAt: usersData?.[uid]?.profile?.subscriptionStartAt || Date.now(), subscriptionEndsAt: base + days*24*60*60*1000 });
+                admin.notify(`تم تمديد الاشتراك ${days} يومًا`);
+            },
+            setContentAccess: (type,id,access) => {
+                const map={category:'categories',chapter:'chapters',lesson:'lessons',quiz:'quizzes'};
+                if(!map[type]) return;
+                dbRef.child(`${map[type]}/${id}/access`).set(access).then(()=>admin.notify(access==='free'?'تم جعله مجانيًا':access==='subscriber'?'تم قفله للمشتركين':'تم إخفاء المحتوى'));
+            },
+            accessSelect: (type,id,current='free') => `<select onclick="event.stopPropagation()" onchange="event.stopPropagation();admin.setContentAccess('${type}','${id}',this.value)" class="text-[10px] font-black border border-slate-200 rounded-lg px-2 py-1 bg-white"><option value="free" ${current!=='subscriber'&&current!=='hidden'?'selected':''}>مجاني</option><option value="subscriber" ${current==='subscriber'?'selected':''}>مشترك 🔒</option><option value="hidden" ${current==='hidden'?'selected':''}>مخفي</option></select>`,
             idTimestamp: (id='') => { const m = String(id).match(/(\d{10,})/); return m ? Number(m[1]) : 0; },
             escapeHtml: (str='') => String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])),
             renderAnnouncementSettings: () => {
@@ -644,29 +672,31 @@
                 const n = document.getElementById('cat-name').value.trim(); 
                 if(!n) return admin.notify('يجب كتابة اسم القسم', 'error'); 
                 const id = 'cat_' + Date.now(); 
-                dbRef.child(`categories/${id}`).set({ id, name: n }).then(() => { admin.notify('تمت الإضافة'); document.getElementById('cat-name').value = ''; }); 
+                dbRef.child(`categories/${id}`).set({ id, name: n, access: 'free' }).then(() => { admin.notify('تمت الإضافة'); document.getElementById('cat-name').value = ''; }); 
             },
             addChapter: () => { 
                 const c = document.getElementById('chap-cat').value; 
                 const t = document.getElementById('chap-title').value.trim(); 
                 if(!c || !t) return admin.notify('يجب اختيار القسم وكتابة اسم الباب', 'error'); 
                 const id = 'chap_' + Date.now(); 
-                dbRef.child(`chapters/${id}`).set({ id, categoryId: c, title: t }).then(() => { admin.notify('تمت الإضافة'); document.getElementById('chap-title').value = ''; }); 
+                dbRef.child(`chapters/${id}`).set({ id, categoryId: c, title: t, access: 'free' }).then(() => { admin.notify('تمت الإضافة'); document.getElementById('chap-title').value = ''; }); 
             },
             addLesson: () => { 
                 const c = document.getElementById('les-chap').value; 
                 const t = document.getElementById('les-title').value.trim(); 
                 const text = document.getElementById('les-content').value.trim(); 
-                const qId = document.getElementById('les-quiz').value; 
+                const qId = document.getElementById('les-quiz').value;
+                const access = document.getElementById('les-access')?.value || 'free'; 
                 if(!c || !t || !text) return admin.notify('يجب استكمال بيانات الدرس', 'error'); 
                 const id = 'les_' + Date.now(); 
-                dbRef.child(`lessons/${id}`).set({ id, chapterId: c, title: t, content: text, quizId: qId || null }).then(() => { admin.notify('تم نشر الدرس بنجاح'); document.getElementById('les-title').value = ''; document.getElementById('les-content').value = ''; }); 
+                dbRef.child(`lessons/${id}`).set({ id, chapterId: c, title: t, content: text, quizId: qId || null, access }).then(() => { admin.notify('تم نشر الدرس بنجاح'); document.getElementById('les-title').value = ''; document.getElementById('les-content').value = ''; }); 
             },
             createQuiz: () => { 
                 const n = document.getElementById('quiz-name').value.trim(); 
+                const access = document.getElementById('quiz-access')?.value || 'free';
                 if(!n) return admin.notify('اكتب اسم الاختبار', 'error'); 
                 const id = 'quiz_' + Date.now(); 
-                dbRef.child(`quizzes/${id}`).set({ id, name: n, questions: [] }).then(() => { admin.notify('تم إنشاء الاختبار'); document.getElementById('quiz-name').value = ''; }); 
+                dbRef.child(`quizzes/${id}`).set({ id, name: n, questions: [], access }).then(() => { admin.notify('تم إنشاء الاختبار'); document.getElementById('quiz-name').value = ''; }); 
             },
             addManualQuestion: () => { 
                 const qId = document.getElementById('q-target-quiz').value; 
@@ -787,7 +817,7 @@
                     if(q && !catMatch && validChaps.length === 0) return; 
 
                     html += `<details ${q ? 'open' : ''}><summary><div class="flex items-center gap-2"><i class="fas fa-book text-islamic-600"></i> ${cat.name}</div><div class="flex items-center gap-2">
-                        <button onclick="event.preventDefault(); admin.openEditCat('${cat.id}')" class="text-xs text-blue-500 hover:text-blue-700 mx-1" title="تعديل اسم القسم"><i class="fas fa-pen"></i></button>
+                        ${admin.accessSelect('category',cat.id,cat.access)}<button onclick="event.preventDefault(); admin.openEditCat('${cat.id}')" class="text-xs text-blue-500 hover:text-blue-700 mx-1" title="تعديل اسم القسم"><i class="fas fa-pen"></i></button>
                         <button onclick="event.preventDefault(); admin.deleteCategory('${cat.id}')" class="text-xs text-red-500 hover:text-red-700 mx-1" title="حذف القسم ومحتوياته بالكامل"><i class="fas fa-trash"></i></button>
                         <i class="fas fa-chevron-down arrow-icon text-slate-400"></i></div></summary><div class="content space-y-3 bg-slate-50">`;
                     
@@ -796,7 +826,7 @@
                         let lessons = Object.values(dbData.lessons || {}).filter(l => l.chapterId === chap.id);
                         let validLessons = lessons.filter(l => !q || catMatch || chapMatch || l.title.toLowerCase().includes(q));
 
-                        html += `<details ${q ? 'open' : ''} class="ml-4 border-r-4 border-blue-400"><summary class="bg-white"><div class="flex items-center gap-2 text-blue-800"><i class="fas fa-folder"></i> ${chap.title}</div><div class="flex items-center gap-2"><button onclick="event.preventDefault(); admin.openEditChap('${chap.id}')" class="text-xs text-blue-500 hover:text-blue-700 mx-2" title="تعديل اسم الباب"><i class="fas fa-pen"></i></button><i class="fas fa-chevron-down arrow-icon text-slate-400"></i></div></summary><div class="content bg-white space-y-2">`;
+                        html += `<details ${q ? 'open' : ''} class="ml-4 border-r-4 border-blue-400"><summary class="bg-white"><div class="flex items-center gap-2 text-blue-800"><i class="fas fa-folder"></i> ${chap.title}</div><div class="flex items-center gap-2">${admin.accessSelect('chapter',chap.id,chap.access)}<button onclick="event.preventDefault(); admin.openEditChap('${chap.id}')" class="text-xs text-blue-500 hover:text-blue-700 mx-2" title="تعديل اسم الباب"><i class="fas fa-pen"></i></button><i class="fas fa-chevron-down arrow-icon text-slate-400"></i></div></summary><div class="content bg-white space-y-2">`;
                         
                         if(validLessons.length === 0) html += `<p class="text-xs text-slate-400 text-center">لا يوجد محتوى في هذا الباب</p>`;
                         validLessons.forEach(les => {
@@ -804,7 +834,7 @@
                             html += `<div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-200">
                                 <div class="flex items-center gap-3">
                                     <input type="checkbox" ${isChecked} class="w-4 h-4 text-red-600 rounded cursor-pointer" onchange="admin.toggleSelection('lesson', '${les.id}', this.checked)">
-                                    <span class="font-bold text-sm text-slate-700">${les.title}</span>
+                                    <span class="font-bold text-sm text-slate-700">${les.title}</span>${admin.accessSelect('lesson',les.id,les.access)}
                                 </div>
                                 <div class="flex gap-2">
                                     <button onclick="admin.openMoveCopyModal('${les.id}')" class="text-xs text-purple-600 bg-purple-50 px-3 py-1 rounded-lg hover:bg-purple-100 font-bold transition-colors shadow-sm border border-purple-100" title="نقل أو نسخ إلى باب آخر"><i class="fas fa-exchange-alt"></i> نقل/نسخ</button>
@@ -849,7 +879,7 @@
                             <div class="flex items-center gap-4">
                                 <input type="checkbox" ${isChecked} class="w-5 h-5 text-red-600 rounded cursor-pointer" onchange="admin.toggleSelection('quiz', '${quiz.id}', this.checked)">
                                 <span class="font-bold">${quiz.name} <span class="text-xs bg-white px-2 py-0.5 rounded-full ml-2 shadow-sm">${qs.length} سؤال</span></span>
-                                <button onclick="event.preventDefault(); admin.openBulkEditQuiz('${quiz.id}')" class="text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-3 py-1 rounded-lg mx-2 font-black shadow-sm transition border border-emerald-200" title="تعديل الأسئلة بالكود البرمجي"><i class="fas fa-file-code"></i> تعديل (JSON)</button>
+                                ${admin.accessSelect('quiz',quiz.id,quiz.access)}<button onclick="event.preventDefault(); admin.openBulkEditQuiz('${quiz.id}')" class="text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-3 py-1 rounded-lg mx-2 font-black shadow-sm transition border border-emerald-200" title="تعديل الأسئلة بالكود البرمجي"><i class="fas fa-file-code"></i> تعديل (JSON)</button>
                                 <button onclick="event.preventDefault(); admin.openEditQuiz('${quiz.id}')" class="text-xs text-blue-500 hover:text-blue-700 mx-2" title="تغيير اسم الاختبار"><i class="fas fa-pen"></i> الاسم</button>
                             </div>
                             <i class="fas fa-chevron-down arrow-icon text-rose-400"></i>
@@ -930,8 +960,9 @@
                 const id = document.getElementById('edit-les-id').value; 
                 const t = document.getElementById('edit-les-title').value.trim(); 
                 const c = document.getElementById('edit-les-content').value.trim(); 
-                const qId = document.getElementById('edit-les-quiz').value; 
-                if(t && c) dbRef.child(`lessons/${id}`).update({ title: t, content: c, quizId: qId || null }).then(() => { admin.notify('تم حفظ التعديلات على الدرس'); admin.closeModal('edit-lesson-modal'); }); 
+                const qId = document.getElementById('edit-les-quiz').value;
+                const access = document.getElementById('edit-les-access').value || 'free'; 
+                if(t && c) dbRef.child(`lessons/${id}`).update({ title: t, content: c, quizId: qId || null, access }).then(() => { admin.notify('تم حفظ التعديلات على الدرس'); admin.closeModal('edit-lesson-modal'); }); 
             },
             
             openEditQuiz: (id) => { 
@@ -941,8 +972,9 @@
             },
             saveQuizEdit: () => { 
                 const id = document.getElementById('edit-quiz-id').value; 
-                const n = document.getElementById('edit-quiz-name').value.trim(); 
-                if(n) dbRef.child(`quizzes/${id}/name`).set(n).then(() => { admin.notify('تم تحديث الاسم'); admin.closeModal('edit-quiz-modal'); }); 
+                const n = document.getElementById('edit-quiz-name').value.trim();
+                const access = document.getElementById('edit-quiz-access').value || 'free'; 
+                if(n) dbRef.child(`quizzes/${id}`).update({name:n, access}).then(() => { admin.notify('تم تحديث الاسم'); admin.closeModal('edit-quiz-modal'); }); 
             },
             
             openEditQuestion: (qId, idx) => { 
