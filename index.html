@@ -30,174 +30,171 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; }
-        .adm-tab { display: none; }
-        .adm-tab.active { display: block; animation: fadeIn 0.4s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .tab-btn { transition: all 0.3s; }
-        .tab-btn.active { background-color: #064e3b; color: white; border-color: #064e3b; transform: scale(1.05); }
-        
-        #toast-notification { transform: translateY(-150%); transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
-        #toast-notification.show { transform: translateY(0); }
-        
-        /* تنسيقات شجرة الإدارة */
-        details { background: white; border: 1px solid #e2e8f0; border-radius: 1rem; margin-bottom: 0.5rem; overflow: hidden; transition: all 0.3s ease; }
-        details summary { padding: 1rem; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; outline: none; background: #f8fafc; }
-        details[open] summary { background: #f0fdf4; border-bottom: 1px solid #e2e8f0; color: #065f46; }
-        details .content { padding: 1rem; }
-        .arrow-icon { transition: transform 0.3s; }
-        details[open] summary .arrow-icon { transform: rotate(180deg); }
+        :root { --sidebar:#0f172a; --sidebar2:#111f2e; --brand:#059669; --brand-dark:#064e3b; --surface:#ffffff; --bg:#f4f7f6; --text:#172033; --muted:#64748b; --border:#e2e8f0; }
+        * { box-sizing: border-box; }
+        body { font-family:'Cairo',sans-serif; background:var(--bg); color:var(--text); margin:0; min-height:100vh; }
+        .adm-tab { display:none; }
+        .adm-tab.active { display:block; animation:fadeIn .32s ease; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+        #toast-notification { transform:translate(-50%,-160%); transition:transform .35s cubic-bezier(.34,1.56,.64,1); }
+        #toast-notification.show { transform:translate(-50%,0); }
+        .admin-sidebar { position:fixed; inset:0 auto 0 0; right:0; left:auto; width:282px; background:linear-gradient(180deg,var(--sidebar) 0%,#0b2c27 100%); color:white; z-index:80; padding:22px 16px; display:flex; flex-direction:column; box-shadow:-12px 0 34px rgba(15,23,42,.12); }
+        .admin-main { margin-right:282px; min-height:100vh; }
+        .brand-box { padding:8px 10px 22px; border-bottom:1px solid rgba(255,255,255,.09); margin-bottom:18px; }
+        .brand-mark { width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,#10b981,#d97706);display:grid;place-items:center;box-shadow:0 10px 24px rgba(16,185,129,.22); }
+        .sidebar-label { color:#94a3b8; font-size:11px; font-weight:900; padding:10px 13px 7px; letter-spacing:.02em; }
+        .tab-btn { width:100%; display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; color:#cbd5e1; font-weight:800; font-size:14px; transition:.22s ease; border:1px solid transparent; text-align:right; }
+        .tab-btn i { width:22px;text-align:center;font-size:16px; }
+        .tab-btn:hover { background:rgba(255,255,255,.07); color:white; transform:translateX(-2px); }
+        .tab-btn.active { background:linear-gradient(135deg,rgba(16,185,129,.22),rgba(16,185,129,.08)); color:#d1fae5; border-color:rgba(52,211,153,.24); box-shadow:inset 0 0 0 1px rgba(255,255,255,.02); }
+        .sidebar-footer { margin-top:auto; padding:15px; border-radius:17px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.07); }
+        .topbar { position:sticky; top:0; z-index:55; background:rgba(255,255,255,.86); backdrop-filter:blur(18px); border-bottom:1px solid rgba(226,232,240,.8); }
+        .top-icon-btn { width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:white;border:1px solid var(--border);color:#475569;transition:.2s;box-shadow:0 4px 12px rgba(15,23,42,.04); }
+        .top-icon-btn:hover { transform:translateY(-2px); color:var(--brand); border-color:#a7f3d0; }
+        .content-wrap { max-width:1440px; margin:0 auto; padding:28px 30px 60px; }
+        .hero-admin { background:linear-gradient(135deg,#063f35 0%,#075b49 48%,#0f766e 100%); color:white; border-radius:28px; padding:28px; position:relative; overflow:hidden; box-shadow:0 18px 45px rgba(6,78,59,.16); }
+        .hero-admin:before,.hero-admin:after { content:''; position:absolute; border-radius:50%; background:rgba(255,255,255,.06); }
+        .hero-admin:before { width:220px;height:220px;left:-60px;top:-95px; }
+        .hero-admin:after { width:160px;height:160px;right:35%;bottom:-120px; }
+        .stat-grid { display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;margin-top:20px; }
+        .stat-card { background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px;box-shadow:0 9px 25px rgba(15,23,42,.045);position:relative;overflow:hidden;transition:.2s; }
+        .stat-card:hover { transform:translateY(-3px); box-shadow:0 14px 32px rgba(15,23,42,.07); }
+        .stat-icon { width:42px;height:42px;border-radius:13px;display:grid;place-items:center;margin-bottom:14px;font-size:18px; }
+        .stat-icon.green{background:#ecfdf5;color:#059669}.stat-icon.blue{background:#eff6ff;color:#2563eb}.stat-icon.indigo{background:#eef2ff;color:#4f46e5}.stat-icon.rose{background:#fff1f2;color:#e11d48}.stat-icon.amber{background:#fffbeb;color:#d97706}.stat-icon.slate{background:#f1f5f9;color:#475569}
+        .stat-number { font-size:28px;font-weight:900;line-height:1;color:#0f172a; }
+        .stat-name { color:#64748b;font-weight:800;font-size:12px;margin-top:7px; }
+        .dashboard-grid { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(320px,.6fr);gap:18px;margin-top:18px; }
+        .panel { background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:22px;box-shadow:0 9px 26px rgba(15,23,42,.04); }
+        .panel-title { display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px; }
+        .recent-item { display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid #eef2f7; }
+        .recent-item:last-child{border-bottom:0}.recent-icon{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;flex:none}.recent-icon.indigo{background:#eef2ff;color:#4f46e5}.recent-icon.rose{background:#fff1f2;color:#e11d48}.recent-icon.blue{background:#eff6ff;color:#2563eb}.recent-icon.emerald{background:#ecfdf5;color:#059669}
+        .quick-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px; }
+        .quick-action { border:1px solid var(--border);border-radius:16px;padding:14px;text-align:right;background:#fbfdff;transition:.2s;font-weight:900;color:#334155; }
+        .quick-action:hover{border-color:#6ee7b7;background:#f0fdf4;color:#065f46;transform:translateY(-2px)}
+        .progress-track{height:10px;border-radius:20px;background:#e2e8f0;overflow:hidden}.progress-fill{height:100%;background:linear-gradient(90deg,#10b981,#059669);border-radius:inherit;transition:width .35s}
+        .page-card { background:var(--surface);border:1px solid var(--border);border-radius:24px;box-shadow:0 9px 26px rgba(15,23,42,.04); }
+        details { background:var(--surface);border:1px solid var(--border);border-radius:15px;margin-bottom:9px;overflow:hidden;transition:.2s; }
+        details summary { padding:14px;font-weight:900;cursor:pointer;display:flex;justify-content:space-between;align-items:center;outline:none;background:#fbfdff; }
+        details[open] summary { background:#ecfdf5;border-bottom:1px solid var(--border);color:#065f46; }
+        details .content{padding:14px}.arrow-icon{transition:transform .25s}details[open] summary .arrow-icon{transform:rotate(180deg)}
+        .empty-state { padding:28px;text-align:center;color:#94a3b8;font-weight:800;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:16px; }
+        .form-help { font-size:12px;color:#64748b;font-weight:700;line-height:1.8; }
+        .announcement-preview{padding:18px;border-radius:18px;display:flex;flex-direction:column;gap:6px;border:1px solid}.announcement-preview.info{background:#eff6ff;border-color:#bfdbfe;color:#1e40af}.announcement-preview.success{background:#ecfdf5;border-color:#a7f3d0;color:#065f46}.announcement-preview.warning{background:#fffbeb;border-color:#fde68a;color:#92400e}.announcement-preview.danger{background:#fff1f2;border-color:#fecdd3;color:#9f1239}.announcement-preview small{opacity:.7;font-weight:800}
+        .preview-content { white-space:pre-wrap;line-height:2.2;font-weight:700;color:#334155;font-size:17px; }
+        .preview-quran{display:block;background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0;padding:14px;border-radius:14px;text-align:center;font-size:20px;font-weight:900;margin:10px 0}.preview-quote{color:#2563eb;font-weight:900}.preview-block{display:block;padding:14px;border-radius:13px;border-right:6px solid;margin:15px 0;font-weight:900}.preview-block.blue{background:#eef2ff;color:#3730a3;border-color:#6366f1}.preview-block.green{background:#ecfdf5;color:#065f46;border-color:#10b981}.preview-block.red{background:#fff1f2;color:#9f1239;border-color:#f43f5e}.preview-block.purple{background:#faf5ff;color:#6b21a8;border-color:#a855f7}.preview-block.teal{background:#f0fdfa;color:#115e59;border-color:#14b8a6}.preview-block.warning{background:#fef2f2;color:#991b1b;border-color:#dc2626}.preview-dark-title{display:block;width:max-content;max-width:100%;margin:18px auto;padding:9px 18px;border-radius:999px;background:#1e293b;color:white;font-weight:900}.preview-highlight{background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:8px;font-weight:900}
+        .mobile-menu-btn{display:none}.sidebar-overlay{display:none}
+        /* Dark mode */
+        .admin-dark { --surface:#111827; --bg:#080f1a; --text:#e5e7eb; --muted:#94a3b8; --border:#233044; }
+        .admin-dark body{background:var(--bg);color:var(--text)}.admin-dark .topbar{background:rgba(8,15,26,.86);border-color:#1f2937}.admin-dark .top-icon-btn{background:#111827;border-color:#263449;color:#cbd5e1}.admin-dark .stat-number,.admin-dark .dark-adapt{color:#f8fafc!important}.admin-dark .stat-name{color:#94a3b8}.admin-dark .panel,.admin-dark .stat-card,.admin-dark .page-card,.admin-dark details{background:#111827;border-color:#233044}.admin-dark details summary{background:#121d2c}.admin-dark details[open] summary{background:#0b2e29;border-color:#233044;color:#a7f3d0}.admin-dark .recent-item{border-color:#233044}.admin-dark .quick-action{background:#0d1724;border-color:#233044;color:#cbd5e1}.admin-dark .quick-action:hover{background:#0b2e29;color:#a7f3d0}.admin-dark .empty-state{background:#0d1724;border-color:#334155;color:#64748b}.admin-dark input,.admin-dark textarea,.admin-dark select{background:#0d1724!important;color:#e5e7eb!important;border-color:#334155!important}.admin-dark .bg-white{background:#111827!important}.admin-dark .bg-slate-50{background:#0d1724!important}.admin-dark .text-slate-800,.admin-dark .text-slate-700,.admin-dark .text-slate-600{color:#e2e8f0!important}.admin-dark .border-slate-200,.admin-dark .border-slate-100{border-color:#334155!important}.admin-dark .preview-content{color:#dbeafe}
+        @media(max-width:1180px){.stat-grid{grid-template-columns:repeat(3,1fr)}.dashboard-grid{grid-template-columns:1fr}}
+        @media(max-width:900px){
+            .admin-sidebar{transform:translateX(110%);transition:transform .3s ease;width:min(84vw,310px)}.admin-sidebar.open{transform:none}.admin-main{margin-right:0}.mobile-menu-btn{display:grid}.sidebar-overlay{display:block;position:fixed;inset:0;background:rgba(2,6,23,.54);z-index:70;opacity:0;pointer-events:none;transition:.25s}.sidebar-overlay.show{opacity:1;pointer-events:auto}.content-wrap{padding:20px 15px 80px}.hero-admin{padding:22px}.stat-grid{grid-template-columns:repeat(2,1fr)}
+        }
+        @media(max-width:560px){.stat-grid{grid-template-columns:repeat(2,1fr);gap:10px}.stat-card{padding:14px}.stat-number{font-size:23px}.quick-grid{grid-template-columns:1fr}.content-wrap{padding-inline:11px}.hero-admin{border-radius:22px}.panel{border-radius:20px;padding:17px}.topbar h2{font-size:17px!important}.topbar p{display:none}}
     </style>
 </head>
-<body class="pb-20 text-slate-800">
-
-    <div id="toast-notification" class="fixed top-5 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl text-white font-bold min-w-[300px] justify-center bg-islamic-600">
-        <i id="toast-icon" class="text-xl fas fa-check-circle"></i> 
-        <span id="toast-msg">تم الإجراء بنجاح</span>
+<body>
+    <div id="toast-notification" class="fixed top-5 left-1/2 z-[9999] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl text-white font-bold min-w-[300px] justify-center bg-islamic-600">
+        <i id="toast-icon" class="text-xl fas fa-check-circle"></i><span id="toast-msg">تم الإجراء بنجاح</span>
     </div>
 
-    <div class="bg-slate-900 text-white py-2 px-4 flex justify-between items-center text-sm font-bold shadow-inner relative z-[60]">
-        <div class="flex gap-6 container mx-auto">
-            <span class="flex items-center gap-2" title="عدد الزيارات الكلي للمنصة">
-                <i class="fas fa-chart-line text-emerald-400 text-lg"></i> إجمالي الزيارات: 
-                <span id="stat-visitors" class="text-emerald-300 font-black text-lg bg-slate-800 px-3 py-0.5 rounded-lg shadow-inner">0</span>
-            </span>
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="admin.closeSidebar()"></div>
+    <aside id="admin-sidebar" class="admin-sidebar">
+        <div class="brand-box flex items-center gap-3">
+            <div class="brand-mark"><i class="fas fa-book-quran text-xl"></i></div>
+            <div><div class="font-black text-lg">لوحة الإدارة</div><div class="text-xs text-emerald-200/70 font-bold mt-1">منصة أستاذ أحمد عيد</div></div>
         </div>
+        <div class="sidebar-label">الرئيسية</div>
+        <button data-tab="dashboard" onclick="admin.switchTab('dashboard', this)" class="tab-btn active"><i class="fas fa-chart-pie"></i><span>نظرة عامة</span></button>
+        <div class="sidebar-label mt-2">إدارة المنصة</div>
+        <button data-tab="manage-content" onclick="admin.switchTab('manage-content', this)" class="tab-btn"><i class="fas fa-magnifying-glass"></i><span>إدارة وبحث شامل</span></button>
+        <button data-tab="add-content" onclick="admin.switchTab('add-content', this)" class="tab-btn"><i class="fas fa-file-circle-plus"></i><span>إضافة المحتوى</span></button>
+        <button data-tab="add-quizzes" onclick="admin.switchTab('add-quizzes', this)" class="tab-btn"><i class="fas fa-clipboard-question"></i><span>الاختبارات والأسئلة</span></button>
+        <button data-tab="announcements" onclick="admin.switchTab('announcements', this)" class="tab-btn"><i class="fas fa-bullhorn"></i><span>مركز الإعلانات</span></button>
+        <button data-tab="settings" onclick="admin.switchTab('settings', this)" class="tab-btn"><i class="fas fa-sliders"></i><span>الإعدادات</span></button>
+        <div class="sidebar-footer">
+            <div class="text-xs text-slate-400 font-bold mb-2">إجمالي زيارات المنصة</div>
+            <div class="flex items-center gap-2"><i class="fas fa-chart-line text-emerald-400"></i><span id="stat-visitors" class="font-black text-2xl">0</span></div>
+        </div>
+    </aside>
+
+    <div class="admin-main">
+        <header class="topbar">
+            <div class="max-w-[1440px] mx-auto px-4 md:px-8 py-3 flex items-center gap-3">
+                <button onclick="admin.toggleSidebar()" class="top-icon-btn mobile-menu-btn"><i class="fas fa-bars"></i></button>
+                <div class="min-w-0 flex-1">
+                    <h2 id="page-title" class="font-black text-xl text-slate-900 dark-adapt">نظرة عامة</h2>
+                    <p id="page-subtitle" class="text-xs md:text-sm font-bold text-slate-400 mt-1 truncate">ملخص سريع عن محتوى المنصة ونشاطها</p>
+                </div>
+                <button onclick="admin.toggleTheme()" class="top-icon-btn" title="الوضع الليلي"><i id="theme-icon" class="fas fa-moon"></i></button>
+                <button onclick="admin.switchTab('manage-content', document.querySelector('.tab-btn[data-tab=\'manage-content\']'))" class="top-icon-btn" title="بحث سريع"><i class="fas fa-search"></i></button>
+            </div>
+        </header>
+
+        <main class="content-wrap">
+            <section id="tab-dashboard" class="adm-tab active">
+                <div class="hero-admin">
+                    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+                        <div><div class="text-emerald-200 text-sm font-black mb-2">مركز التحكم</div><h3 class="text-2xl md:text-3xl font-black mb-2">أهلاً بك في إدارة المنصة</h3><p class="text-emerald-50/80 font-bold max-w-2xl leading-7">تابع المحتوى والاختبارات من مكان واحد، وانتقل مباشرة لأكثر العمليات استخدامًا.</p></div>
+                        <button onclick="admin.switchTab('add-content', document.querySelector('.tab-btn[data-tab=\'add-content\']'))" class="relative z-10 bg-white text-emerald-800 px-6 py-3.5 rounded-2xl font-black shadow-lg hover:-translate-y-1 transition-transform"><i class="fas fa-plus ml-2"></i>إضافة محتوى جديد</button>
+                    </div>
+                </div>
+                <div class="stat-grid">
+                    <div class="stat-card"><div class="stat-icon green"><i class="fas fa-layer-group"></i></div><div id="dash-categories" class="stat-number">0</div><div class="stat-name">الأقسام</div></div>
+                    <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-folder-open"></i></div><div id="dash-chapters" class="stat-number">0</div><div class="stat-name">الأبواب والفصول</div></div>
+                    <div class="stat-card"><div class="stat-icon indigo"><i class="fas fa-file-lines"></i></div><div id="dash-lessons" class="stat-number">0</div><div class="stat-name">الدروس</div></div>
+                    <div class="stat-card"><div class="stat-icon rose"><i class="fas fa-clipboard-question"></i></div><div id="dash-quizzes" class="stat-number">0</div><div class="stat-name">الاختبارات</div></div>
+                    <div class="stat-card"><div class="stat-icon amber"><i class="fas fa-circle-question"></i></div><div id="dash-questions" class="stat-number">0</div><div class="stat-name">إجمالي الأسئلة</div></div>
+                    <div class="stat-card"><div class="stat-icon slate"><i class="fas fa-eye"></i></div><div id="dash-visitors" class="stat-number">0</div><div class="stat-name">الزيارات</div></div>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="panel"><div class="panel-title"><div><h4 class="font-black text-xl text-slate-800 dark-adapt">أحدث المحتوى</h4><p class="text-xs font-bold text-slate-400 mt-1">آخر العناصر المضافة حسب معرفاتها الزمنية</p></div><button onclick="admin.switchTab('manage-content', document.querySelector('.tab-btn[data-tab=\'manage-content\']'))" class="text-emerald-600 font-black text-sm">عرض الكل</button></div><div id="recent-content-list"></div></div>
+                    <div class="space-y-4">
+                        <div class="panel"><div class="panel-title"><h4 class="font-black text-lg text-slate-800 dark-adapt">إجراءات سريعة</h4></div><div class="quick-grid"><button class="quick-action" onclick="admin.switchTab('add-content', document.querySelector('.tab-btn[data-tab=\'add-content\']'))"><i class="fas fa-file-circle-plus text-indigo-500 ml-2"></i>درس جديد</button><button class="quick-action" onclick="admin.switchTab('add-quizzes', document.querySelector('.tab-btn[data-tab=\'add-quizzes\']'))"><i class="fas fa-clipboard-question text-rose-500 ml-2"></i>اختبار جديد</button><button class="quick-action" onclick="admin.switchTab('announcements', document.querySelector('.tab-btn[data-tab=\'announcements\']'))"><i class="fas fa-bullhorn text-amber-500 ml-2"></i>إعلان للطلاب</button><button class="quick-action" onclick="admin.exportBackup()"><i class="fas fa-download text-emerald-500 ml-2"></i>نسخة احتياطية</button></div></div>
+                        <div class="panel"><div class="flex items-center justify-between mb-3"><div><div class="text-sm font-black text-slate-800 dark-adapt">ربط الدروس بالاختبارات</div><div class="text-xs font-bold text-slate-400 mt-1">نسبة الدروس التي تحتوي على اختبار</div></div><span id="dash-link-rate" class="font-black text-emerald-600 text-lg">0%</span></div><div class="progress-track"><div id="dash-link-bar" class="progress-fill" style="width:0%"></div></div></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-manage-content" class="adm-tab space-y-6">
+                <div class="page-card p-4 md:p-5 relative"><i class="fas fa-search absolute top-1/2 -translate-y-1/2 right-8 text-emerald-500 text-xl"></i><input type="text" id="admin-global-search" onkeyup="admin.globalSearch()" placeholder="ابحث عن قسم، باب، درس، اختبار، أو سؤال..." class="w-full bg-slate-50 border-2 border-slate-200 p-4 pr-14 rounded-2xl font-black text-slate-700 focus:border-emerald-500 focus:outline-none transition text-base"></div>
+                <div id="bulk-actions" class="bg-red-50 border border-red-200 p-4 rounded-2xl hidden flex flex-col sm:flex-row gap-3 justify-between items-center transition-all sticky top-20 z-40 shadow-md"><div class="font-bold text-red-700 text-sm">تم تحديد <span id="sel-les-count" class="bg-red-200 px-2 rounded">0</span> درس، و <span id="sel-quiz-count" class="bg-red-200 px-2 rounded">0</span> اختبار.</div><button onclick="admin.executeBulkDelete()" class="bg-red-600 text-white px-6 py-3 rounded-xl font-black hover:bg-red-700 shadow-sm"><i class="fas fa-trash-alt ml-2"></i>حذف المحدد نهائياً</button></div>
+                <div class="page-card p-5 md:p-7"><div id="management-tree" class="space-y-4"></div></div>
+            </section>
+
+            <section id="tab-add-content" class="adm-tab space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <div class="page-card p-6 border-r-4 border-emerald-500"><div class="flex gap-3 items-center mb-5"><div class="stat-icon green !mb-0"><i class="fas fa-layer-group"></i></div><div><h3 class="font-black text-lg text-slate-800 dark-adapt">إضافة قسم رئيسي</h3><p class="form-help">المستوى الأول في تنظيم المحتوى.</p></div></div><input id="cat-name" placeholder="مثال: الفقه، العقيدة..." class="w-full border-2 p-3 rounded-xl font-bold mb-3 outline-none focus:border-emerald-500"><button onclick="admin.addCategory()" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-black hover:bg-emerald-700">إضافة القسم</button></div>
+                    <div class="page-card p-6 border-r-4 border-blue-500"><div class="flex gap-3 items-center mb-5"><div class="stat-icon blue !mb-0"><i class="fas fa-folder-plus"></i></div><div><h3 class="font-black text-lg text-slate-800 dark-adapt">إضافة باب / فصل</h3><p class="form-help">اختر القسم ثم أضف الباب التابع له.</p></div></div><select id="chap-cat" class="w-full border-2 p-3 rounded-xl font-bold mb-3 outline-none focus:border-blue-500 bg-slate-50"></select><input id="chap-title" placeholder="مثال: باب الطهارة" class="w-full border-2 p-3 rounded-xl font-bold mb-3 outline-none focus:border-blue-500"><button onclick="admin.addChapter()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black hover:bg-blue-700">إضافة الباب</button></div>
+                </div>
+                <div class="page-card p-6 md:p-8 border-t-4 border-indigo-500">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6"><div><h3 class="font-black text-2xl text-indigo-800 dark-adapt"><i class="fas fa-file-lines ml-2"></i>إضافة درس جديد</h3><p class="form-help mt-2">يمكنك معاينة الدرس بالشكل القريب من ظهوره للطالب قبل النشر.</p></div><button onclick="admin.previewNewLesson()" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-5 py-3 rounded-xl font-black hover:bg-indigo-100"><i class="fas fa-eye ml-2"></i>معاينة الدرس</button></div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4"><div><label class="block text-xs font-bold text-slate-500 mb-1">القسم</label><select id="les-cat" onchange="admin.updateChaptersDropdown('les-cat','les-chap')" class="w-full border-2 p-3 rounded-xl font-bold outline-none focus:border-indigo-500 bg-slate-50"></select></div><div><label class="block text-xs font-bold text-slate-500 mb-1">الباب</label><select id="les-chap" class="w-full border-2 p-3 rounded-xl font-bold outline-none focus:border-indigo-500 bg-slate-50"></select></div><div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100"><label class="block text-xs font-black text-indigo-800 mb-1">الاختبار المرتبط</label><input type="text" id="quiz-search-input" onkeyup="admin.filterQuizzes('quiz-search-input','les-quiz')" placeholder="ابحث عن اختبار..." class="w-full border-2 p-2 rounded-lg text-sm font-bold mb-2 outline-none focus:border-indigo-500"><select id="les-quiz" class="w-full border-2 p-2 rounded-lg font-bold outline-none focus:border-indigo-500 bg-white" size="3"></select></div></div>
+                    <input id="les-title" placeholder="عنوان الدرس" class="w-full border-2 p-3 rounded-xl font-bold text-lg mb-4 outline-none focus:border-indigo-500"><textarea id="les-content" placeholder="اكتب محتوى الشرح هنا..." class="w-full border-2 p-4 rounded-xl font-bold h-72 mb-3 outline-none focus:border-indigo-500 leading-loose"></textarea><div class="form-help mb-4">يدعم التنسيقات الحالية مثل: {نص قرآني}، [تنبيه]...[/تنبيه]، [ازرق]...[/ازرق]، **خط عريض**.</div><div class="grid sm:grid-cols-2 gap-3"><button onclick="admin.previewNewLesson()" class="border-2 border-indigo-200 text-indigo-700 py-4 rounded-xl font-black hover:bg-indigo-50"><i class="fas fa-eye ml-2"></i>معاينة قبل النشر</button><button onclick="admin.addLesson()" class="bg-indigo-600 text-white py-4 rounded-xl font-black hover:bg-indigo-700 text-lg"><i class="fas fa-paper-plane ml-2"></i>نشر الدرس</button></div>
+                </div>
+            </section>
+
+            <section id="tab-add-quizzes" class="adm-tab space-y-6">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-5"><div class="page-card p-6 border-r-4 border-rose-500"><h3 class="font-black text-lg mb-4 text-rose-800 dark-adapt"><i class="fas fa-plus-circle ml-2"></i>إنشاء اختبار فارغ</h3><input id="quiz-name" placeholder="مثال: اختبار الوضوء" class="w-full border-2 p-3 rounded-xl font-bold mb-4 outline-none focus:border-rose-500"><button onclick="admin.createQuiz()" class="w-full bg-rose-600 text-white py-3 rounded-xl font-black hover:bg-rose-700">إنشاء الاختبار</button></div><div class="page-card p-6 border-r-4 border-orange-500 xl:col-span-2"><h3 class="font-black text-lg mb-4 text-orange-800 dark-adapt"><i class="fas fa-pen-to-square ml-2"></i>إضافة سؤال يدوي</h3><select id="q-target-quiz" class="w-full border-2 p-3 rounded-xl font-bold mb-3 bg-orange-50 outline-none focus:border-orange-500"></select><textarea id="q-text" placeholder="نص السؤال..." class="w-full border-2 p-3 rounded-xl font-bold h-24 mb-3 outline-none focus:border-orange-500"></textarea><div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3"><input id="opt-0" placeholder="الإجابة أ" class="border-2 p-3 rounded-lg font-bold"><input id="opt-1" placeholder="الإجابة ب" class="border-2 p-3 rounded-lg font-bold"><input id="opt-2" placeholder="الإجابة ج" class="border-2 p-3 rounded-lg font-bold"><input id="opt-3" placeholder="الإجابة د" class="border-2 p-3 rounded-lg font-bold"></div><div class="flex items-center gap-3 mb-3"><label class="font-bold text-sm">الإجابة الصحيحة:</label><select id="q-correct" class="border-2 p-2 rounded-lg font-bold w-24 text-center"><option value="0">أ</option><option value="1">ب</option><option value="2">ج</option><option value="3">د</option></select></div><button onclick="admin.addManualQuestion()" class="w-full bg-orange-600 text-white py-3 rounded-xl font-black hover:bg-orange-700">إضافة السؤال للاختبار</button></div></div>
+                <div class="bg-slate-900 p-6 md:p-8 rounded-3xl shadow-xl text-white"><div class="flex items-center gap-3 mb-4"><div class="w-11 h-11 rounded-xl bg-emerald-500/15 text-emerald-300 grid place-items-center"><i class="fas fa-code"></i></div><div><h3 class="font-black text-xl text-emerald-300">إضافة أسئلة مجمعة (Bulk JSON)</h3><p class="text-xs text-slate-400 font-bold mt-1">مناسب لرفع عشرات أو مئات الأسئلة دفعة واحدة.</p></div></div><select id="bulk-target-quiz" class="w-full border-none p-3 rounded-xl font-bold mb-4 bg-slate-800 text-white"></select><textarea id="bulk-json" class="w-full bg-slate-800 text-emerald-300 p-4 rounded-xl font-mono text-sm h-56 mb-4 border-none outline-none focus:ring-2 focus:ring-emerald-500" dir="ltr" placeholder='[{"text":"سؤال؟","options":["أ","ب","ج","د"],"correctIndex":0}]'></textarea><button onclick="admin.addBulkQuestions()" class="w-full bg-emerald-600 text-white py-4 rounded-xl font-black hover:bg-emerald-500">رفع الأسئلة المجمعة</button></div>
+            </section>
+
+            <section id="tab-announcements" class="adm-tab space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-5"><div class="page-card p-6 lg:col-span-3"><div class="flex items-center gap-3 mb-6"><div class="stat-icon amber !mb-0"><i class="fas fa-bullhorn"></i></div><div><h3 class="font-black text-xl text-slate-800 dark-adapt">إعلان للطلاب</h3><p class="form-help">اكتب تنويهًا أو تحديثًا واحفظه في إعدادات المنصة.</p></div></div><label class="block text-sm font-black mb-2">عنوان الإعلان</label><input id="announcement-title" placeholder="مثال: تم إضافة اختبارات جديدة" class="w-full border-2 p-3 rounded-xl font-bold mb-4"><label class="block text-sm font-black mb-2">نص الإعلان</label><textarea id="announcement-text" placeholder="اكتب نص الإعلان هنا..." class="w-full border-2 p-4 rounded-xl font-bold h-36 mb-4"></textarea><div class="grid sm:grid-cols-2 gap-4 mb-5"><div><label class="block text-sm font-black mb-2">نوع الإعلان</label><select id="announcement-type" class="w-full border-2 p-3 rounded-xl font-bold"><option value="info">معلومة</option><option value="success">إضافة جديدة</option><option value="warning">تنبيه مهم</option><option value="danger">تنبيه عاجل</option></select></div><label class="flex items-center gap-3 border-2 rounded-xl p-3 cursor-pointer"><input id="announcement-active" type="checkbox" class="w-5 h-5 rounded text-emerald-600"><span class="font-black">تفعيل الإعلان للطلاب</span></label></div><div class="grid sm:grid-cols-2 gap-3"><button onclick="admin.saveAnnouncement()" class="bg-emerald-600 text-white py-3 rounded-xl font-black hover:bg-emerald-700"><i class="fas fa-save ml-2"></i>حفظ الإعلان</button><button onclick="admin.clearAnnouncement()" class="border-2 border-red-200 text-red-600 py-3 rounded-xl font-black hover:bg-red-50"><i class="fas fa-trash ml-2"></i>حذف الإعلان</button></div></div><div class="page-card p-6 lg:col-span-2"><h4 class="font-black text-lg text-slate-800 dark-adapt mb-2">المعاينة الحالية</h4><p class="form-help mb-5">تأكد من النص والحالة قبل عرضه.</p><div id="announcement-current-preview"></div><div class="mt-5 p-4 rounded-xl bg-blue-50 border border-blue-100 text-blue-800 text-sm font-bold leading-7"><i class="fas fa-circle-info ml-2"></i>تم تخزين الإعلان داخل Firebase في إعدادات المنصة، ويمكن لواجهة الطالب قراءته وعرضه تلقائيًا.</div></div></div>
+            </section>
+
+            <section id="tab-settings" class="adm-tab space-y-6">
+                <div class="page-card p-6 md:p-8 border-t-4 border-amber-500"><h3 class="font-black text-2xl mb-6 text-emerald-800 dark-adapt"><i class="fas fa-kaaba ml-2"></i>إدارة الأذكار التلقائية</h3><div class="mb-7 p-5 bg-amber-50 rounded-2xl border border-amber-200"><label class="block font-black text-amber-900 mb-2">زمن ظهور الذكر على شاشة الطالب</label><div class="flex flex-wrap items-center gap-3"><span class="font-bold text-slate-600">يظهر ذكر جديد كل</span><input type="number" id="dhikr-interval" value="2" class="w-24 border-2 p-2 rounded-xl font-bold text-center"><span class="font-bold text-slate-600">دقيقة</span><button onclick="admin.saveDhikrInterval()" class="bg-amber-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-amber-700 sm:mr-auto">حفظ التوقيت</button></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-7"><div><h4 class="font-black text-lg text-slate-800 dark-adapt mb-3">إضافة ذكر جديد</h4><textarea id="new-dhikr-text" placeholder="اكتب الذكر هنا..." class="w-full border-2 p-4 rounded-xl font-bold h-32 mb-3 bg-slate-50"></textarea><button onclick="admin.addDhikr()" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-black hover:bg-emerald-700">إضافة الذكر للقائمة</button></div><div><h4 class="font-black text-lg text-slate-800 dark-adapt mb-3">الأذكار الحالية</h4><div id="dhikr-list" class="space-y-3 max-h-72 overflow-y-auto pr-2"></div></div></div></div>
+                <div class="page-card p-6"><div class="flex flex-col md:flex-row md:items-center justify-between gap-4"><div><h3 class="font-black text-xl text-slate-800 dark-adapt"><i class="fas fa-shield-halved text-emerald-600 ml-2"></i>نسخة احتياطية</h3><p class="form-help mt-2">نزّل نسخة JSON من بيانات المنصة الحالية قبل التعديلات الكبيرة.</p></div><button onclick="admin.exportBackup()" class="bg-slate-900 text-white px-6 py-3 rounded-xl font-black hover:bg-black"><i class="fas fa-download ml-2"></i>تنزيل نسخة الآن</button></div></div>
+            </section>
+        </main>
     </div>
 
-    <nav class="bg-islamic-900 text-white p-4 shadow-xl sticky top-0 z-50 border-b-4 border-islamic-500">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl md:text-2xl font-black flex items-center gap-2">
-                <i class="fas fa-sliders-h text-islamic-500"></i> إدارة منصة أستاذ أحمد عيد
-            </h1>
+    <div id="lesson-preview-modal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-[120] hidden flex items-center justify-center p-3 md:p-6">
+        <div class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl relative max-h-[92vh] overflow-hidden flex flex-col">
+            <div class="p-5 border-b flex items-center justify-between gap-3"><div><div class="text-xs font-black text-emerald-600 mb-1">معاينة الطالب</div><h3 id="preview-lesson-title" class="font-black text-xl text-slate-800">عنوان الدرس</h3></div><button onclick="admin.closeModal('lesson-preview-modal')" class="w-10 h-10 rounded-full bg-slate-100 text-slate-500 hover:bg-red-50 hover:text-red-500"><i class="fas fa-times"></i></button></div>
+            <div class="p-6 md:p-8 overflow-y-auto"><div id="preview-lesson-content" class="preview-content"></div></div>
         </div>
-    </nav>
-
-    <div class="container mx-auto px-4 py-8">
-        
-        <div class="flex gap-3 overflow-x-auto pb-6 no-scrollbar justify-start md:justify-center px-1">
-            <button onclick="admin.switchTab('manage-content')" class="tab-btn active bg-white text-slate-600 px-6 py-3 rounded-2xl font-black text-sm whitespace-nowrap shadow border-2 border-transparent">⚙️ إدارة وبحث شامل</button>
-            <button onclick="admin.switchTab('add-content')" class="tab-btn bg-white text-slate-600 px-6 py-3 rounded-2xl font-black text-sm whitespace-nowrap shadow border-2 border-transparent">📝 إضافة الأقسام والدروس</button>
-            <button onclick="admin.switchTab('add-quizzes')" class="tab-btn bg-white text-slate-600 px-6 py-3 rounded-2xl font-black text-sm whitespace-nowrap shadow border-2 border-transparent">📋 إنشاء الاختبارات</button>
-            <button onclick="admin.switchTab('settings')" class="tab-btn bg-white text-slate-600 px-6 py-3 rounded-2xl font-black text-sm whitespace-nowrap shadow border-2 border-transparent">📿 الأذكار والإعدادات</button>
-        </div>
-
-        <div id="tab-manage-content" class="adm-tab active space-y-6">
-            
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-6 relative">
-                <i class="fas fa-search absolute top-1/2 -translate-y-1/2 right-8 text-islamic-500 text-2xl"></i>
-                <input type="text" id="admin-global-search" onkeyup="admin.globalSearch()" placeholder="ابحث هنا عن (قسم، باب، درس، اختبار، أو حتى سؤال) للتعديل السريع..." class="w-full bg-slate-50 border-2 border-slate-200 p-4 pr-16 rounded-xl font-black text-slate-700 focus:border-islamic-500 focus:outline-none transition-colors text-lg shadow-inner">
-            </div>
-
-            <div id="bulk-actions" class="bg-red-50 border border-red-200 p-4 rounded-2xl hidden flex justify-between items-center transition-all sticky top-20 z-40 shadow-md">
-                <div class="font-bold text-red-700 text-sm">
-                    تم تحديد <span id="sel-les-count" class="bg-red-200 px-2 rounded">0</span> درس، و <span id="sel-quiz-count" class="bg-red-200 px-2 rounded">0</span> اختبار.
-                </div>
-                <button onclick="admin.executeBulkDelete()" class="bg-red-600 text-white px-6 py-3 rounded-xl font-black hover:bg-red-700 shadow-sm"><i class="fas fa-trash-alt"></i> حذف المحدد نهائياً</button>
-            </div>
-
-            <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm">
-                <div id="management-tree" class="space-y-4"></div>
-            </div>
-        </div>
-
-        <div id="tab-add-content" class="adm-tab space-y-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white p-6 rounded-[2rem] shadow-sm border-r-8 border-islamic-500">
-                    <h3 class="font-black text-lg mb-4 text-islamic-800">1. إضافة قسم رئيسي</h3>
-                    <input id="cat-name" placeholder="مثال: الفقه، العقيدة..." class="w-full border-2 p-3 rounded-xl font-bold mb-3 outline-none focus:border-islamic-500">
-                    <button onclick="admin.addCategory()" class="w-full bg-islamic-600 text-white py-3 rounded-xl font-black hover:bg-islamic-700">إضافة القسم</button>
-                </div>
-                <div class="bg-white p-6 rounded-[2rem] shadow-sm border-r-8 border-blue-500">
-                    <h3 class="font-black text-lg mb-4 text-blue-800">2. إضافة باب / فصل</h3>
-                    <select id="chap-cat" class="w-full border-2 p-3 rounded-xl font-bold mb-3 outline-none focus:border-blue-500 bg-slate-50"></select>
-                    <input id="chap-title" placeholder="مثال: باب الطهارة" class="w-full border-2 p-3 rounded-xl font-bold mb-3 outline-none focus:border-blue-500">
-                    <button onclick="admin.addChapter()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black hover:bg-blue-700">إضافة الباب</button>
-                </div>
-            </div>
-            
-            <div class="bg-white p-8 rounded-[2rem] shadow-sm border-t-8 border-indigo-500">
-                <h3 class="font-black text-2xl mb-6 text-indigo-800 flex items-center gap-2"><i class="fas fa-file-lines"></i> 3. إضافة درس جديد</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">القسم</label>
-                        <select id="les-cat" onchange="admin.updateChaptersDropdown('les-cat', 'les-chap')" class="w-full border-2 p-3 rounded-xl font-bold outline-none focus:border-indigo-500 bg-slate-50"></select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">الباب</label>
-                        <select id="les-chap" class="w-full border-2 p-3 rounded-xl font-bold outline-none focus:border-indigo-500 bg-slate-50"></select>
-                    </div>
-                    <div class="bg-indigo-50 p-2 rounded-xl border border-indigo-100">
-                        <label class="block text-xs font-black text-indigo-800 mb-1">بحث واختيار الاختبار المرتبط</label>
-                        <input type="text" id="quiz-search-input" onkeyup="admin.filterQuizzes('quiz-search-input', 'les-quiz')" placeholder="🔍 ابحث عن اسم الاختبار..." class="w-full border-2 p-2 rounded-lg text-sm font-bold mb-2 outline-none focus:border-indigo-500">
-                        <select id="les-quiz" class="w-full border-2 p-2 rounded-lg font-bold outline-none focus:border-indigo-500 bg-white" size="3"></select>
-                    </div>
-                </div>
-                <input id="les-title" placeholder="عنوان الدرس" class="w-full border-2 p-3 rounded-xl font-bold text-lg mb-4 outline-none focus:border-indigo-500">
-                <textarea id="les-content" placeholder="اكتب محتوى الشرح هنا..." class="w-full border-2 p-4 rounded-xl font-bold h-64 mb-4 outline-none focus:border-indigo-500 leading-loose"></textarea>
-                <button onclick="admin.addLesson()" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-black hover:bg-indigo-700 text-lg">نشر الدرس</button>
-            </div>
-        </div>
-
-        <div id="tab-add-quizzes" class="adm-tab space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-[2rem] shadow-sm border-r-8 border-rose-500 md:col-span-1">
-                    <h3 class="font-black text-lg mb-4 text-rose-800">إنشاء اختبار فارغ</h3>
-                    <input id="quiz-name" placeholder="مثال: اختبار الوضوء" class="w-full border-2 p-3 rounded-xl font-bold mb-4 outline-none focus:border-rose-500">
-                    <button onclick="admin.createQuiz()" class="w-full bg-rose-600 text-white py-3 rounded-xl font-black hover:bg-rose-700">إنشاء الاختبار</button>
-                </div>
-                <div class="bg-white p-6 rounded-[2rem] shadow-sm border-r-8 border-orange-500 md:col-span-2">
-                    <h3 class="font-black text-lg mb-4 text-orange-800">إضافة سؤال يدوي</h3>
-                    <select id="q-target-quiz" class="w-full border-2 p-3 rounded-xl font-bold mb-3 bg-orange-50 outline-none focus:border-orange-500"></select>
-                    <textarea id="q-text" placeholder="نص السؤال..." class="w-full border-2 p-3 rounded-xl font-bold h-20 mb-3 outline-none focus:border-orange-500"></textarea>
-                    <div class="grid grid-cols-2 gap-2 mb-3">
-                        <input id="opt-0" placeholder="أ" class="border-2 p-2 rounded-lg font-bold"><input id="opt-1" placeholder="ب" class="border-2 p-2 rounded-lg font-bold">
-                        <input id="opt-2" placeholder="ج" class="border-2 p-2 rounded-lg font-bold"><input id="opt-3" placeholder="د" class="border-2 p-2 rounded-lg font-bold">
-                    </div>
-                    <div class="flex items-center gap-3 mb-3">
-                        <label class="font-bold text-sm">الإجابة الصحيحة:</label>
-                        <select id="q-correct" class="border-2 p-2 rounded-lg font-bold w-24 text-center">
-                            <option value="0">أ</option><option value="1">ب</option><option value="2">ج</option><option value="3">د</option>
-                        </select>
-                    </div>
-                    <button onclick="admin.addManualQuestion()" class="w-full bg-orange-600 text-white py-3 rounded-xl font-black hover:bg-orange-700">إضافة السؤال للاختبار</button>
-                </div>
-            </div>
-            
-            <div class="bg-slate-900 p-8 rounded-[2rem] shadow-xl text-white">
-                <h3 class="font-black text-xl mb-2 text-emerald-400"><i class="fas fa-code"></i> إضافة أسئلة مجمعة (Bulk JSON)</h3>
-                <select id="bulk-target-quiz" class="w-full border-none p-3 rounded-xl font-bold mb-4 bg-slate-800 text-white"></select>
-                <textarea id="bulk-json" class="w-full bg-slate-800 text-emerald-300 p-4 rounded-xl font-mono text-sm h-48 mb-4 border-none outline-none focus:ring-2 focus:ring-emerald-500" dir="ltr" placeholder='[{"text": "سؤال؟", "options": ["أ", "ب", "ج", "د"], "correctIndex": 0}]'></textarea>
-                <button onclick="admin.addBulkQuestions()" class="w-full bg-emerald-600 text-white py-4 rounded-xl font-black hover:bg-emerald-500">رفع الأسئلة المجمعة</button>
-            </div>
-        </div>
-
-        <div id="tab-settings" class="adm-tab space-y-6">
-            <div class="bg-white p-8 rounded-[2rem] shadow-sm border-t-8 border-islamic-gold">
-                <h3 class="font-black text-2xl mb-6 text-islamic-800 flex items-center gap-2"><i class="fas fa-kaaba"></i> إدارة الأذكار التلقائية</h3>
-                <div class="mb-8 p-6 bg-amber-50 rounded-2xl border border-amber-200">
-                    <label class="block font-black text-amber-900 mb-2">زمن ظهور الذكر على شاشة الطالب:</label>
-                    <div class="flex items-center gap-3">
-                        <span class="font-bold text-slate-600">يظهر ذكر جديد كل</span>
-                        <input type="number" id="dhikr-interval" value="2" class="w-24 border-2 p-2 rounded-xl font-bold text-center">
-                        <span class="font-bold text-slate-600">دقيقة</span>
-                        <button onclick="admin.saveDhikrInterval()" class="bg-amber-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-amber-700 shadow-sm mr-auto">حفظ التوقيت</button>
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                        <h4 class="font-black text-lg text-slate-800 mb-3">إضافة ذكر جديد</h4>
-                        <textarea id="new-dhikr-text" placeholder="اكتب الذكر هنا..." class="w-full border-2 p-4 rounded-xl font-bold h-32 mb-3 bg-slate-50"></textarea>
-                        <button onclick="admin.addDhikr()" class="w-full bg-islamic-600 text-white py-3 rounded-xl font-black hover:bg-islamic-700 shadow-sm">إضافة الذكر للقائمة</button>
-                    </div>
-                    <div>
-                        <h4 class="font-black text-lg text-slate-800 mb-3">الأذكار الحالية</h4>
-                        <div id="dhikr-list" class="space-y-3 max-h-64 overflow-y-auto pr-2"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 
     <div id="move-copy-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
@@ -321,11 +318,13 @@
         const admin = {
             // التهيئة وقراءة البيانات
             init: () => {
+                admin.applySavedTheme();
                 dbRef.on('value', snap => {
                     dbData = snap.val() || { categories: {}, chapters: {}, lessons: {}, quizzes: {}, settings: {}, stats: {} };
                     
                     const visits = (dbData.stats && dbData.stats.visitors) ? dbData.stats.visitors : 0;
-                    document.getElementById('stat-visitors').innerText = visits;
+                    const visitorEl = document.getElementById('stat-visitors');
+                    if(visitorEl) visitorEl.innerText = visits;
 
                     if(!dbData.settings) dbData.settings = {};
                     if(!dbData.settings.dhikrList) dbData.settings.dhikrList = ['سبحان الله وبحمده'];
@@ -334,6 +333,8 @@
                     admin.updateDropdowns();
                     admin.globalSearch(); 
                     admin.renderDhikrList();
+                    admin.renderDashboard();
+                    admin.renderAnnouncementSettings();
                 });
             },
 
@@ -347,13 +348,147 @@
             },
 
             // التنقل وإغلاق النوافذ
-            switchTab: (tabId) => {
+            switchTab: (tabId, btn = null) => {
                 document.querySelectorAll('.adm-tab').forEach(el => el.classList.remove('active'));
                 document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-                document.getElementById('tab-' + tabId).classList.add('active');
-                event.target.classList.add('active');
+                const tab = document.getElementById('tab-' + tabId);
+                if(tab) tab.classList.add('active');
+                const targetBtn = btn || document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+                if(targetBtn) targetBtn.classList.add('active');
+                const labels = {
+                    dashboard: ['نظرة عامة', 'ملخص سريع عن محتوى المنصة ونشاطها'],
+                    'manage-content': ['إدارة المحتوى', 'بحث وتعديل الأقسام والأبواب والدروس والاختبارات'],
+                    'add-content': ['إضافة محتوى', 'إنشاء أقسام وأبواب ودروس جديدة'],
+                    'add-quizzes': ['إدارة الاختبارات', 'إنشاء الاختبارات وإضافة الأسئلة يدويًا أو دفعة واحدة'],
+                    announcements: ['مركز الإعلانات', 'إنشاء تنبيه يظهر لطلاب المنصة'],
+                    settings: ['الإعدادات', 'الأذكار والنسخ الاحتياطي وتفضيلات اللوحة']
+                };
+                const info = labels[tabId] || ['', ''];
+                const title = document.getElementById('page-title');
+                const sub = document.getElementById('page-subtitle');
+                if(title) title.innerText = info[0];
+                if(sub) sub.innerText = info[1];
+                admin.closeSidebar();
+                window.scrollTo({top: 0, behavior: 'smooth'});
             },
-            closeModal: (id) => document.getElementById(id).classList.add('hidden'),
+            closeModal: (id) => document.getElementById(id)?.classList.add('hidden'),
+            toggleSidebar: () => {
+                document.getElementById('admin-sidebar')?.classList.toggle('open');
+                document.getElementById('sidebar-overlay')?.classList.toggle('show');
+            },
+            closeSidebar: () => {
+                document.getElementById('admin-sidebar')?.classList.remove('open');
+                document.getElementById('sidebar-overlay')?.classList.remove('show');
+            },
+            applySavedTheme: () => {
+                const saved = localStorage.getItem('admin_theme') || 'light';
+                document.documentElement.classList.toggle('admin-dark', saved === 'dark');
+                admin.updateThemeIcon(saved);
+            },
+            toggleTheme: () => {
+                const dark = !document.documentElement.classList.contains('admin-dark');
+                document.documentElement.classList.toggle('admin-dark', dark);
+                localStorage.setItem('admin_theme', dark ? 'dark' : 'light');
+                admin.updateThemeIcon(dark ? 'dark' : 'light');
+            },
+            updateThemeIcon: (theme) => {
+                const icon = document.getElementById('theme-icon');
+                if(icon) icon.className = `fas ${theme === 'dark' ? 'fa-sun' : 'fa-moon'}`;
+            },
+            renderDashboard: () => {
+                const cats = Object.values(dbData.categories || {});
+                const chaps = Object.values(dbData.chapters || {});
+                const lessons = Object.values(dbData.lessons || {});
+                const quizzes = Object.values(dbData.quizzes || {});
+                const questions = quizzes.reduce((sum, q) => sum + ((q.questions || []).length), 0);
+                const visits = dbData.stats?.visitors || 0;
+                const stats = {
+                    'dash-categories': cats.length, 'dash-chapters': chaps.length,
+                    'dash-lessons': lessons.length, 'dash-quizzes': quizzes.length,
+                    'dash-questions': questions, 'dash-visitors': visits
+                };
+                Object.entries(stats).forEach(([id, val]) => { const el = document.getElementById(id); if(el) el.innerText = val.toLocaleString('ar-EG'); });
+                const linkedLessons = lessons.filter(l => l.quizId).length;
+                const linkRate = lessons.length ? Math.round((linkedLessons / lessons.length) * 100) : 0;
+                const linkRateEl = document.getElementById('dash-link-rate');
+                if(linkRateEl) linkRateEl.innerText = `${linkRate}%`;
+                const linkBar = document.getElementById('dash-link-bar');
+                if(linkBar) linkBar.style.width = `${linkRate}%`;
+
+                const recent = [
+                    ...lessons.map(x => ({...x, type:'درس', label:x.title, icon:'fa-file-lines', tint:'indigo'})),
+                    ...quizzes.map(x => ({...x, type:'اختبار', label:x.name, icon:'fa-clipboard-question', tint:'rose'})),
+                    ...chaps.map(x => ({...x, type:'باب', label:x.title, icon:'fa-folder-open', tint:'blue'})),
+                    ...cats.map(x => ({...x, type:'قسم', label:x.name, icon:'fa-layer-group', tint:'emerald'}))
+                ].sort((a,b) => admin.idTimestamp(b.id)-admin.idTimestamp(a.id)).slice(0,6);
+                const box = document.getElementById('recent-content-list');
+                if(box) box.innerHTML = recent.length ? recent.map(item => `
+                    <div class="recent-item">
+                        <div class="recent-icon ${item.tint}"><i class="fas ${item.icon}"></i></div>
+                        <div class="min-w-0 flex-1"><div class="font-black text-slate-800 dark-adapt truncate">${admin.escapeHtml(item.label || '')}</div><div class="text-xs font-bold text-slate-400 mt-1">${item.type}</div></div>
+                    </div>`).join('') : '<div class="empty-state">لم تتم إضافة محتوى بعد.</div>';
+            },
+            idTimestamp: (id='') => { const m = String(id).match(/(\d{10,})/); return m ? Number(m[1]) : 0; },
+            escapeHtml: (str='') => String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])),
+            renderAnnouncementSettings: () => {
+                const a = dbData.settings?.announcement || {};
+                const title = document.getElementById('announcement-title');
+                const text = document.getElementById('announcement-text');
+                const type = document.getElementById('announcement-type');
+                const active = document.getElementById('announcement-active');
+                if(title) title.value = a.title || '';
+                if(text) text.value = a.text || '';
+                if(type) type.value = a.type || 'info';
+                if(active) active.checked = !!a.active;
+                const preview = document.getElementById('announcement-current-preview');
+                if(preview) preview.innerHTML = a.text ? `<div class="announcement-preview ${a.type || 'info'}"><strong>${admin.escapeHtml(a.title || 'إعلان المنصة')}</strong><span>${admin.escapeHtml(a.text)}</span><small>${a.active ? 'نشط الآن' : 'غير نشط'}</small></div>` : '<div class="empty-state">لا يوجد إعلان محفوظ حاليًا.</div>';
+            },
+            saveAnnouncement: () => {
+                const title = document.getElementById('announcement-title').value.trim();
+                const text = document.getElementById('announcement-text').value.trim();
+                const type = document.getElementById('announcement-type').value;
+                const active = document.getElementById('announcement-active').checked;
+                if(!text) return admin.notify('اكتب نص الإعلان أولاً', 'error');
+                dbRef.child('settings/announcement').set({ title, text, type, active, updatedAt: Date.now() })
+                    .then(() => admin.notify('تم حفظ الإعلان وتحديثه'));
+            },
+            clearAnnouncement: () => {
+                if(confirm('هل تريد حذف الإعلان الحالي؟')) dbRef.child('settings/announcement').remove().then(() => admin.notify('تم حذف الإعلان'));
+            },
+            formatLessonContent: (text) => {
+                if (!text) return '';
+                text = admin.escapeHtml(text);
+                text = text.replace(/\{([^}]+)\}/g, '<span class="preview-quran">{$1}</span>');
+                text = text.replace(/«([^»]+)»/g, '<span class="preview-quote">«$1»</span>');
+                text = text.replace(/\[ازرق\](.*?)\[\/ازرق\]/gs, '<span class="preview-block blue">$1</span>');
+                text = text.replace(/\[اخضر\](.*?)\[\/اخضر\]/gs, '<span class="preview-block green">$1</span>');
+                text = text.replace(/\[احمر\](.*?)\[\/احمر\]/gs, '<span class="preview-block red">$1</span>');
+                text = text.replace(/\[بنفسجي\](.*?)\[\/بنفسجي\]/gs, '<span class="preview-block purple">$1</span>');
+                text = text.replace(/\[فيروزي\](.*?)\[\/فيروزي\]/gs, '<span class="preview-block teal">$1</span>');
+                text = text.replace(/\[تنبيه\](.*?)\[\/تنبيه\]/gs, '<span class="preview-block warning">$1</span>');
+                text = text.replace(/\[داكن\](.*?)\[\/داكن\]/gs, '<span class="preview-dark-title">$1</span>');
+                text = text.replace(/\[اصفر\](.*?)\[\/اصفر\]/gs, '<span class="preview-highlight">$1</span>');
+                text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                return text;
+            },
+            previewNewLesson: () => {
+                const title = document.getElementById('les-title').value.trim() || 'عنوان الدرس';
+                const content = document.getElementById('les-content').value.trim();
+                if(!content) return admin.notify('اكتب محتوى الدرس أولاً لمعاينته', 'error');
+                document.getElementById('preview-lesson-title').innerText = title;
+                document.getElementById('preview-lesson-content').innerHTML = admin.formatLessonContent(content);
+                document.getElementById('lesson-preview-modal').classList.remove('hidden');
+            },
+            exportBackup: () => {
+                const payload = JSON.stringify(dbData, null, 2);
+                const blob = new Blob([payload], {type:'application/json;charset=utf-8'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const d = new Date();
+                a.href = url; a.download = `sharia-platform-backup-${d.toISOString().slice(0,10)}.json`;
+                document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+                admin.notify('تم تجهيز النسخة الاحتياطية للتحميل');
+            },
 
             // إدارة الأذكار
             renderDhikrList: () => { 
@@ -773,7 +908,8 @@
         };
 
         // تهيئة اللوحة عند التحميل
-        window.onload = admin.init;
+        window.onload = () => { admin.init(); admin.switchTab('dashboard', document.querySelector('.tab-btn[data-tab="dashboard"]')); };
     </script>
+
 </body>
 </html>
