@@ -94,6 +94,7 @@
         @media(max-width:560px){.stat-grid{grid-template-columns:repeat(2,1fr);gap:10px}.stat-card{padding:14px}.stat-number{font-size:23px}.quick-grid{grid-template-columns:1fr}.content-wrap{padding-inline:11px}.hero-admin{border-radius:22px}.panel{border-radius:20px;padding:17px}.topbar h2{font-size:17px!important}.topbar p{display:none}}
         .admin-auth-gate{position:fixed;inset:0;z-index:99999;background:radial-gradient(circle at 20% 20%,rgba(16,185,129,.16),transparent 32%),linear-gradient(135deg,#07111f,#062f2a);display:flex;align-items:center;justify-content:center;padding:18px}.admin-auth-card{width:min(440px,100%);background:#fff;border-radius:28px;padding:28px;box-shadow:0 30px 90px rgba(0,0,0,.35)}.admin-auth-gate.hidden{display:none}.admin-dark .admin-auth-card{background:#111c1a;color:#e5e7eb}.admin-dark .admin-auth-card input{background:#13231f!important;border-color:#31443e!important;color:#e5e7eb!important}
 
+            .media-help{font-size:11px;font-weight:800;color:#94a3b8;line-height:1.8}.security-card{background:linear-gradient(135deg,#ecfdf5,#f0fdfa);border:1px solid #a7f3d0}.social-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}@media(max-width:640px){.social-grid{grid-template-columns:1fr}}
     </style>
 </head>
 <body>
@@ -124,6 +125,9 @@
         <button data-tab="add-content" onclick="admin.switchTab('add-content', this)" class="tab-btn"><i class="fas fa-file-circle-plus"></i><span>إضافة المحتوى</span></button>
         <button data-tab="add-quizzes" onclick="admin.switchTab('add-quizzes', this)" class="tab-btn"><i class="fas fa-clipboard-question"></i><span>الاختبارات والأسئلة</span></button>
         <button data-tab="students" onclick="admin.switchTab('students', this)" class="tab-btn"><i class="fas fa-users"></i><span>الطلاب والحسابات</span></button>
+        <button data-tab="subscriptions" onclick="admin.switchTab('subscriptions', this)" class="tab-btn"><i class="fas fa-ticket"></i><span>الباقات وأكواد الاشتراك</span></button>
+        <button data-tab="analytics" onclick="admin.switchTab('analytics', this)" class="tab-btn"><i class="fas fa-chart-line"></i><span>الإحصائيات المتقدمة</span></button>
+        <button data-tab="system" onclick="admin.switchTab('system', this)" class="tab-btn"><i class="fas fa-database"></i><span>النسخ والسجل</span></button>
         <button data-tab="announcements" onclick="admin.switchTab('announcements', this)" class="tab-btn"><i class="fas fa-bullhorn"></i><span>مركز الإعلانات</span></button>
         <button data-tab="settings" onclick="admin.switchTab('settings', this)" class="tab-btn"><i class="fas fa-sliders"></i><span>الإعدادات</span></button>
         <div class="sidebar-footer">
@@ -185,12 +189,23 @@
                 <div class="page-card p-6 md:p-8 border-t-4 border-indigo-500">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6"><div><h3 class="font-black text-2xl text-indigo-800 dark-adapt"><i class="fas fa-file-lines ml-2"></i>إضافة درس جديد</h3><p class="form-help mt-2">يمكنك معاينة الدرس بالشكل القريب من ظهوره للطالب قبل النشر.</p></div><button onclick="admin.previewNewLesson()" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-5 py-3 rounded-xl font-black hover:bg-indigo-100"><i class="fas fa-eye ml-2"></i>معاينة الدرس</button></div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4"><div><label class="block text-xs font-bold text-slate-500 mb-1">القسم</label><select id="les-cat" onchange="admin.updateChaptersDropdown('les-cat','les-chap')" class="w-full border-2 p-3 rounded-xl font-bold outline-none focus:border-indigo-500 bg-slate-50"></select></div><div><label class="block text-xs font-bold text-slate-500 mb-1">الباب</label><select id="les-chap" class="w-full border-2 p-3 rounded-xl font-bold outline-none focus:border-indigo-500 bg-slate-50"></select></div><div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100"><label class="block text-xs font-black text-indigo-800 mb-1">الاختبار المرتبط</label><input type="text" id="quiz-search-input" onkeyup="admin.filterQuizzes('quiz-search-input','les-quiz')" placeholder="ابحث عن اختبار..." class="w-full border-2 p-2 rounded-lg text-sm font-bold mb-2 outline-none focus:border-indigo-500"><select id="les-quiz" class="w-full border-2 p-2 rounded-lg font-bold outline-none focus:border-indigo-500 bg-white" size="3"></select></div></div>
-                    <div class="mb-4"><label class="block text-xs font-black text-slate-500 mb-1">نوع إتاحة الدرس</label><select id="les-access" class="w-full border-2 p-3 rounded-xl font-black bg-slate-50"><option value="free">مجاني</option><option value="subscriber">للمشتركين فقط 🔒</option><option value="hidden">مخفي مؤقتًا</option></select></div><input id="les-title" placeholder="عنوان الدرس" class="w-full border-2 p-3 rounded-xl font-bold text-lg mb-4 outline-none focus:border-indigo-500"><textarea id="les-content" placeholder="اكتب محتوى الشرح هنا..." class="w-full border-2 p-4 rounded-xl font-bold h-72 mb-3 outline-none focus:border-indigo-500 leading-loose"></textarea><div class="form-help mb-4">يدعم التنسيقات الحالية مثل: {نص قرآني}، [تنبيه]...[/تنبيه]، [ازرق]...[/ازرق]، **خط عريض**.</div><div class="grid sm:grid-cols-2 gap-3"><button onclick="admin.previewNewLesson()" class="border-2 border-indigo-200 text-indigo-700 py-4 rounded-xl font-black hover:bg-indigo-50"><i class="fas fa-eye ml-2"></i>معاينة قبل النشر</button><button onclick="admin.addLesson()" class="bg-indigo-600 text-white py-4 rounded-xl font-black hover:bg-indigo-700 text-lg"><i class="fas fa-paper-plane ml-2"></i>نشر الدرس</button></div>
+                    <div class="mb-4"><label class="block text-xs font-black text-slate-500 mb-1">نوع إتاحة الدرس</label><select id="les-access" class="w-full border-2 p-3 rounded-xl font-black bg-slate-50"><option value="free">مجاني</option><option value="subscriber">للمشتركين فقط 🔒</option><option value="hidden">مخفي مؤقتًا</option></select></div><input id="les-title" placeholder="عنوان الدرس" class="w-full border-2 p-3 rounded-xl font-bold text-lg mb-4 outline-none focus:border-indigo-500"><div class="grid md:grid-cols-2 gap-3 mb-4"><div><label class="block text-xs font-black text-slate-500 mb-1">رابط الفيديو (YouTube / TikTok / Facebook)</label><input id="les-video-url" dir="ltr" placeholder="https://..." class="w-full border-2 p-3 rounded-xl font-bold text-left"><div class="media-help mt-1">اتركه فارغًا لو الدرس بدون فيديو.</div></div><div><label class="block text-xs font-black text-slate-500 mb-1">مكان الفيديو</label><select id="les-video-position" class="w-full border-2 p-3 rounded-xl font-black bg-slate-50"><option value="top">فوق الشرح</option><option value="bottom">تحت الشرح</option></select></div><div><label class="block text-xs font-black text-slate-500 mb-1">رابط الكتاب / الملف</label><input id="les-book-url" dir="ltr" placeholder="https://..." class="w-full border-2 p-3 rounded-xl font-bold text-left"></div><div><label class="block text-xs font-black text-slate-500 mb-1">اسم الكتاب الظاهر للطالب</label><input id="les-book-title" placeholder="مثال: تحميل كتاب الفقه" class="w-full border-2 p-3 rounded-xl font-bold"></div></div><div class="mb-4 bg-sky-50 border border-sky-100 p-4 rounded-2xl"><label class="block text-xs font-black text-sky-800 mb-1"><i class="fas fa-calendar-clock ml-1"></i>موعد النشر الاختياري</label><input id="les-publish-at" type="datetime-local" class="w-full border-2 p-3 rounded-xl font-bold bg-white"><p class="text-[11px] font-bold text-sky-600 mt-2">اتركه فارغًا للنشر فورًا. المحتوى المجدول لن يظهر قبل الموعد.</p></div><textarea id="les-content" placeholder="اكتب محتوى الشرح هنا..." class="w-full border-2 p-4 rounded-xl font-bold h-72 mb-3 outline-none focus:border-indigo-500 leading-loose"></textarea><div class="form-help mb-4">يدعم التنسيقات الحالية مثل: {نص قرآني}، [تنبيه]...[/تنبيه]، [ازرق]...[/ازرق]، **خط عريض**.</div><div class="grid sm:grid-cols-2 gap-3"><button onclick="admin.previewNewLesson()" class="border-2 border-indigo-200 text-indigo-700 py-4 rounded-xl font-black hover:bg-indigo-50"><i class="fas fa-eye ml-2"></i>معاينة قبل النشر</button><button onclick="admin.addLesson()" class="bg-indigo-600 text-white py-4 rounded-xl font-black hover:bg-indigo-700 text-lg"><i class="fas fa-paper-plane ml-2"></i>نشر الدرس</button></div>
                 </div>
             </section>
 
             <section id="tab-add-quizzes" class="adm-tab space-y-6">
                 <div class="grid grid-cols-1 xl:grid-cols-3 gap-5"><div class="page-card p-6 border-r-4 border-rose-500"><h3 class="font-black text-lg mb-4 text-rose-800 dark-adapt"><i class="fas fa-plus-circle ml-2"></i>إنشاء اختبار فارغ</h3><input id="quiz-name" placeholder="مثال: اختبار الوضوء" class="w-full border-2 p-3 rounded-xl font-bold mb-4 outline-none focus:border-rose-500"><select id="quiz-access" class="w-full border-2 p-3 rounded-xl font-black mb-4 bg-slate-50"><option value="free">مجاني</option><option value="subscriber">للمشتركين فقط 🔒</option><option value="hidden">مخفي مؤقتًا</option></select><button onclick="admin.createQuiz()" class="w-full bg-rose-600 text-white py-3 rounded-xl font-black hover:bg-rose-700">إنشاء الاختبار</button></div><div class="page-card p-6 border-r-4 border-orange-500 xl:col-span-2"><h3 class="font-black text-lg mb-4 text-orange-800 dark-adapt"><i class="fas fa-pen-to-square ml-2"></i>إضافة سؤال يدوي</h3><select id="q-target-quiz" class="w-full border-2 p-3 rounded-xl font-bold mb-3 bg-orange-50 outline-none focus:border-orange-500"></select><textarea id="q-text" placeholder="نص السؤال..." class="w-full border-2 p-3 rounded-xl font-bold h-24 mb-3 outline-none focus:border-orange-500"></textarea><div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3"><input id="opt-0" placeholder="الإجابة أ" class="border-2 p-3 rounded-lg font-bold"><input id="opt-1" placeholder="الإجابة ب" class="border-2 p-3 rounded-lg font-bold"><input id="opt-2" placeholder="الإجابة ج" class="border-2 p-3 rounded-lg font-bold"><input id="opt-3" placeholder="الإجابة د" class="border-2 p-3 rounded-lg font-bold"></div><div class="flex items-center gap-3 mb-3"><label class="font-bold text-sm">الإجابة الصحيحة:</label><select id="q-correct" class="border-2 p-2 rounded-lg font-bold w-24 text-center"><option value="0">أ</option><option value="1">ب</option><option value="2">ج</option><option value="3">د</option></select></div><button onclick="admin.addManualQuestion()" class="w-full bg-orange-600 text-white py-3 rounded-xl font-black hover:bg-orange-700">إضافة السؤال للاختبار</button></div></div>
+                <div class="page-card p-6 md:p-7 border-r-4 border-cyan-500">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-5"><div><h3 class="font-black text-xl text-cyan-900 dark-adapt"><i class="fas fa-stopwatch ml-2"></i>إعدادات النشر ووضع الامتحان الحقيقي</h3><p class="form-help mt-1">تنطبق هذه الإعدادات على الاختبار الجديد عند الضغط على إنشاء الاختبار.</p></div><label class="inline-flex items-center gap-2 font-black text-sm bg-cyan-50 border border-cyan-100 px-4 py-2.5 rounded-xl"><input id="quiz-exam-mode" type="checkbox" class="w-5 h-5 accent-cyan-600"> وضع امتحان رسمي</label></div>
+                    <div class="grid md:grid-cols-3 gap-3">
+                        <div><label class="block text-xs font-black text-slate-500 mb-1">موعد النشر</label><input id="quiz-publish-at" type="datetime-local" class="w-full border-2 p-3 rounded-xl font-bold"></div>
+                        <div><label class="block text-xs font-black text-slate-500 mb-1">الوقت بالدقائق (0 = بدون)</label><input id="quiz-time-limit" type="number" min="0" value="0" class="w-full border-2 p-3 rounded-xl font-bold"></div>
+                        <div><label class="block text-xs font-black text-slate-500 mb-1">عدد المحاولات (0 = مفتوح)</label><input id="quiz-max-attempts" type="number" min="0" value="0" class="w-full border-2 p-3 rounded-xl font-bold"></div>
+                        <div><label class="block text-xs font-black text-slate-500 mb-1">درجة النجاح %</label><input id="quiz-passing-score" type="number" min="0" max="100" value="70" class="w-full border-2 p-3 rounded-xl font-bold"></div>
+                        <div><label class="block text-xs font-black text-slate-500 mb-1">إظهار صحة الإجابة</label><select id="quiz-answer-feedback" class="w-full border-2 p-3 rounded-xl font-black bg-slate-50"><option value="immediate">فور الإجابة</option><option value="end">بعد نهاية الاختبار</option><option value="never">لا تظهر</option></select></div>
+                        <div class="flex flex-col gap-2 justify-center pt-5"><label class="inline-flex items-center gap-2 font-bold text-sm"><input id="quiz-allow-back" type="checkbox" checked class="accent-cyan-600"> السماح بالرجوع للسابق</label><label class="inline-flex items-center gap-2 font-bold text-sm"><input id="quiz-show-review" type="checkbox" checked class="accent-cyan-600"> إظهار مراجعة الإجابات بعد النهاية</label></div>
+                    </div>
+                </div>
                 <div class="bg-slate-900 p-6 md:p-8 rounded-3xl shadow-xl text-white"><div class="flex items-center gap-3 mb-4"><div class="w-11 h-11 rounded-xl bg-emerald-500/15 text-emerald-300 grid place-items-center"><i class="fas fa-code"></i></div><div><h3 class="font-black text-xl text-emerald-300">إضافة أسئلة مجمعة (Bulk JSON)</h3><p class="text-xs text-slate-400 font-bold mt-1">مناسب لرفع عشرات أو مئات الأسئلة دفعة واحدة.</p></div></div><select id="bulk-target-quiz" class="w-full border-none p-3 rounded-xl font-bold mb-4 bg-slate-800 text-white"></select><textarea id="bulk-json" class="w-full bg-slate-800 text-emerald-300 p-4 rounded-xl font-mono text-sm h-56 mb-4 border-none outline-none focus:ring-2 focus:ring-emerald-500" dir="ltr" placeholder='[{"text":"سؤال؟","options":["أ","ب","ج","د"],"correctIndex":0}]'></textarea><button onclick="admin.addBulkQuestions()" class="w-full bg-emerald-600 text-white py-4 rounded-xl font-black hover:bg-emerald-500">رفع الأسئلة المجمعة</button></div>
             </section>
 
@@ -205,11 +220,40 @@
                 <div class="page-card p-4 md:p-6"><div class="flex items-center justify-between gap-4 mb-5"><div><h3 class="font-black text-xl text-slate-800 dark-adapt">حسابات الطلاب</h3><p class="text-xs font-bold text-slate-400 mt-1">متابعة التقدم والنتائج وحالة الحساب.</p></div><span class="text-xs font-black text-slate-400">التحديث مباشر من Firebase</span></div><div id="students-list" class="space-y-3"></div></div>
             </section>
 
+            <section id="tab-subscriptions" class="adm-tab space-y-6">
+                <div class="grid lg:grid-cols-[.9fr_1.1fr] gap-5">
+                    <div class="page-card p-6 border-t-4 border-violet-500">
+                        <div class="mb-5"><span class="text-xs font-black text-violet-600">خطط الاشتراك</span><h3 class="text-2xl font-black text-slate-800 dark-adapt mt-1">إنشاء باقة جديدة</h3><p class="form-help mt-1">يمكنك عمل شهر، 3 أشهر، سنة أو أي مدة.</p></div>
+                        <div class="space-y-3"><input id="plan-name" placeholder="اسم الباقة - مثال: 3 أشهر" class="w-full border-2 p-3 rounded-xl font-bold"><div class="grid grid-cols-2 gap-3"><input id="plan-days" type="number" min="1" value="30" placeholder="عدد الأيام" class="border-2 p-3 rounded-xl font-bold"><input id="plan-price" placeholder="السعر الظاهر - مثال: 150 جنيه" class="border-2 p-3 rounded-xl font-bold"></div><textarea id="plan-description" placeholder="وصف مختصر للباقة" class="w-full border-2 p-3 rounded-xl font-bold h-24"></textarea><label class="inline-flex items-center gap-2 font-bold"><input id="plan-active" type="checkbox" checked class="accent-violet-600"> الباقة متاحة للاستخدام</label><button onclick="admin.savePlan()" class="w-full bg-violet-600 text-white py-3.5 rounded-xl font-black"><i class="fas fa-plus ml-2"></i>حفظ الباقة</button></div>
+                    </div>
+                    <div class="page-card p-6"><div class="panel-title"><div><h3 class="font-black text-xl text-slate-800 dark-adapt">الباقات الحالية</h3><p class="form-help mt-1">تستخدم في أكواد التفعيل وإدارة الطلاب.</p></div><i class="fas fa-layer-group text-violet-500 text-xl"></i></div><div id="plans-list" class="space-y-3"></div></div>
+                </div>
+                <div class="page-card p-6 md:p-7 border-t-4 border-amber-500">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-5"><div><span class="text-xs font-black text-amber-600">أكواد التفعيل</span><h3 class="text-2xl font-black text-slate-800 dark-adapt mt-1">إنشاء أكواد اشتراك آمنة</h3><p class="form-help mt-1">كل كود يُستخدم مرة واحدة، والطالب يفعّله بنفسه من حسابه.</p></div><div class="flex gap-2 flex-wrap"><select id="code-plan" class="border-2 p-3 rounded-xl font-black bg-white min-w-[180px]"></select><input id="code-count" type="number" min="1" max="100" value="5" class="w-24 border-2 p-3 rounded-xl font-black"><input id="code-expires" type="date" class="border-2 p-3 rounded-xl font-bold"><button onclick="admin.generateSubscriptionCodes()" class="bg-amber-500 text-white px-5 py-3 rounded-xl font-black"><i class="fas fa-wand-magic-sparkles ml-2"></i>إنشاء</button></div></div>
+                    <div class="grid md:grid-cols-[1fr_auto] gap-3 mb-4"><input id="codes-search" onkeyup="admin.renderCodes()" placeholder="ابحث بالكود أو اسم الباقة أو بريد المستخدم..." class="border-2 p-3 rounded-xl font-bold"><select id="codes-filter" onchange="admin.renderCodes()" class="border-2 p-3 rounded-xl font-black bg-white"><option value="all">كل الأكواد</option><option value="available">متاح</option><option value="used">مستخدم</option><option value="inactive">موقوف/منتهي</option></select></div>
+                    <div id="codes-list" class="space-y-3 max-h-[620px] overflow-y-auto"></div>
+                </div>
+            </section>
+
+            <section id="tab-analytics" class="adm-tab space-y-6">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3"><div class="stat-card"><div class="stat-icon green"><i class="fas fa-user-clock"></i></div><div id="ana-active-today" class="stat-number">0</div><div class="stat-name">نشط آخر 24 ساعة</div></div><div class="stat-card"><div class="stat-icon blue"><i class="fas fa-calendar-week"></i></div><div id="ana-active-week" class="stat-number">0</div><div class="stat-name">نشط آخر 7 أيام</div></div><div class="stat-card"><div class="stat-icon amber"><i class="fas fa-crown"></i></div><div id="ana-active-subs" class="stat-number">0</div><div class="stat-name">اشتراك فعّال</div></div><div class="stat-card"><div class="stat-icon rose"><i class="fas fa-hourglass-half"></i></div><div id="ana-expiring" class="stat-number">0</div><div class="stat-name">ينتهي خلال 7 أيام</div></div></div>
+                <div class="grid lg:grid-cols-2 gap-5"><div class="page-card p-6"><div class="panel-title"><div><h3 class="font-black text-xl text-slate-800 dark-adapt">أكثر الدروس فتحًا</h3><p class="form-help mt-1">بناءً على نشاط الحسابات المسجلة.</p></div><i class="fas fa-fire text-orange-500"></i></div><div id="analytics-lessons" class="space-y-3"></div></div><div class="page-card p-6"><div class="panel-title"><div><h3 class="font-black text-xl text-slate-800 dark-adapt">أكثر الاختبارات استخدامًا</h3><p class="form-help mt-1">عدد المحاولات ومتوسط الدرجات.</p></div><i class="fas fa-clipboard-check text-blue-500"></i></div><div id="analytics-quizzes" class="space-y-3"></div></div></div>
+                <div class="grid lg:grid-cols-2 gap-5"><div class="page-card p-6"><div class="panel-title"><div><h3 class="font-black text-xl text-slate-800 dark-adapt">الأسئلة الأكثر حاجة للمراجعة</h3><p class="form-help mt-1">الأسئلة الموجودة حاليًا في بنوك أخطاء الطلاب.</p></div><i class="fas fa-triangle-exclamation text-rose-500"></i></div><div id="analytics-hard-questions" class="space-y-3"></div></div><div class="page-card p-6"><div class="panel-title"><div><h3 class="font-black text-xl text-slate-800 dark-adapt">توزيع الطلاب والباقات</h3><p class="form-help mt-1">مجاني ومشترك والباقات المفعلة.</p></div><i class="fas fa-chart-pie text-violet-500"></i></div><div id="analytics-plans" class="space-y-3"></div></div></div>
+                <div class="page-card p-6"><div class="flex flex-col md:flex-row md:items-center justify-between gap-3"><div><h3 class="font-black text-xl text-slate-800 dark-adapt">ملخص الأداء</h3><p class="form-help mt-1">إجمالي المحاولات ومتوسط الدرجات على مستوى المنصة.</p></div><div class="flex gap-5"><div class="text-center"><strong id="ana-attempts" class="text-3xl font-black text-indigo-600">0</strong><span class="block text-xs font-bold text-slate-400">محاولة</span></div><div class="text-center"><strong id="ana-average" class="text-3xl font-black text-emerald-600">—</strong><span class="block text-xs font-bold text-slate-400">متوسط</span></div></div></div></div>
+            </section>
+
+            <section id="tab-system" class="adm-tab space-y-6">
+                <div class="grid lg:grid-cols-2 gap-5"><div class="page-card p-6 border-t-4 border-slate-700"><h3 class="font-black text-xl text-slate-800 dark-adapt"><i class="fas fa-download text-emerald-600 ml-2"></i>نسخة احتياطية كاملة</h3><p class="form-help mt-2 leading-7">تشمل المحتوى العام والمحتوى المحمي والإعدادات والأكواد. يمكنك اختيار تضمين حسابات الطلاب وتقدمهم.</p><label class="inline-flex items-center gap-2 font-bold mt-4"><input id="backup-include-users" type="checkbox" class="accent-emerald-600"> تضمين بيانات وتقدم الطلاب</label><button onclick="admin.exportFullBackup()" class="w-full mt-4 bg-slate-900 text-white py-3.5 rounded-xl font-black"><i class="fas fa-file-arrow-down ml-2"></i>تنزيل النسخة الكاملة</button></div><div class="page-card p-6 border-t-4 border-orange-500"><h3 class="font-black text-xl text-slate-800 dark-adapt"><i class="fas fa-file-import text-orange-500 ml-2"></i>استرجاع نسخة</h3><p class="form-help mt-2 leading-7">اختر ملف النسخة الذي أنشأته من اللوحة. لن يتم تعديل حسابات Firebase Authentication نفسها.</p><input id="restore-file" type="file" accept="application/json,.json" class="w-full border-2 border-dashed p-4 rounded-xl mt-4 font-bold"><label class="inline-flex items-center gap-2 font-bold mt-3"><input id="restore-users" type="checkbox" class="accent-orange-600"> استرجاع سجلات الطلاب الموجودة في قاعدة البيانات</label><button onclick="admin.restoreFullBackup()" class="w-full mt-4 bg-orange-600 text-white py-3.5 rounded-xl font-black"><i class="fas fa-rotate-left ml-2"></i>بدء الاسترجاع</button></div></div>
+                <div class="page-card p-6"><div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5"><div><h3 class="font-black text-xl text-slate-800 dark-adapt"><i class="fas fa-clock-rotate-left text-blue-500 ml-2"></i>سجل تعديلات الإدارة</h3><p class="form-help mt-1">يسجل العمليات الرئيسية ووقت تنفيذها وحساب المدير.</p></div><button onclick="admin.clearAuditLog()" class="bg-red-50 text-red-600 border border-red-100 px-4 py-2.5 rounded-xl font-black text-sm">مسح السجل</button></div><div id="audit-list" class="space-y-3 max-h-[620px] overflow-y-auto"></div></div>
+            </section>
+
             <section id="tab-announcements" class="adm-tab space-y-6">
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-5"><div class="page-card p-6 lg:col-span-3"><div class="flex items-center gap-3 mb-6"><div class="stat-icon amber !mb-0"><i class="fas fa-bullhorn"></i></div><div><h3 class="font-black text-xl text-slate-800 dark-adapt">إعلان للطلاب</h3><p class="form-help">اكتب تنويهًا أو تحديثًا واحفظه في إعدادات المنصة.</p></div></div><label class="block text-sm font-black mb-2">عنوان الإعلان</label><input id="announcement-title" placeholder="مثال: تم إضافة اختبارات جديدة" class="w-full border-2 p-3 rounded-xl font-bold mb-4"><label class="block text-sm font-black mb-2">نص الإعلان</label><textarea id="announcement-text" placeholder="اكتب نص الإعلان هنا..." class="w-full border-2 p-4 rounded-xl font-bold h-36 mb-4"></textarea><div class="grid sm:grid-cols-2 gap-4 mb-5"><div><label class="block text-sm font-black mb-2">نوع الإعلان</label><select id="announcement-type" class="w-full border-2 p-3 rounded-xl font-bold"><option value="info">معلومة</option><option value="success">إضافة جديدة</option><option value="warning">تنبيه مهم</option><option value="danger">تنبيه عاجل</option></select></div><label class="flex items-center gap-3 border-2 rounded-xl p-3 cursor-pointer"><input id="announcement-active" type="checkbox" class="w-5 h-5 rounded text-emerald-600"><span class="font-black">تفعيل الإعلان للطلاب</span></label></div><div class="grid sm:grid-cols-2 gap-3"><button onclick="admin.saveAnnouncement()" class="bg-emerald-600 text-white py-3 rounded-xl font-black hover:bg-emerald-700"><i class="fas fa-save ml-2"></i>حفظ الإعلان</button><button onclick="admin.clearAnnouncement()" class="border-2 border-red-200 text-red-600 py-3 rounded-xl font-black hover:bg-red-50"><i class="fas fa-trash ml-2"></i>حذف الإعلان</button></div></div><div class="page-card p-6 lg:col-span-2"><h4 class="font-black text-lg text-slate-800 dark-adapt mb-2">المعاينة الحالية</h4><p class="form-help mb-5">تأكد من النص والحالة قبل عرضه.</p><div id="announcement-current-preview"></div><div class="mt-5 p-4 rounded-xl bg-blue-50 border border-blue-100 text-blue-800 text-sm font-bold leading-7"><i class="fas fa-circle-info ml-2"></i>تم تخزين الإعلان داخل Firebase في إعدادات المنصة، ويمكن لواجهة الطالب قراءته وعرضه تلقائيًا.</div></div></div>
             </section>
 
             <section id="tab-settings" class="adm-tab space-y-6">
+                <div class="page-card p-6 md:p-8 border-t-4 border-emerald-500"><div class="panel-title"><div><h3 class="font-black text-2xl text-slate-800 dark-adapt"><i class="fas fa-palette text-emerald-600 ml-2"></i>هوية المنصة وروابط التواصل</h3><p class="form-help mt-2">غيّر الاسم والوصف وروابط السوشيال بدون تعديل الكود.</p></div><button onclick="admin.saveBrandingSettings()" class="bg-emerald-600 text-white px-6 py-3 rounded-xl font-black">حفظ الهوية</button></div><div class="grid md:grid-cols-2 gap-4 mt-5"><div><label class="block text-xs font-black text-slate-500 mb-1">اسم المنصة</label><input id="brand-name" class="w-full border-2 p-3 rounded-xl font-bold"></div><div><label class="block text-xs font-black text-slate-500 mb-1">وصف قصير</label><input id="brand-description" class="w-full border-2 p-3 rounded-xl font-bold"></div><div class="md:col-span-2"><label class="block text-xs font-black text-slate-500 mb-1">عنوان الواجهة الرئيسية</label><input id="brand-hero-title" class="w-full border-2 p-3 rounded-xl font-bold"></div><div class="md:col-span-2"><label class="block text-xs font-black text-slate-500 mb-1">وصف الواجهة الرئيسية</label><textarea id="brand-hero-description" class="w-full border-2 p-3 rounded-xl font-bold h-24"></textarea></div></div><div class="social-grid mt-5"><input id="brand-facebook" dir="ltr" placeholder="Facebook URL" class="border-2 p-3 rounded-xl font-bold text-left"><input id="brand-youtube" dir="ltr" placeholder="YouTube URL" class="border-2 p-3 rounded-xl font-bold text-left"><input id="brand-tiktok" dir="ltr" placeholder="TikTok URL" class="border-2 p-3 rounded-xl font-bold text-left"><input id="brand-whatsapp" dir="ltr" placeholder="WhatsApp URL أو رقم" class="border-2 p-3 rounded-xl font-bold text-left"></div></div>
+                <div class="page-card p-6 security-card"><div class="flex flex-col md:flex-row md:items-center justify-between gap-4"><div><h3 class="font-black text-xl text-emerald-900"><i class="fas fa-lock ml-2"></i>حماية المحتوى المدفوع</h3><p class="text-sm font-bold text-emerald-800/70 mt-2 leading-7">ينقل نص الدروس وأسئلة الاختبارات وروابط الفيديو والكتب الخاصة بالمشتركين إلى مسار محمي في Firebase.</p></div><button onclick="admin.syncProtectedContent(false)" class="bg-emerald-700 text-white px-6 py-3 rounded-xl font-black"><i class="fas fa-shield-halved ml-2"></i>فحص وتأمين الآن</button></div></div>
                 <div class="page-card p-6 md:p-8 border-t-4 border-amber-500"><h3 class="font-black text-2xl mb-6 text-emerald-800 dark-adapt"><i class="fas fa-kaaba ml-2"></i>إدارة الأذكار التلقائية</h3><div class="mb-7 p-5 bg-amber-50 rounded-2xl border border-amber-200"><label class="block font-black text-amber-900 mb-2">زمن ظهور الذكر على شاشة الطالب</label><div class="flex flex-wrap items-center gap-3"><span class="font-bold text-slate-600">يظهر ذكر جديد كل</span><input type="number" id="dhikr-interval" value="2" class="w-24 border-2 p-2 rounded-xl font-bold text-center"><span class="font-bold text-slate-600">دقيقة</span><button onclick="admin.saveDhikrInterval()" class="bg-amber-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-amber-700 sm:mr-auto">حفظ التوقيت</button></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-7"><div><h4 class="font-black text-lg text-slate-800 dark-adapt mb-3">إضافة ذكر جديد</h4><textarea id="new-dhikr-text" placeholder="اكتب الذكر هنا..." class="w-full border-2 p-4 rounded-xl font-bold h-32 mb-3 bg-slate-50"></textarea><button onclick="admin.addDhikr()" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-black hover:bg-emerald-700">إضافة الذكر للقائمة</button></div><div><h4 class="font-black text-lg text-slate-800 dark-adapt mb-3">الأذكار الحالية</h4><div id="dhikr-list" class="space-y-3 max-h-72 overflow-y-auto pr-2"></div></div></div></div>
                 <div class="page-card p-6"><div class="flex flex-col md:flex-row md:items-center justify-between gap-4"><div><h3 class="font-black text-xl text-slate-800 dark-adapt"><i class="fas fa-shield-halved text-emerald-600 ml-2"></i>نسخة احتياطية</h3><p class="form-help mt-2">نزّل نسخة JSON من بيانات المنصة الحالية قبل التعديلات الكبيرة.</p></div><button onclick="admin.exportBackup()" class="bg-slate-900 text-white px-6 py-3 rounded-xl font-black hover:bg-black"><i class="fas fa-download ml-2"></i>تنزيل نسخة الآن</button></div></div>
             </section>
@@ -279,7 +323,7 @@
             <input type="hidden" id="edit-les-id">
             <label class="block text-sm font-bold text-slate-600 mb-1">عنوان الدرس</label>
             <input id="edit-les-title" class="w-full border-2 p-3 rounded-xl font-bold mb-4 outline-none focus:border-indigo-500">
-            <label class="block text-sm font-bold text-slate-600 mb-1">نوع الإتاحة</label><select id="edit-les-access" class="w-full border-2 p-3 rounded-xl font-black mb-4 bg-slate-50"><option value="free">مجاني</option><option value="subscriber">للمشتركين فقط 🔒</option><option value="hidden">مخفي مؤقتًا</option></select><label class="block text-sm font-bold text-slate-600 mb-1">محتوى الدرس</label>
+            <label class="block text-sm font-bold text-slate-600 mb-1">نوع الإتاحة</label><select id="edit-les-access" class="w-full border-2 p-3 rounded-xl font-black mb-4 bg-slate-50"><option value="free">مجاني</option><option value="subscriber">للمشتركين فقط 🔒</option><option value="hidden">مخفي مؤقتًا</option></select><div class="grid md:grid-cols-2 gap-3 mb-4"><input id="edit-les-video-url" dir="ltr" placeholder="رابط الفيديو" class="border-2 p-3 rounded-xl font-bold text-left"><select id="edit-les-video-position" class="border-2 p-3 rounded-xl font-black bg-slate-50"><option value="top">الفيديو فوق الشرح</option><option value="bottom">الفيديو تحت الشرح</option></select><input id="edit-les-book-url" dir="ltr" placeholder="رابط الكتاب" class="border-2 p-3 rounded-xl font-bold text-left"><input id="edit-les-book-title" placeholder="اسم الكتاب" class="border-2 p-3 rounded-xl font-bold"></div><div class="mb-4"><label class="block text-sm font-bold text-slate-600 mb-1">موعد النشر الاختياري</label><input id="edit-les-publish-at" type="datetime-local" class="w-full border-2 p-3 rounded-xl font-bold"></div><label class="block text-sm font-bold text-slate-600 mb-1">محتوى الدرس</label>
             <textarea id="edit-les-content" class="w-full border-2 p-4 rounded-xl font-bold h-48 mb-4 outline-none focus:border-indigo-500 bg-slate-50 leading-loose"></textarea>
             <div class="bg-indigo-50 p-4 rounded-xl mb-6">
                 <label class="block text-sm font-black text-indigo-800 mb-2">تعديل الاختبار المرتبط بالدرس (بحث)</label>
@@ -318,8 +362,9 @@
             <button onclick="admin.closeModal('edit-quiz-modal')" class="absolute top-4 left-4 text-slate-400"><i class="fas fa-times"></i></button>
             <h3 class="text-lg font-black text-rose-800 mb-4 text-center">تغيير اسم الاختبار</h3>
             <input type="hidden" id="edit-quiz-id">
-            <input id="edit-quiz-name" class="w-full border-2 p-3 rounded-xl font-bold mb-6 text-center"><select id="edit-quiz-access" class="w-full border-2 p-3 rounded-xl font-black mb-6 bg-slate-50"><option value="free">مجاني</option><option value="subscriber">للمشتركين فقط 🔒</option><option value="hidden">مخفي مؤقتًا</option></select>
-            <button onclick="admin.saveQuizEdit()" class="w-full bg-rose-600 text-white py-3 rounded-xl font-black hover:bg-rose-700">تحديث الاسم</button>
+            <input id="edit-quiz-name" class="w-full border-2 p-3 rounded-xl font-bold mb-3 text-center"><select id="edit-quiz-access" class="w-full border-2 p-3 rounded-xl font-black mb-3 bg-slate-50"><option value="free">مجاني</option><option value="subscriber">للمشتركين فقط 🔒</option><option value="hidden">مخفي مؤقتًا</option></select>
+            <div class="grid grid-cols-2 gap-2 mb-3"><input id="edit-quiz-publish-at" type="datetime-local" class="border-2 p-2 rounded-xl font-bold col-span-2"><label class="col-span-2 inline-flex items-center gap-2 text-sm font-black"><input id="edit-quiz-exam-mode" type="checkbox" class="accent-rose-600"> وضع امتحان رسمي</label><input id="edit-quiz-time-limit" type="number" min="0" placeholder="الدقائق" class="border-2 p-2 rounded-xl font-bold"><input id="edit-quiz-max-attempts" type="number" min="0" placeholder="المحاولات" class="border-2 p-2 rounded-xl font-bold"><input id="edit-quiz-passing-score" type="number" min="0" max="100" placeholder="درجة النجاح" class="border-2 p-2 rounded-xl font-bold"><select id="edit-quiz-answer-feedback" class="border-2 p-2 rounded-xl font-bold"><option value="immediate">الإجابة فورًا</option><option value="end">بعد النهاية</option><option value="never">لا تظهر</option></select><label class="inline-flex items-center gap-2 text-xs font-bold"><input id="edit-quiz-allow-back" type="checkbox" checked> رجوع للسابق</label><label class="inline-flex items-center gap-2 text-xs font-bold"><input id="edit-quiz-show-review" type="checkbox" checked> مراجعة الإجابات</label></div>
+            <button onclick="admin.saveQuizEdit()" class="w-full bg-rose-600 text-white py-3 rounded-xl font-black hover:bg-rose-700">حفظ كل إعدادات الاختبار</button>
         </div>
     </div>
 
@@ -337,9 +382,17 @@
         firebase.initializeApp(firebaseConfig);
         const dbRef = firebase.database().ref('sharia_platform');
         const usersRef = firebase.database().ref('sharia_platform_users');
+        const protectedRef = firebase.database().ref('sharia_protected_content');
+        const codesRef = firebase.database().ref('sharia_subscription_codes');
+        const auditRef = firebase.database().ref('sharia_admin_audit');
 
+        let codesData = {};
+        let auditData = {};
+        let publicDbData = { categories: {}, chapters: {}, lessons: {}, quizzes: {}, settings: {}, stats: {} };
+        let protectedData = { lessons: {}, quizzes: {} };
         let dbData = { categories: {}, chapters: {}, lessons: {}, quizzes: {}, settings: {}, stats: {} };
         let usersData = {};
+        let publicLoaded = false, protectedLoaded = false, securityMigrationRunning = false;
         let adminDataStarted = false;
         let currentAdminUser = null;
         let selLessons = new Set(); 
@@ -375,32 +428,57 @@
                 catch(e){ admin.showLoginGate(e?.code==='auth/operation-not-allowed'?'فعّل Email/Password في Firebase Authentication أولًا.':'بيانات الدخول غير صحيحة أو تعذر الاتصال.'); }
                 finally { if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-right-to-bracket ml-2"></i>دخول لوحة الإدارة';} }
             },
-            logout: async () => { try { dbRef.off(); usersRef.off(); adminDataStarted=false; await firebase.auth().signOut(); } catch(e){} },
+            logout: async () => { try { dbRef.off(); usersRef.off(); protectedRef.off(); codesRef.off(); auditRef.off(); adminDataStarted=false; await firebase.auth().signOut(); } catch(e){} },
             showLoginGate: (msg='') => { const gate=document.getElementById('admin-auth-gate'); if(gate) gate.classList.remove('hidden'); const box=document.getElementById('admin-auth-message'); if(box){ if(msg){box.innerText=msg;box.classList.remove('hidden')}else box.classList.add('hidden'); } },
             hideLoginGate: () => { document.getElementById('admin-auth-gate')?.classList.add('hidden'); document.getElementById('admin-auth-message')?.classList.add('hidden'); },
             initData: () => {
-                dbRef.on('value', snap => {
-                    dbData = snap.val() || { categories: {}, chapters: {}, lessons: {}, quizzes: {}, settings: {}, stats: {} };
-                    
-                    const visits = (dbData.stats && dbData.stats.visitors) ? dbData.stats.visitors : 0;
+                const refresh = () => {
+                    admin.rebuildDbData();
+                    const visits = dbData.stats?.visitors || 0;
                     const visitorEl = document.getElementById('stat-visitors');
                     if(visitorEl) visitorEl.innerText = visits;
-
                     if(!dbData.settings) dbData.settings = {};
                     if(!dbData.settings.dhikrList) dbData.settings.dhikrList = ['سبحان الله وبحمده'];
                     if(!dbData.settings.dhikrInterval) dbData.settings.dhikrInterval = 2;
-                    
                     admin.updateDropdowns();
-                    admin.globalSearch(); 
+                    admin.globalSearch();
                     admin.renderDhikrList();
                     admin.renderDashboard();
                     admin.renderAnnouncementSettings();
-                });
+                    admin.renderBrandingSettings();
+                    admin.renderPlans(); admin.renderCodes(); admin.renderAnalytics(); admin.renderAuditLog();
+                    if(publicLoaded && protectedLoaded) admin.ensureSecurityMigration();
+                };
+                dbRef.on('value', snap => { publicDbData = snap.val() || { categories:{},chapters:{},lessons:{},quizzes:{},settings:{},stats:{} }; publicLoaded = true; refresh(); });
+                protectedRef.on('value', snap => { protectedData = snap.val() || {lessons:{},quizzes:{}}; protectedLoaded = true; refresh(); });
                 usersRef.on('value', snap => {
                     usersData = snap.val() || {};
                     admin.renderStudents();
-                    admin.renderDashboard();
+                    admin.renderDashboard(); admin.renderAnalytics();
                 });
+                codesRef.on('value', snap => { codesData = snap.val() || {}; admin.renderCodes(); });
+                auditRef.limitToLast(250).on('value', snap => { auditData = snap.val() || {}; admin.renderAuditLog(); });
+            },
+            rebuildDbData: () => {
+                const clone = v => JSON.parse(JSON.stringify(v || {}));
+                dbData = clone(publicDbData);
+                dbData.categories ||= {}; dbData.chapters ||= {}; dbData.lessons ||= {}; dbData.quizzes ||= {}; dbData.settings ||= {}; dbData.stats ||= {};
+                Object.entries(protectedData.lessons || {}).forEach(([id,payload]) => {
+                    if(dbData.lessons[id]) Object.assign(dbData.lessons[id], payload || {});
+                });
+                Object.entries(protectedData.quizzes || {}).forEach(([id,payload]) => {
+                    if(dbData.quizzes[id]) Object.assign(dbData.quizzes[id], payload || {});
+                });
+            },
+            ensureSecurityMigration: async () => {
+                if(securityMigrationRunning || dbData.settings?.securityV7MigratedAt) return;
+                securityMigrationRunning = true;
+                try {
+                    await admin.syncProtectedContent(true);
+                    await dbRef.child('settings/securityV7MigratedAt').set(Date.now());
+                    admin.notify('تم تأمين المحتوى المدفوع تلقائيًا');
+                } catch(e) { console.warn('security migration',e); }
+                finally { securityMigrationRunning = false; }
             },
 
             // الإشعارات
@@ -426,6 +504,9 @@
                     'add-content': ['إضافة محتوى', 'إنشاء أقسام وأبواب ودروس جديدة'],
                     'add-quizzes': ['إدارة الاختبارات', 'إنشاء الاختبارات وإضافة الأسئلة يدويًا أو دفعة واحدة'],
                     students: ['الطلاب والحسابات', 'متابعة حسابات الطلاب وتقدمهم ونتائجهم'],
+                    subscriptions: ['الباقات وأكواد الاشتراك', 'إدارة الخطط وإنشاء أكواد تفعيل ذاتية للطلاب'],
+                    analytics: ['الإحصائيات المتقدمة', 'قراءة نشاط الطلاب والدروس والاختبارات والأخطاء'],
+                    system: ['النسخ والسجل', 'نسخ احتياطي واسترجاع وسجل عمليات الإدارة'],
                     announcements: ['مركز الإعلانات', 'إنشاء تنبيه يظهر لطلاب المنصة'],
                     settings: ['الإعدادات', 'الأذكار والنسخ الاحتياطي وتفضيلات اللوحة']
                 };
@@ -545,14 +626,62 @@
                 await usersRef.child(`${uid}/profile`).update({ plan:'subscriber', subscriptionStartAt: usersData?.[uid]?.profile?.subscriptionStartAt || Date.now(), subscriptionEndsAt: base + days*24*60*60*1000 });
                 admin.notify(`تم تمديد الاشتراك ${days} يومًا`);
             },
-            setContentAccess: (type,id,access) => {
-                const map={category:'categories',chapter:'chapters',lesson:'lessons',quiz:'quizzes'};
-                if(!map[type]) return;
-                dbRef.child(`${map[type]}/${id}/access`).set(access).then(()=>admin.notify(access==='free'?'تم جعله مجانيًا':access==='subscriber'?'تم قفله للمشتركين':'تم إخفاء المحتوى'));
+            setContentAccess: async (type,id,access) => {
+                const map={category:'categories',chapter:'chapters',lesson:'lessons',quiz:'quizzes'}; if(!map[type]) return;
+                await dbRef.child(`${map[type]}/${id}/access`).set(access); await admin.syncProtectedContent(true);
+                admin.notify(access==='free'?'تم جعله مجانيًا':access==='subscriber'?'تم قفله وتأمينه للمشتركين':'تم إخفاء وتأمين المحتوى');
             },
             accessSelect: (type,id,current='free') => `<select onclick="event.stopPropagation()" onchange="event.stopPropagation();admin.setContentAccess('${type}','${id}',this.value)" class="text-[10px] font-black border border-slate-200 rounded-lg px-2 py-1 bg-white"><option value="free" ${current!=='subscriber'&&current!=='hidden'?'selected':''}>مجاني</option><option value="subscriber" ${current==='subscriber'?'selected':''}>مشترك 🔒</option><option value="hidden" ${current==='hidden'?'selected':''}>مخفي</option></select>`,
             idTimestamp: (id='') => { const m = String(id).match(/(\d{10,})/); return m ? Number(m[1]) : 0; },
             escapeHtml: (str='') => String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])),
+            normalizeSocialUrl: (value, kind='') => {
+                let v=String(value||'').trim(); if(!v) return '';
+                if(kind==='whatsapp' && /^\+?[0-9 ]{8,}$/.test(v)) v='https://wa.me/'+v.replace(/\D/g,'');
+                if(!/^https?:\/\//i.test(v)) v='https://'+v;
+                try { const u=new URL(v); return ['http:','https:'].includes(u.protocol)?u.href:''; } catch(e){ return ''; }
+            },
+            renderBrandingSettings: () => {
+                const b=dbData.settings?.branding||{};
+                const set=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v||''};
+                set('brand-name',b.name||'منصة أستاذ أحمد عيد'); set('brand-description',b.description||'تعلم • اختبر نفسك • تابع تقدمك');
+                set('brand-hero-title',b.heroTitle||'تعلّم بهدوء، راجع بذكاء، واختبر فهمك باستمرار.'); set('brand-hero-description',b.heroDescription||'الدروس والاختبارات مرتبة حسب الأقسام والأبواب.');
+                set('brand-facebook',b.facebook); set('brand-youtube',b.youtube); set('brand-tiktok',b.tiktok); set('brand-whatsapp',b.whatsapp);
+            },
+            saveBrandingSettings: async () => {
+                const val=id=>(document.getElementById(id)?.value||'').trim();
+                const branding={name:val('brand-name')||'منصة أستاذ أحمد عيد',description:val('brand-description'),heroTitle:val('brand-hero-title'),heroDescription:val('brand-hero-description'),facebook:admin.normalizeSocialUrl(val('brand-facebook')),youtube:admin.normalizeSocialUrl(val('brand-youtube')),tiktok:admin.normalizeSocialUrl(val('brand-tiktok')),whatsapp:admin.normalizeSocialUrl(val('brand-whatsapp'),'whatsapp'),updatedAt:Date.now()};
+                await dbRef.child('settings/branding').set(branding); admin.notify('تم حفظ هوية المنصة وروابط التواصل');
+            },
+            contentRank: a => a==='hidden'?2:a==='subscriber'?1:0,
+            lessonEffectiveAccess: (lesson, source=publicDbData) => {
+                if(!lesson) return 'hidden'; const ch=source.chapters?.[lesson.chapterId]; const cat=ch?source.categories?.[ch.categoryId]:null;
+                const levels=[cat?.access||'free',ch?.access||'free',lesson.access||'free'];
+                return levels.sort((a,b)=>admin.contentRank(b)-admin.contentRank(a))[0]||'free';
+            },
+            quizEffectiveAccess: (quiz, source=publicDbData) => {
+                if(!quiz) return 'hidden';
+                const levels=[quiz.access||'free'];
+                Object.values(source.lessons||{}).filter(l=>l.quizId===quiz.id).forEach(l=>levels.push(admin.lessonEffectiveAccess(l,source)));
+                return levels.sort((a,b)=>admin.contentRank(b)-admin.contentRank(a))[0]||'free';
+            },
+            syncProtectedContent: async (silent=false) => {
+                const pubSnap=await dbRef.once('value'), protSnap=await protectedRef.once('value');
+                const pub=pubSnap.val()||{}, prot=protSnap.val()||{}; pub.lessons||={}; pub.quizzes||={}; pub.categories||={}; pub.chapters||={};
+                const publicUpdates={}, protectedUpdates={};
+                Object.entries(pub.lessons).forEach(([id,l])=>{
+                    const effective=admin.lessonEffectiveAccess(l,pub); publicUpdates[`lessons/${id}/effectiveAccess`]=effective;
+                    const old=prot.lessons?.[id]||{}; const payload={content:l.content ?? old.content ?? '',videoUrl:l.videoUrl ?? old.videoUrl ?? '',bookUrl:l.bookUrl ?? old.bookUrl ?? ''};
+                    const scheduled=Number(l.publishAt||0)>Date.now(); if(effective==='free'&&!scheduled) { publicUpdates[`lessons/${id}/content`]=payload.content; publicUpdates[`lessons/${id}/videoUrl`]=payload.videoUrl||null; publicUpdates[`lessons/${id}/bookUrl`]=payload.bookUrl||null; protectedUpdates[`lessons/${id}`]=null; }
+                    else { protectedUpdates[`lessons/${id}`]=payload; publicUpdates[`lessons/${id}/content`]=null; publicUpdates[`lessons/${id}/videoUrl`]=null; publicUpdates[`lessons/${id}/bookUrl`]=null; }
+                });
+                Object.entries(pub.quizzes).forEach(([id,q])=>{
+                    const effective=admin.quizEffectiveAccess(q,pub); publicUpdates[`quizzes/${id}/effectiveAccess`]=effective; const old=prot.quizzes?.[id]||{}; const questions=q.questions ?? old.questions ?? [];
+                    const scheduled=Number(q.publishAt||0)>Date.now(); if(effective==='free'&&!scheduled) { publicUpdates[`quizzes/${id}/questions`]=questions; protectedUpdates[`quizzes/${id}`]=null; }
+                    else { protectedUpdates[`quizzes/${id}/questions`]=questions; publicUpdates[`quizzes/${id}/questions`]=null; }
+                });
+                await protectedRef.update(protectedUpdates); await dbRef.update(publicUpdates);
+                if(!silent) admin.notify('تم فحص وتأمين المحتوى بنجاح');
+            },
             renderAnnouncementSettings: () => {
                 const a = dbData.settings?.announcement || {};
                 const title = document.getElementById('announcement-title');
@@ -602,15 +731,8 @@
                 document.getElementById('preview-lesson-content').innerHTML = admin.formatLessonContent(content);
                 document.getElementById('lesson-preview-modal').classList.remove('hidden');
             },
-            exportBackup: () => {
-                const payload = JSON.stringify(dbData, null, 2);
-                const blob = new Blob([payload], {type:'application/json;charset=utf-8'});
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                const d = new Date();
-                a.href = url; a.download = `sharia-platform-backup-${d.toISOString().slice(0,10)}.json`;
-                document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-                admin.notify('تم تجهيز النسخة الاحتياطية للتحميل');
+            exportBackup: async () => {
+                const payload = JSON.stringify({format:'sharia-platform-content-backup',version:7,exportedAt:Date.now(),public:publicDbData,protected:protectedData}, null, 2); const blob=new Blob([payload],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a'),d=new Date(); a.href=url;a.download=`sharia-platform-content-${d.toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);admin.notify('تم تجهيز نسخة المحتوى');admin.logAction('تنزيل نسخة محتوى','بدون بيانات الطلاب');
             },
 
             // إدارة الأذكار
@@ -667,6 +789,8 @@
                 document.getElementById(selId).innerHTML = h; 
             },
 
+            quizQuestionsRef: (qId) => { const q=dbData.quizzes?.[qId]||{}; const secure=(q.effectiveAccess||q.access||'free')!=='free'||Number(q.publishAt||0)>Date.now(); return secure?protectedRef.child(`quizzes/${qId}/questions`):dbRef.child(`quizzes/${qId}/questions`); },
+
             // إضافة المحتوى
             addCategory: () => { 
                 const n = document.getElementById('cat-name').value.trim(); 
@@ -681,22 +805,22 @@
                 const id = 'chap_' + Date.now(); 
                 dbRef.child(`chapters/${id}`).set({ id, categoryId: c, title: t, access: 'free' }).then(() => { admin.notify('تمت الإضافة'); document.getElementById('chap-title').value = ''; }); 
             },
-            addLesson: () => { 
-                const c = document.getElementById('les-chap').value; 
-                const t = document.getElementById('les-title').value.trim(); 
-                const text = document.getElementById('les-content').value.trim(); 
-                const qId = document.getElementById('les-quiz').value;
-                const access = document.getElementById('les-access')?.value || 'free'; 
-                if(!c || !t || !text) return admin.notify('يجب استكمال بيانات الدرس', 'error'); 
-                const id = 'les_' + Date.now(); 
-                dbRef.child(`lessons/${id}`).set({ id, chapterId: c, title: t, content: text, quizId: qId || null, access }).then(() => { admin.notify('تم نشر الدرس بنجاح'); document.getElementById('les-title').value = ''; document.getElementById('les-content').value = ''; }); 
+            addLesson: async () => { 
+                const c=document.getElementById('les-chap').value,t=document.getElementById('les-title').value.trim(),text=document.getElementById('les-content').value.trim(),qId=document.getElementById('les-quiz').value,access=document.getElementById('les-access')?.value||'free'; const publishValue=document.getElementById('les-publish-at')?.value||''; const publishAt=publishValue?new Date(publishValue).getTime():null;
+                const videoUrl=admin.normalizeSocialUrl(document.getElementById('les-video-url')?.value),videoPosition=document.getElementById('les-video-position')?.value||'top',bookUrl=admin.normalizeSocialUrl(document.getElementById('les-book-url')?.value),bookTitle=(document.getElementById('les-book-title')?.value||'').trim();
+                if(!c||!t||!text) return admin.notify('يجب استكمال بيانات الدرس','error'); const id='les_'+Date.now(); const effective=admin.lessonEffectiveAccess({id,chapterId:c,access},publicDbData);
+                await dbRef.child(`lessons/${id}`).set({id,chapterId:c,title:t,quizId:qId||null,access,effectiveAccess:effective,videoPosition,bookTitle,publishAt});
+                if(effective==='free') await dbRef.child(`lessons/${id}`).update({content:text,videoUrl:videoUrl||null,bookUrl:bookUrl||null}); else await protectedRef.child(`lessons/${id}`).set({content:text,videoUrl,bookUrl});
+                await admin.syncProtectedContent(true); admin.notify('تم نشر الدرس وتأمينه بنجاح'); ['les-title','les-content','les-video-url','les-book-url','les-book-title','les-publish-at'].forEach(x=>{const e=document.getElementById(x);if(e)e.value=''});
             },
-            createQuiz: () => { 
+            createQuiz: async () => { 
                 const n = document.getElementById('quiz-name').value.trim(); 
                 const access = document.getElementById('quiz-access')?.value || 'free';
                 if(!n) return admin.notify('اكتب اسم الاختبار', 'error'); 
-                const id = 'quiz_' + Date.now(); 
-                dbRef.child(`quizzes/${id}`).set({ id, name: n, questions: [], access }).then(() => { admin.notify('تم إنشاء الاختبار'); document.getElementById('quiz-name').value = ''; }); 
+                const id = 'quiz_' + Date.now(); const pv=document.getElementById('quiz-publish-at')?.value||'';
+                const settings={examMode:!!document.getElementById('quiz-exam-mode')?.checked,timeLimitMinutes:Math.max(0,parseInt(document.getElementById('quiz-time-limit')?.value||0)),maxAttempts:Math.max(0,parseInt(document.getElementById('quiz-max-attempts')?.value||0)),passingScore:Math.min(100,Math.max(0,parseInt(document.getElementById('quiz-passing-score')?.value||70))),answerFeedback:document.getElementById('quiz-answer-feedback')?.value||'immediate',allowBack:!!document.getElementById('quiz-allow-back')?.checked,showReview:!!document.getElementById('quiz-show-review')?.checked,publishAt:pv?new Date(pv).getTime():null};
+                const secure=access!=='free'||(settings.publishAt&&settings.publishAt>Date.now());
+                await dbRef.child(`quizzes/${id}`).set({ id, name: n, questions: secure?null:[], access, effectiveAccess:access, ...settings }); if(secure) await protectedRef.child(`quizzes/${id}/questions`).set([]); admin.notify('تم إنشاء الاختبار بالإعدادات المحددة'); document.getElementById('quiz-name').value = ''; admin.logAction('إنشاء اختبار',n);
             },
             addManualQuestion: () => { 
                 const qId = document.getElementById('q-target-quiz').value; 
@@ -706,7 +830,7 @@
                 if(!qId || !t || opts.includes('')) return admin.notify('يجب استكمال جميع الحقول', 'error'); 
                 const qs = dbData.quizzes[qId].questions || []; 
                 qs.push({ text: t, options: opts, correctIndex: c }); 
-                dbRef.child(`quizzes/${qId}/questions`).set(qs).then(() => { admin.notify('تم إضافة السؤال للاختبار'); document.getElementById('q-text').value = ''; [0,1,2,3].forEach(i => document.getElementById('opt-'+i).value = ''); }); 
+                admin.quizQuestionsRef(qId).set(qs).then(() => { admin.notify('تم إضافة السؤال للاختبار'); document.getElementById('q-text').value = ''; [0,1,2,3].forEach(i => document.getElementById('opt-'+i).value = ''); }); 
             },
             addBulkQuestions: () => { 
                 const qId = document.getElementById('bulk-target-quiz').value; 
@@ -715,7 +839,7 @@
                     const qs = JSON.parse(document.getElementById('bulk-json').value.trim()); 
                     if(!Array.isArray(qs)) throw new Error(); 
                     const ex = dbData.quizzes[qId].questions || []; 
-                    dbRef.child(`quizzes/${qId}/questions`).set([...ex, ...qs]).then(() => { admin.notify('تم رفع الأسئلة بنجاح'); document.getElementById('bulk-json').value = ''; }); 
+                    admin.quizQuestionsRef(qId).set([...ex, ...qs]).then(() => { admin.notify('تم رفع الأسئلة بنجاح'); document.getElementById('bulk-json').value = ''; }); 
                 } catch(e) { admin.notify('خطأ في صيغة JSON، تأكد من الأقواس', 'error'); } 
             },
 
@@ -737,11 +861,8 @@
                         }
                     });
                     
-                    dbRef.update(updates).then(() => {
-                        admin.notify('تم حذف القسم وجميع ملحقاته بنجاح');
-                    }).catch(err => {
-                        admin.notify('حدث خطأ أثناء الحذف', 'error');
-                    });
+                    const protectedUpdates={}; Object.values(dbData.chapters||{}).filter(ch=>ch.categoryId===catId).forEach(ch=>Object.values(dbData.lessons||{}).filter(l=>l.chapterId===ch.id).forEach(l=>protectedUpdates[`lessons/${l.id}`]=null));
+                    Promise.all([dbRef.update(updates),protectedRef.update(protectedUpdates)]).then(() => { admin.notify('تم حذف القسم وجميع ملحقاته بنجاح'); }).catch(err => { admin.notify('حدث خطأ أثناء الحذف', 'error'); });
                 }
             },
 
@@ -760,34 +881,11 @@
                 document.getElementById('mc-chap').innerHTML = chaps.length ? chaps.map(c => `<option value="${c.id}">${c.title}</option>`).join('') : '<option value="">عفواً، لا يوجد أبواب في هذا القسم</option>';
             },
 
-            executeMoveCopy: (action) => {
-                const lesId = document.getElementById('mc-les-id').value;
-                const newChapId = document.getElementById('mc-chap').value;
-                
-                if(!newChapId) return admin.notify('يجب اختيار الباب المستهدف أولاً!', 'error');
-                
-                if (action === 'move') {
-                    // تحديث chapterId للدرس فقط كفيل بنقله في شجرة البيانات
-                    dbRef.child(`lessons/${lesId}/chapterId`).set(newChapId).then(() => {
-                        admin.notify('تم نقل الدرس بنجاح إلى الباب الجديد');
-                        admin.closeModal('move-copy-modal');
-                    });
-                } else if (action === 'copy') {
-                    // أخذ نسخة وإنشاء ID جديد مع إضافة (نسخة) للعنوان لتمييزه
-                    const oldLes = dbData.lessons[lesId];
-                    const newLesId = 'les_' + Date.now(); 
-                    const newLes = { 
-                        ...oldLes, 
-                        id: newLesId, 
-                        chapterId: newChapId, 
-                        title: oldLes.title + ' (نسخة)' 
-                    };
-                    
-                    dbRef.child(`lessons/${newLesId}`).set(newLes).then(() => {
-                        admin.notify('تم أخذ نسخة من الدرس بنجاح ووضعها في الباب المختار');
-                        admin.closeModal('move-copy-modal');
-                    });
-                }
+            executeMoveCopy: async (action) => {
+                const lesId=document.getElementById('mc-les-id').value,newChapId=document.getElementById('mc-chap').value;if(!newChapId)return admin.notify('يجب اختيار الباب المستهدف أولاً!','error');
+                if(action==='move'){await dbRef.child(`lessons/${lesId}/chapterId`).set(newChapId);await admin.syncProtectedContent(true);admin.notify('تم نقل الدرس وتأمينه حسب الباب الجديد');admin.closeModal('move-copy-modal');return;}
+                const oldLes=dbData.lessons[lesId];if(!oldLes)return;const newLesId='les_'+Date.now();const payload={content:oldLes.content||'',videoUrl:oldLes.videoUrl||'',bookUrl:oldLes.bookUrl||''};const meta={...oldLes,id:newLesId,chapterId:newChapId,title:oldLes.title+' (نسخة)'};delete meta.content;delete meta.videoUrl;delete meta.bookUrl;delete meta.effectiveAccess;
+                await dbRef.child(`lessons/${newLesId}`).set(meta);await protectedRef.child(`lessons/${newLesId}`).set(payload);await admin.syncProtectedContent(true);admin.notify('تم نسخ الدرس بأمان إلى الباب الجديد');admin.closeModal('move-copy-modal');
             },
 
             // --- دوال البحث وتوليد شجرة الإدارة ---
@@ -922,7 +1020,7 @@
                 try { 
                     const qs = JSON.parse(document.getElementById('bulk-edit-json').value.trim()); 
                     if(!Array.isArray(qs)) throw new Error(); 
-                    dbRef.child(`quizzes/${id}/questions`).set(qs).then(() => { admin.notify('تم تحديث أسئلة الاختبار بنجاح'); admin.closeModal('bulk-edit-modal'); }); 
+                    admin.quizQuestionsRef(id).set(qs).then(() => { admin.notify('تم تحديث أسئلة الاختبار بنجاح'); admin.closeModal('bulk-edit-modal'); }); 
                 } catch(e) { admin.notify('خطأ في صيغة JSON المستعملة', 'error'); } 
             },
 
@@ -952,29 +1050,28 @@
                 const les = dbData.lessons[id]; 
                 document.getElementById('edit-les-id').value = id; 
                 document.getElementById('edit-les-title').value = les.title; 
-                document.getElementById('edit-les-content').value = les.content; 
+                document.getElementById('edit-les-content').value = les.content || '';
+                document.getElementById('edit-les-video-url').value = les.videoUrl || ''; document.getElementById('edit-les-video-position').value = les.videoPosition || 'top'; document.getElementById('edit-les-book-url').value = les.bookUrl || ''; document.getElementById('edit-les-book-title').value = les.bookTitle || ''; document.getElementById('edit-les-access').value = les.access || 'free'; document.getElementById('edit-les-publish-at').value = les.publishAt ? admin.toLocalDateTimeInput(les.publishAt) : '';
                 admin.filterQuizzes('edit-quiz-search-input', 'edit-les-quiz', les.quizId); 
                 document.getElementById('edit-lesson-modal').classList.remove('hidden'); 
             },
-            saveLessonEdit: () => { 
-                const id = document.getElementById('edit-les-id').value; 
-                const t = document.getElementById('edit-les-title').value.trim(); 
-                const c = document.getElementById('edit-les-content').value.trim(); 
-                const qId = document.getElementById('edit-les-quiz').value;
-                const access = document.getElementById('edit-les-access').value || 'free'; 
-                if(t && c) dbRef.child(`lessons/${id}`).update({ title: t, content: c, quizId: qId || null, access }).then(() => { admin.notify('تم حفظ التعديلات على الدرس'); admin.closeModal('edit-lesson-modal'); }); 
+            saveLessonEdit: async () => { 
+                const id=document.getElementById('edit-les-id').value,t=document.getElementById('edit-les-title').value.trim(),c=document.getElementById('edit-les-content').value.trim(),qId=document.getElementById('edit-les-quiz').value,access=document.getElementById('edit-les-access').value||'free'; const pv=document.getElementById('edit-les-publish-at')?.value||''; const publishAt=pv?new Date(pv).getTime():null;
+                const videoUrl=admin.normalizeSocialUrl(document.getElementById('edit-les-video-url').value),videoPosition=document.getElementById('edit-les-video-position').value||'top',bookUrl=admin.normalizeSocialUrl(document.getElementById('edit-les-book-url').value),bookTitle=document.getElementById('edit-les-book-title').value.trim(); if(!t||!c)return;
+                await dbRef.child(`lessons/${id}`).update({title:t,quizId:qId||null,access,videoPosition,bookTitle,publishAt});
+                const lesson={...(dbData.lessons[id]||{}),access}; const effective=admin.lessonEffectiveAccess(lesson,{...publicDbData,lessons:{...(publicDbData.lessons||{}),[id]:lesson}});
+                if(effective==='free'){await dbRef.child(`lessons/${id}`).update({content:c,videoUrl:videoUrl||null,bookUrl:bookUrl||null});await protectedRef.child(`lessons/${id}`).remove();}else{await protectedRef.child(`lessons/${id}`).set({content:c,videoUrl,bookUrl});await dbRef.child(`lessons/${id}`).update({content:null,videoUrl:null,bookUrl:null});}
+                await admin.syncProtectedContent(true); admin.notify('تم حفظ التعديلات وتأمين الدرس'); admin.closeModal('edit-lesson-modal');
             },
             
             openEditQuiz: (id) => { 
-                document.getElementById('edit-quiz-id').value = id; 
-                document.getElementById('edit-quiz-name').value = dbData.quizzes[id].name; 
+                const q=dbData.quizzes[id]||{}; document.getElementById('edit-quiz-id').value = id; 
+                document.getElementById('edit-quiz-name').value = q.name||''; document.getElementById('edit-quiz-access').value = q.access || 'free'; document.getElementById('edit-quiz-publish-at').value=q.publishAt?admin.toLocalDateTimeInput(q.publishAt):''; document.getElementById('edit-quiz-exam-mode').checked=!!q.examMode; document.getElementById('edit-quiz-time-limit').value=q.timeLimitMinutes||0; document.getElementById('edit-quiz-max-attempts').value=q.maxAttempts||0; document.getElementById('edit-quiz-passing-score').value=q.passingScore??70; document.getElementById('edit-quiz-answer-feedback').value=q.answerFeedback||'immediate'; document.getElementById('edit-quiz-allow-back').checked=q.allowBack!==false; document.getElementById('edit-quiz-show-review').checked=q.showReview!==false;
                 document.getElementById('edit-quiz-modal').classList.remove('hidden'); 
             },
-            saveQuizEdit: () => { 
-                const id = document.getElementById('edit-quiz-id').value; 
-                const n = document.getElementById('edit-quiz-name').value.trim();
-                const access = document.getElementById('edit-quiz-access').value || 'free'; 
-                if(n) dbRef.child(`quizzes/${id}`).update({name:n, access}).then(() => { admin.notify('تم تحديث الاسم'); admin.closeModal('edit-quiz-modal'); }); 
+            saveQuizEdit: async () => { 
+                const id = document.getElementById('edit-quiz-id').value; const n = document.getElementById('edit-quiz-name').value.trim(); const access = document.getElementById('edit-quiz-access').value || 'free'; if(!n)return; const pv=document.getElementById('edit-quiz-publish-at').value||'';
+                const settings={name:n,access,publishAt:pv?new Date(pv).getTime():null,examMode:!!document.getElementById('edit-quiz-exam-mode').checked,timeLimitMinutes:Math.max(0,parseInt(document.getElementById('edit-quiz-time-limit').value||0)),maxAttempts:Math.max(0,parseInt(document.getElementById('edit-quiz-max-attempts').value||0)),passingScore:Math.min(100,Math.max(0,parseInt(document.getElementById('edit-quiz-passing-score').value||70))),answerFeedback:document.getElementById('edit-quiz-answer-feedback').value||'immediate',allowBack:!!document.getElementById('edit-quiz-allow-back').checked,showReview:!!document.getElementById('edit-quiz-show-review').checked}; await dbRef.child(`quizzes/${id}`).update(settings); await admin.syncProtectedContent(true); admin.notify('تم تحديث الاختبار وتأمينه'); admin.closeModal('edit-quiz-modal'); admin.logAction('تعديل اختبار',n); 
             },
             
             openEditQuestion: (qId, idx) => { 
@@ -995,15 +1092,61 @@
                 const t = document.getElementById('edit-q-text').value.trim(); 
                 const opts = [document.getElementById('edit-opt-0').value.trim(), document.getElementById('edit-opt-1').value.trim(), document.getElementById('edit-opt-2').value.trim(), document.getElementById('edit-opt-3').value.trim()]; 
                 const c = parseInt(document.getElementById('edit-q-correct').value); 
-                dbRef.child(`quizzes/${qId}/questions/${idx}`).update({ text: t, options: opts, correctIndex: c }).then(() => { admin.notify('تم تحديث بيانات السؤال'); admin.closeModal('edit-question-modal'); }); 
+                admin.quizQuestionsRef(qId).child(String(idx)).update({ text: t, options: opts, correctIndex: c }).then(() => { admin.notify('تم تحديث بيانات السؤال'); admin.closeModal('edit-question-modal'); }); 
             },
             deleteQuestion: (qId, idx) => { 
                 if(confirm('هل أنت متأكد من حذف هذا السؤال نهائياً؟')) { 
                     const qs = dbData.quizzes[qId].questions; 
                     qs.splice(idx, 1); 
-                    dbRef.child(`quizzes/${qId}/questions`).set(qs).then(() => admin.notify('تم حذف السؤال بنجاح')); 
+                    admin.quizQuestionsRef(qId).set(qs).then(() => admin.notify('تم حذف السؤال بنجاح')); 
                 } 
             },
+
+            // --- المرحلة الثانية: الباقات والأكواد والإحصائيات والنسخ والسجل ---
+            toLocalDateTimeInput: ts => { if(!ts)return''; const d=new Date(Number(ts)); const pad=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; },
+            plansObject: () => dbData.settings?.subscriptionPlans || {},
+            renderPlans: () => {
+                const plans=Object.values(admin.plansObject()); const box=document.getElementById('plans-list'); if(box) box.innerHTML=plans.length?plans.sort((a,b)=>(a.durationDays||0)-(b.durationDays||0)).map(p=>`<div class="border border-slate-200 rounded-2xl p-4 flex items-center justify-between gap-3"><div><div class="flex items-center gap-2"><strong class="text-slate-800 dark-adapt">${admin.escapeHtml(p.name||'باقة')}</strong><span class="text-[10px] font-black ${p.active===false?'bg-slate-100 text-slate-500':'bg-emerald-50 text-emerald-600'} px-2 py-1 rounded-lg">${p.active===false?'موقوفة':'فعالة'}</span></div><p class="text-xs font-bold text-slate-400 mt-1">${Number(p.durationDays)||0} يوم ${p.priceLabel?'• '+admin.escapeHtml(p.priceLabel):''}</p><p class="text-xs font-bold text-slate-500 mt-1">${admin.escapeHtml(p.description||'')}</p></div><div class="flex gap-2"><button onclick="admin.editPlan('${p.id}')" class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600"><i class="fas fa-pen"></i></button><button onclick="admin.deletePlan('${p.id}')" class="w-9 h-9 rounded-xl bg-red-50 text-red-600"><i class="fas fa-trash"></i></button></div></div>`).join(''):'<div class="empty-state">لا توجد باقات بعد. أنشئ أول باقة.</div>';
+                const selects=['code-plan']; selects.forEach(id=>{const el=document.getElementById(id);if(el){const current=el.value;el.innerHTML=plans.filter(p=>p.active!==false).map(p=>`<option value="${p.id}">${admin.escapeHtml(p.name)} - ${p.durationDays} يوم</option>`).join('')||'<option value="">أضف باقة أولًا</option>';if([...el.options].some(o=>o.value===current))el.value=current;}});
+            },
+            savePlan: async () => { const name=(document.getElementById('plan-name')?.value||'').trim(),days=Math.max(1,parseInt(document.getElementById('plan-days')?.value||0)),priceLabel=(document.getElementById('plan-price')?.value||'').trim(),description=(document.getElementById('plan-description')?.value||'').trim(),active=!!document.getElementById('plan-active')?.checked;if(!name||!days)return admin.notify('اكتب اسم الباقة وعدد الأيام','error');const editId=document.getElementById('plan-name')?.dataset.editId;const id=editId||('plan_'+Date.now());await dbRef.child(`settings/subscriptionPlans/${id}`).set({id,name,durationDays:days,priceLabel,description,active,updatedAt:Date.now()});document.getElementById('plan-name').dataset.editId='';['plan-name','plan-price','plan-description'].forEach(x=>document.getElementById(x).value='');document.getElementById('plan-days').value=30;document.getElementById('plan-active').checked=true;admin.notify(editId?'تم تحديث الباقة':'تم إنشاء الباقة');admin.logAction(editId?'تعديل باقة':'إنشاء باقة',name); },
+            editPlan: id => {const p=admin.plansObject()[id];if(!p)return;const n=document.getElementById('plan-name');n.value=p.name||'';n.dataset.editId=id;document.getElementById('plan-days').value=p.durationDays||30;document.getElementById('plan-price').value=p.priceLabel||'';document.getElementById('plan-description').value=p.description||'';document.getElementById('plan-active').checked=p.active!==false;document.getElementById('plan-name').scrollIntoView({behavior:'smooth',block:'center'});},
+            deletePlan: async id => {if(!confirm('حذف هذه الباقة؟ الأكواد القديمة ستظل محتفظة بمدتها.'))return;const name=admin.plansObject()[id]?.name||id;await dbRef.child(`settings/subscriptionPlans/${id}`).remove();admin.notify('تم حذف الباقة');admin.logAction('حذف باقة',name);},
+            randomCode: () => {const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let out='';for(let i=0;i<12;i++){if(i&&i%4===0)out+='-';out+=chars[Math.floor(Math.random()*chars.length)]}return out;},
+            hashText: async text => {const bytes=new TextEncoder().encode(String(text).trim().toUpperCase());const hash=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,'0')).join('');},
+            generateSubscriptionCodes: async () => {const planId=document.getElementById('code-plan')?.value;const plan=admin.plansObject()[planId];if(!plan)return admin.notify('اختر باقة صالحة أولًا','error');const count=Math.min(100,Math.max(1,parseInt(document.getElementById('code-count')?.value||1)));const ex=document.getElementById('code-expires')?.value;const expiresAt=ex?new Date(ex+'T23:59:59').getTime():null;const updates={};const created=[];for(let i=0;i<count;i++){let plain=admin.randomCode(),hash=await admin.hashText(plain);while(codesData[hash]||updates[hash]){plain=admin.randomCode();hash=await admin.hashText(plain)}updates[hash]={plain,planId:plan.id,planName:plan.name,durationDays:Number(plan.durationDays)||30,active:true,createdAt:Date.now(),expiresAt,createdBy:currentAdminUser?.email||''};created.push(plain)}await codesRef.update(updates);admin.notify(`تم إنشاء ${count} كود`);admin.logAction('إنشاء أكواد اشتراك',`${count} كود - ${plan.name}`);if(navigator.clipboard)navigator.clipboard.writeText(created.join('\n')).catch(()=>{});},
+            codeStatus: c => {if(c.usedBy)return'used';if(c.active===false||(c.expiresAt&&Number(c.expiresAt)<Date.now()))return'inactive';return'available';},
+            renderCodes: () => {const box=document.getElementById('codes-list');if(!box)return;const q=(document.getElementById('codes-search')?.value||'').trim().toLowerCase(),filter=document.getElementById('codes-filter')?.value||'all';let arr=Object.entries(codesData||{}).map(([hash,c])=>({hash,...c})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));arr=arr.filter(c=>{const st=admin.codeStatus(c);const user=c.usedBy?usersData?.[c.usedBy]?.profile||{}:{};const txt=`${c.plain||''} ${c.planName||''} ${user.email||''} ${user.name||''}`.toLowerCase();return(!q||txt.includes(q))&&(filter==='all'||filter===st)});box.innerHTML=arr.length?arr.map(c=>{const st=admin.codeStatus(c),user=c.usedBy?usersData?.[c.usedBy]?.profile||{}:{};const cls=st==='available'?'bg-emerald-50 text-emerald-700':st==='used'?'bg-blue-50 text-blue-700':'bg-slate-100 text-slate-500';return`<div class="border border-slate-200 rounded-2xl p-4"><div class="flex flex-col lg:flex-row lg:items-center gap-3"><div class="flex-1 min-w-0"><div class="flex flex-wrap items-center gap-2"><code class="font-black text-lg tracking-wider text-slate-800">${admin.escapeHtml(c.plain||'')}</code><span class="${cls} px-2 py-1 rounded-lg text-[10px] font-black">${st==='available'?'متاح':st==='used'?'مستخدم':'غير متاح'}</span></div><p class="text-xs font-bold text-slate-400 mt-1">${admin.escapeHtml(c.planName||'باقة')} • ${c.durationDays||0} يوم ${c.expiresAt?'• صلاحية الكود حتى '+new Date(c.expiresAt).toLocaleDateString('ar-EG'):''}</p>${c.usedBy?`<p class="text-xs font-bold text-blue-600 mt-1">استُخدم بواسطة: ${admin.escapeHtml(user.name||user.email||c.usedBy)}</p>`:''}</div><div class="flex gap-2"><button onclick="admin.copyText('${admin.escapeHtml(c.plain||'')}')" class="px-3 py-2 rounded-xl bg-slate-50 text-slate-700 font-black text-xs"><i class="fas fa-copy"></i></button>${st==='available'?`<button onclick="admin.setCodeActive('${c.hash}',false)" class="px-3 py-2 rounded-xl bg-amber-50 text-amber-700 font-black text-xs">إيقاف</button>`:''}<button onclick="admin.deleteCode('${c.hash}')" class="px-3 py-2 rounded-xl bg-red-50 text-red-600 font-black text-xs"><i class="fas fa-trash"></i></button></div></div></div>`}).join(''):'<div class="empty-state">لا توجد أكواد مطابقة.</div>';},
+            copyText: text => navigator.clipboard?.writeText(text).then(()=>admin.notify('تم النسخ')).catch(()=>admin.notify('تعذر النسخ','error')),
+            setCodeActive: async (hash,active) => {await codesRef.child(`${hash}/active`).set(!!active);admin.notify(active?'تم تفعيل الكود':'تم إيقاف الكود');admin.logAction(active?'تفعيل كود':'إيقاف كود',codesData?.[hash]?.plain||hash);},
+            deleteCode: async hash => {if(!confirm('حذف هذا الكود نهائيًا؟'))return;const label=codesData?.[hash]?.plain||hash;await codesRef.child(hash).remove();admin.notify('تم حذف الكود');admin.logAction('حذف كود',label);},
+            renderAnalytics: () => {const now=Date.now(),day=86400000,users=Object.entries(usersData||{}).map(([uid,u])=>({uid,profile:u?.profile||{},progress:u?.progress||{}}));const activeToday=users.filter(u=>now-Number(u.profile.lastActivityAt||u.profile.lastLoginAt||0)<=day).length,activeWeek=users.filter(u=>now-Number(u.profile.lastActivityAt||u.profile.lastLoginAt||0)<=7*day).length,subs=users.filter(u=>u.profile.plan==='subscriber'&&(!u.profile.subscriptionEndsAt||Number(u.profile.subscriptionEndsAt)>now)).length,exp=users.filter(u=>u.profile.plan==='subscriber'&&Number(u.profile.subscriptionEndsAt)>now&&Number(u.profile.subscriptionEndsAt)<=now+7*day).length;[['ana-active-today',activeToday],['ana-active-week',activeWeek],['ana-active-subs',subs],['ana-expiring',exp]].forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.innerText=Number(v).toLocaleString('ar-EG')});let attempts=0,sum=0,quizAgg={},viewAgg={},mistAgg={};users.forEach(u=>{const hist=u.progress.quizHistory||[];attempts+=hist.length;hist.forEach(h=>{sum+=Number(h.percentage)||0;const k=h.quizId||h.name||'unknown';quizAgg[k]||={name:h.name||dbData.quizzes?.[k]?.name||'اختبار',count:0,sum:0};quizAgg[k].count++;quizAgg[k].sum+=Number(h.percentage)||0});Object.entries(u.progress.lessonViews||{}).forEach(([id,n])=>viewAgg[id]=(viewAgg[id]||0)+(Number(n)||0));(u.progress.mistakes||[]).forEach(m=>{const k=m.key||m.text;mistAgg[k]||={text:m.text||'سؤال',count:0};mistAgg[k].count++})});const ae=document.getElementById('ana-attempts'),av=document.getElementById('ana-average');if(ae)ae.innerText=attempts.toLocaleString('ar-EG');if(av)av.innerText=attempts?Math.round(sum/attempts)+'%':'—';const row=(label,value,max=1,sub='')=>`<div><div class="flex items-center justify-between gap-3 text-sm font-bold mb-1"><span class="truncate text-slate-700 dark-adapt">${admin.escapeHtml(label)}</span><span class="text-slate-500 shrink-0">${value}${sub}</span></div><div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500 rounded-full" style="width:${Math.max(3,Math.round(Number(value)/Math.max(1,max)*100))}%"></div></div></div>`;const views=Object.entries(viewAgg).map(([id,count])=>({id,count,name:dbData.lessons?.[id]?.title||id})).sort((a,b)=>b.count-a.count).slice(0,8),maxV=views[0]?.count||1;const vl=document.getElementById('analytics-lessons');if(vl)vl.innerHTML=views.length?views.map(x=>row(x.name,x.count,maxV)).join(''):'<div class="empty-state">ستظهر البيانات بعد فتح الطلاب للدروس.</div>';const qa=Object.entries(quizAgg).map(([id,x])=>({...x,id,avg:x.count?Math.round(x.sum/x.count):0})).sort((a,b)=>b.count-a.count).slice(0,8),maxQ=qa[0]?.count||1;const ql=document.getElementById('analytics-quizzes');if(ql)ql.innerHTML=qa.length?qa.map(x=>`<div class="border-b border-slate-100 pb-3"><div class="flex justify-between gap-3"><strong class="text-sm text-slate-700 dark-adapt truncate">${admin.escapeHtml(x.name)}</strong><span class="text-xs font-black text-blue-600">${x.count} محاولة • ${x.avg}%</span></div></div>`).join(''):'<div class="empty-state">لا توجد محاولات بعد.</div>';const hard=Object.values(mistAgg).sort((a,b)=>b.count-a.count).slice(0,8),maxH=hard[0]?.count||1;const hl=document.getElementById('analytics-hard-questions');if(hl)hl.innerHTML=hard.length?hard.map(x=>row(x.text,x.count,maxH,' طلاب')).join(''):'<div class="empty-state">لا توجد أخطاء محفوظة حاليًا.</div>';const planCounts={free:0};users.forEach(u=>{const key=u.profile.plan==='subscriber'?(u.profile.planId||'subscriber'):'free';planCounts[key]=(planCounts[key]||0)+1});const total=users.length||1;const pl=document.getElementById('analytics-plans');if(pl)pl.innerHTML=Object.entries(planCounts).map(([id,c])=>{const name=id==='free'?'مجاني':admin.plansObject()[id]?.name||'مشترك';return row(name,c,total,' طالب')}).join('')||'<div class="empty-state">لا توجد حسابات.</div>';},
+            resetStudentProgress: async uid => {const p=usersData?.[uid]?.profile||{};if(!confirm(`تصفير تقدم ${p.name||p.email||'الطالب'} بالكامل؟`))return;await usersRef.child(`${uid}/progress`).remove();admin.notify('تم تصفير تقدم الطالب');admin.logAction('تصفير تقدم طالب',p.email||uid);},
+            applyPlanToStudent: async (uid,planId) => {if(planId==='free'){await usersRef.child(`${uid}/profile`).update({plan:'free',planId:null,subscriptionEndsAt:null});admin.notify('تم تحويل الطالب إلى مجاني');return;}if(planId==='subscriber'){await admin.changeStudentPlan(uid,'subscriber');return;}const plan=admin.plansObject()[planId];if(!plan)return;const prof=usersData?.[uid]?.profile||{},now=Date.now(),base=Number(prof.subscriptionEndsAt)>now?Number(prof.subscriptionEndsAt):now;await usersRef.child(`${uid}/profile`).update({plan:'subscriber',planId,subscriptionStartAt:prof.subscriptionStartAt||now,subscriptionEndsAt:base+Number(plan.durationDays||30)*86400000});admin.notify(`تم تطبيق باقة ${plan.name}`);admin.logAction('تفعيل باقة لطالب',`${prof.email||uid} - ${plan.name}`);},
+            exportFullBackup: async () => {const includeUsers=!!document.getElementById('backup-include-users')?.checked;const [pub,prot,codes,audit,users]=await Promise.all([dbRef.once('value'),protectedRef.once('value'),codesRef.once('value'),auditRef.limitToLast(1000).once('value'),includeUsers?usersRef.once('value'):Promise.resolve(null)]);const payload={format:'sharia-platform-full-backup',version:7,exportedAt:Date.now(),public:pub.val()||{},protected:prot.val()||{},codes:codes.val()||{},audit:audit.val()||{},users:includeUsers?(users?.val()||{}):null};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`sharia-platform-full-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);admin.notify('تم تجهيز النسخة الكاملة');admin.logAction('تنزيل نسخة احتياطية كاملة',includeUsers?'مع الطلاب':'بدون الطلاب');},
+            restoreFullBackup: async () => {
+                const file=document.getElementById('restore-file')?.files?.[0];
+                if(!file)return admin.notify('اختر ملف JSON أولًا','error');
+                let data; try{data=JSON.parse(await file.text())}catch(e){return admin.notify('ملف JSON غير صالح','error')}
+                if(data.format!=='sharia-platform-full-backup'||!data.public||!data.protected)return admin.notify('هذا ليس ملف النسخة الكاملة الصحيح','error');
+                if(!confirm('سيتم استبدال بيانات المنصة والمحتوى المحمي والأكواد بالنسخة المختارة. هل أنت متأكد؟'))return;
+                let preservedAdmin=null;
+                if(currentAdminUser){try{preservedAdmin=(await usersRef.child(currentAdminUser.uid).once('value')).val()||null}catch(e){}}
+                await Promise.all([dbRef.set(data.public||{}),protectedRef.set(data.protected||{}),codesRef.set(data.codes||{}),auditRef.set(data.audit||{})]);
+                if(document.getElementById('restore-users')?.checked&&data.users){
+                    const restored=JSON.parse(JSON.stringify(data.users||{}));
+                    if(currentAdminUser){
+                        const old=restored[currentAdminUser.uid]||{};
+                        restored[currentAdminUser.uid]={...old,profile:{...(old.profile||{}),...(preservedAdmin?.profile||{}),email:currentAdminUser.email||(preservedAdmin?.profile?.email||old.profile?.email||''),role:'admin'}};
+                    }
+                    await usersRef.set(restored);
+                }
+                admin.notify('تم استرجاع النسخة بنجاح');
+                admin.logAction('استرجاع نسخة احتياطية',new Date(data.exportedAt||Date.now()).toLocaleString('ar-EG'));
+            },
+            logAction: (action,details='') => {if(!currentAdminUser)return;const id='log_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);auditRef.child(id).set({id,action:String(action||''),details:String(details||'').slice(0,500),at:firebase.database.ServerValue.TIMESTAMP,adminUid:currentAdminUser.uid,adminEmail:currentAdminUser.email||''}).catch(()=>{});},
+            renderAuditLog: () => {const box=document.getElementById('audit-list');if(!box)return;const arr=Object.values(auditData||{}).sort((a,b)=>(b.at||0)-(a.at||0));box.innerHTML=arr.length?arr.map(x=>`<div class="border border-slate-200 rounded-2xl p-4 flex gap-3"><span class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0"><i class="fas fa-clock-rotate-left"></i></span><div class="min-w-0"><strong class="text-sm text-slate-800 dark-adapt">${admin.escapeHtml(x.action||'عملية')}</strong><p class="text-xs font-bold text-slate-500 mt-1">${admin.escapeHtml(x.details||'')}</p><p class="text-[10px] font-bold text-slate-400 mt-1">${x.at?new Date(x.at).toLocaleString('ar-EG'):''} • ${admin.escapeHtml(x.adminEmail||'')}</p></div></div>`).join(''):'<div class="empty-state">لم يتم تسجيل عمليات بعد.</div>';},
+            clearAuditLog: async () => {if(!confirm('مسح سجل تعديلات الإدارة بالكامل؟'))return;await auditRef.remove();admin.notify('تم مسح السجل');},
 
             // --- التحديد والحذف الجماعي للدروس والاختبارات ---
             toggleSelection: (type, id, isChecked) => { 
@@ -1024,15 +1167,17 @@
                     const u = {}; 
                     selLessons.forEach(id => { u[`lessons/${id}`] = null; }); 
                     selQuizzes.forEach(id => { u[`quizzes/${id}`] = null; }); 
-                    dbRef.update(u).then(() => { 
-                        admin.notify('تم الحذف الجماعي بنجاح'); 
-                        selLessons.clear(); 
-                        selQuizzes.clear(); 
-                        admin.updateBulkActionUI(); 
-                    }); 
+                    const pu={}; selLessons.forEach(id=>pu[`lessons/${id}`]=null); selQuizzes.forEach(id=>pu[`quizzes/${id}`]=null);
+                    Promise.all([dbRef.update(u),protectedRef.update(pu)]).then(() => { admin.notify('تم الحذف الجماعي بنجاح'); selLessons.clear(); selQuizzes.clear(); admin.updateBulkActionUI(); }); 
                 } 
             }
         };
+
+        // تحسين إدارة الطلاب وإضافة سجل تلقائي للعمليات الأساسية
+        const _renderStudentsV6 = admin.renderStudents;
+        admin.renderStudents = () => {
+            const entries=Object.entries(usersData||{}),q=(document.getElementById('students-search')?.value||'').trim().toLowerCase(),plans=Object.values(admin.plansObject());const normalized=entries.map(([uid,u])=>({uid,...(u||{}),profile:(u||{}).profile||{},progress:(u||{}).progress||{}})),filtered=normalized.filter(u=>!q||(u.profile.name||'').toLowerCase().includes(q)||(u.profile.email||'').toLowerCase().includes(q));const active=normalized.filter(u=>u.profile.status!=='blocked').length,subs=normalized.filter(u=>u.profile.plan==='subscriber'&&(!u.profile.subscriptionEndsAt||Number(u.profile.subscriptionEndsAt)>Date.now())).length,blocked=normalized.filter(u=>u.profile.status==='blocked').length;[['students-total',normalized.length],['students-active',active],['students-subscribers',subs],['students-blocked',blocked]].forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.innerText=Number(v).toLocaleString('ar-EG')});const box=document.getElementById('students-list');if(!box)return;const fd=ts=>ts?new Date(Number(ts)).toLocaleString('ar-EG',{dateStyle:'short',timeStyle:'short'}):'—';box.innerHTML=filtered.length?filtered.sort((a,b)=>(b.profile.lastActivityAt||0)-(a.profile.lastActivityAt||0)).map(u=>{const hist=u.progress.quizHistory||[],avg=hist.length?Math.round(hist.reduce((s,h)=>s+(Number(h.percentage)||0),0)/hist.length):null,best=hist.length?Math.max(...hist.map(h=>Number(h.percentage)||0)):null,isBlocked=u.profile.status==='blocked',activeSub=u.profile.plan==='subscriber'&&(!u.profile.subscriptionEndsAt||Number(u.profile.subscriptionEndsAt)>Date.now()),planOpts=`<option value="free">مجاني</option>`+plans.filter(p=>p.active!==false).map(p=>`<option value="${p.id}" ${u.profile.planId===p.id?'selected':''}>${admin.escapeHtml(p.name)}</option>`).join('');return `<div class="border border-slate-200 rounded-2xl p-4 md:p-5 bg-white dark-adapt-bg"><div class="flex flex-col 2xl:flex-row 2xl:items-center gap-4"><div class="flex items-center gap-3 flex-1 min-w-0"><span class="w-12 h-12 rounded-2xl ${isBlocked?'bg-red-50 text-red-500':'bg-emerald-50 text-emerald-600'} flex items-center justify-center font-black shrink-0">${admin.escapeHtml(((u.profile.name||'ط')[0]||'ط').toUpperCase())}</span><div class="min-w-0"><div class="flex flex-wrap gap-2 items-center"><h4 class="font-black text-slate-800 dark-adapt truncate">${admin.escapeHtml(u.profile.name||'طالب')}</h4><span class="text-[10px] px-2 py-1 rounded-lg font-black ${activeSub?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-500'}">${activeSub?(plans.find(p=>p.id===u.profile.planId)?.name||'مشترك'):'مجاني'}</span>${isBlocked?'<span class="text-[10px] px-2 py-1 rounded-lg font-black bg-red-50 text-red-600">موقوف</span>':''}</div><p dir="ltr" class="text-xs font-bold text-slate-400 truncate mt-1">${admin.escapeHtml(u.profile.email||'')}</p><p class="text-[10px] font-bold text-slate-400 mt-1">آخر نشاط: ${fd(u.profile.lastActivityAt||u.profile.lastLoginAt)}</p></div></div><div class="grid grid-cols-4 gap-2 2xl:w-[360px]"><div class="bg-slate-50 rounded-xl p-2 text-center"><strong class="block">${(u.progress.completedLessons||[]).length}</strong><span class="text-[9px] text-slate-400 font-bold">درس</span></div><div class="bg-slate-50 rounded-xl p-2 text-center"><strong class="block">${hist.length}</strong><span class="text-[9px] text-slate-400 font-bold">اختبار</span></div><div class="bg-slate-50 rounded-xl p-2 text-center"><strong class="block text-emerald-600">${best===null?'—':best+'%'}</strong><span class="text-[9px] text-slate-400 font-bold">الأفضل</span></div><div class="bg-slate-50 rounded-xl p-2 text-center"><strong class="block text-blue-600">${avg===null?'—':avg+'%'}</strong><span class="text-[9px] text-slate-400 font-bold">المتوسط</span></div></div><div class="2xl:w-[430px] space-y-2"><div class="grid grid-cols-[1fr_auto_auto] gap-2"><select onchange="admin.applyPlanToStudent('${u.uid}',this.value)" class="border-2 rounded-xl px-3 py-2 font-black text-xs bg-white">${planOpts}</select><button onclick="admin.toggleStudentStatus('${u.uid}','${isBlocked?'active':'blocked'}')" class="${isBlocked?'bg-emerald-50 text-emerald-700':'bg-red-50 text-red-600'} px-3 py-2 rounded-xl font-black text-xs">${isBlocked?'تفعيل':'إيقاف'}</button><button onclick="admin.resetStudentProgress('${u.uid}')" class="bg-amber-50 text-amber-700 px-3 py-2 rounded-xl font-black text-xs" title="تصفير التقدم"><i class="fas fa-rotate-left"></i></button></div><div class="grid grid-cols-[1fr_auto] gap-2"><input type="date" value="${u.profile.subscriptionEndsAt?new Date(Number(u.profile.subscriptionEndsAt)).toISOString().slice(0,10):''}" onchange="admin.setSubscriptionEnd('${u.uid}',this.value)" class="border-2 rounded-xl px-3 py-2 font-bold text-xs"><button onclick="admin.extendSubscription('${u.uid}',30)" class="bg-blue-50 text-blue-700 px-3 py-2 rounded-xl font-black text-xs">+30 يوم</button></div></div></div></div>`}).join(''):'<div class="empty-state">لا توجد حسابات مطابقة.</div>';};
+        ['addCategory','addChapter','addLesson','saveLessonEdit','saveCatEdit','saveChapEdit','saveBrandingSettings','saveAnnouncement','toggleStudentStatus','changeStudentPlan','setSubscriptionEnd','extendSubscription'].forEach(name=>{const fn=admin[name];if(typeof fn!=='function')return;admin[name]=function(...args){const result=fn.apply(admin,args);if(!['toggleStudentStatus'].includes(name)||true)admin.logAction(name,args.join(' | '));return result;};});
 
         // تهيئة اللوحة عند التحميل
         window.onload = () => { admin.bootstrap(); admin.switchTab('dashboard', document.querySelector('.tab-btn[data-tab="dashboard"]')); };
