@@ -154,12 +154,13 @@
             <section id="tab-dashboard" class="adm-tab active">
                 <div class="hero-admin">
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
-                        <div><div class="text-emerald-200 text-sm font-black mb-2">مركز التحكم</div><h3 class="text-2xl md:text-3xl font-black mb-2">أهلاً بك في إدارة المنصة</h3><p class="text-emerald-50/80 font-bold max-w-2xl leading-7">تابع المحتوى والاختبارات من مكان واحد، وانتقل مباشرة لأكثر العمليات استخدامًا.</p></div>
+                        <div><div class="text-emerald-200 text-sm font-black mb-2">مركز التحكم</div><h3 class="text-2xl md:text-3xl font-black mb-2">أهلاً بك في إدارة المنصة</h3><p class="text-emerald-50/80 font-bold max-w-2xl leading-7">أدر المكتبة العلمية من مكان واحد: الأقسام والكتب والأبواب والدروس والفيديوهات واختبارات التثبيت.</p></div>
                         <button onclick="admin.switchTab('add-content', document.querySelector('.tab-btn[data-tab=\'add-content\']'))" class="relative z-10 bg-white text-emerald-800 px-6 py-3.5 rounded-2xl font-black shadow-lg hover:-translate-y-1 transition-transform"><i class="fas fa-plus ml-2"></i>إضافة محتوى جديد</button>
                     </div>
                 </div>
                 <div class="stat-grid">
                     <div class="stat-card"><div class="stat-icon green"><i class="fas fa-layer-group"></i></div><div id="dash-categories" class="stat-number">0</div><div class="stat-name">الأقسام</div></div>
+                    <div class="stat-card"><div class="stat-icon amber"><i class="fas fa-book-open"></i></div><div id="dash-books" class="stat-number">0</div><div class="stat-name">الكتب</div></div>
                     <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-folder-open"></i></div><div id="dash-chapters" class="stat-number">0</div><div class="stat-name">الأبواب والفصول</div></div>
                     <div class="stat-card"><div class="stat-icon indigo"><i class="fas fa-file-lines"></i></div><div id="dash-lessons" class="stat-number">0</div><div class="stat-name">الدروس</div></div>
                     <div class="stat-card"><div class="stat-icon rose"><i class="fas fa-clipboard-question"></i></div><div id="dash-quizzes" class="stat-number">0</div><div class="stat-name">الاختبارات</div></div>
@@ -169,27 +170,43 @@
                 <div class="dashboard-grid">
                     <div class="panel"><div class="panel-title"><div><h4 class="font-black text-xl text-slate-800 dark-adapt">أحدث المحتوى</h4><p class="text-xs font-bold text-slate-400 mt-1">آخر العناصر المضافة حسب معرفاتها الزمنية</p></div><button onclick="admin.switchTab('manage-content', document.querySelector('.tab-btn[data-tab=\'manage-content\']'))" class="text-emerald-600 font-black text-sm">عرض الكل</button></div><div id="recent-content-list"></div></div>
                     <div class="space-y-4">
-                        <div class="panel"><div class="panel-title"><h4 class="font-black text-lg text-slate-800 dark-adapt">إجراءات سريعة</h4></div><div class="quick-grid"><button class="quick-action" onclick="admin.switchTab('add-content', document.querySelector('.tab-btn[data-tab=\'add-content\']'))"><i class="fas fa-file-circle-plus text-indigo-500 ml-2"></i>درس جديد</button><button class="quick-action" onclick="admin.switchTab('add-quizzes', document.querySelector('.tab-btn[data-tab=\'add-quizzes\']'))"><i class="fas fa-clipboard-question text-rose-500 ml-2"></i>اختبار جديد</button><button class="quick-action" onclick="admin.switchTab('announcements', document.querySelector('.tab-btn[data-tab=\'announcements\']'))"><i class="fas fa-bullhorn text-amber-500 ml-2"></i>إعلان للطلاب</button><button class="quick-action" onclick="admin.exportBackup()"><i class="fas fa-download text-emerald-500 ml-2"></i>نسخة احتياطية</button></div></div>
+                        <div class="panel"><div class="panel-title"><h4 class="font-black text-lg text-slate-800 dark-adapt">إجراءات سريعة</h4></div><div class="quick-grid"><button class="quick-action" onclick="admin.switchTab('add-content', document.querySelector('.tab-btn[data-tab=\'add-content\']'))"><i class="fas fa-file-circle-plus text-indigo-500 ml-2"></i>كتاب / درس جديد</button><button class="quick-action" onclick="admin.switchTab('add-quizzes', document.querySelector('.tab-btn[data-tab=\'add-quizzes\']'))"><i class="fas fa-clipboard-question text-rose-500 ml-2"></i>اختبار جديد</button><button class="quick-action" onclick="admin.switchTab('announcements', document.querySelector('.tab-btn[data-tab=\'announcements\']'))"><i class="fas fa-bullhorn text-amber-500 ml-2"></i>إعلان للطلاب</button><button class="quick-action" onclick="admin.exportBackup()"><i class="fas fa-download text-emerald-500 ml-2"></i>نسخة احتياطية</button></div></div>
                         <div class="panel"><div class="flex items-center justify-between mb-3"><div><div class="text-sm font-black text-slate-800 dark-adapt">ربط الدروس بالاختبارات</div><div class="text-xs font-bold text-slate-400 mt-1">نسبة الدروس التي تحتوي على اختبار</div></div><span id="dash-link-rate" class="font-black text-emerald-600 text-lg">0%</span></div><div class="progress-track"><div id="dash-link-bar" class="progress-fill" style="width:0%"></div></div></div>
                     </div>
                 </div>
             </section>
 
             <section id="tab-manage-content" class="adm-tab space-y-6">
-                <div class="page-card p-4 md:p-5 relative"><i class="fas fa-search absolute top-1/2 -translate-y-1/2 right-8 text-emerald-500 text-xl"></i><input type="text" id="admin-global-search" onkeyup="admin.globalSearch()" placeholder="ابحث عن قسم، باب، درس، اختبار، أو سؤال..." class="w-full bg-slate-50 border-2 border-slate-200 p-4 pr-14 rounded-2xl font-black text-slate-700 focus:border-emerald-500 focus:outline-none transition text-base"></div>
+                <div class="page-card p-4 md:p-5 relative"><i class="fas fa-search absolute top-1/2 -translate-y-1/2 right-8 text-emerald-500 text-xl"></i><input type="text" id="admin-global-search" onkeyup="admin.globalSearch()" placeholder="ابحث عن قسم، كتاب، باب، درس، اختبار، أو سؤال..." class="w-full bg-slate-50 border-2 border-slate-200 p-4 pr-14 rounded-2xl font-black text-slate-700 focus:border-emerald-500 focus:outline-none transition text-base"></div>
                 <div id="bulk-actions" class="bg-red-50 border border-red-200 p-4 rounded-2xl hidden flex flex-col sm:flex-row gap-3 justify-between items-center transition-all sticky top-20 z-40 shadow-md"><div class="font-bold text-red-700 text-sm">تم تحديد <span id="sel-les-count" class="bg-red-200 px-2 rounded">0</span> درس، و <span id="sel-quiz-count" class="bg-red-200 px-2 rounded">0</span> اختبار.</div><button onclick="admin.executeBulkDelete()" class="bg-red-600 text-white px-6 py-3 rounded-xl font-black hover:bg-red-700 shadow-sm"><i class="fas fa-trash-alt ml-2"></i>حذف المحدد نهائياً</button></div>
                 <div class="page-card p-5 md:p-7"><div id="management-tree" class="space-y-4"></div></div>
             </section>
 
             <section id="tab-add-content" class="adm-tab space-y-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                    <div class="page-card p-6 border-r-4 border-emerald-500"><div class="flex gap-3 items-center mb-5"><div class="stat-icon green !mb-0"><i class="fas fa-layer-group"></i></div><div><h3 class="font-black text-lg text-slate-800 dark-adapt">إضافة قسم رئيسي</h3><p class="form-help">المستوى الأول في تنظيم المحتوى.</p></div></div><input id="cat-name" placeholder="مثال: الفقه، العقيدة..." class="w-full border-2 p-3 rounded-xl font-bold mb-3 outline-none focus:border-emerald-500"><button onclick="admin.addCategory()" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-black hover:bg-emerald-700">إضافة القسم</button></div>
-                    <div class="page-card p-6 border-r-4 border-blue-500"><div class="flex gap-3 items-center mb-5"><div class="stat-icon blue !mb-0"><i class="fas fa-folder-plus"></i></div><div><h3 class="font-black text-lg text-slate-800 dark-adapt">إضافة باب / فصل</h3><p class="form-help">اختر القسم ثم أضف الباب التابع له.</p></div></div><select id="chap-cat" class="w-full border-2 p-3 rounded-xl font-bold mb-3 outline-none focus:border-blue-500 bg-slate-50"></select><input id="chap-title" placeholder="مثال: باب الطهارة" class="w-full border-2 p-3 rounded-xl font-bold mb-3 outline-none focus:border-blue-500"><button onclick="admin.addChapter()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black hover:bg-blue-700">إضافة الباب</button></div>
+                <div class="page-card p-6 md:p-8 border-t-4 border-emerald-500">
+                    <div class="panel-title"><div><h3 class="font-black text-2xl text-slate-800 dark-adapt"><i class="fas fa-layer-group text-emerald-600 ml-2"></i>إضافة قسم علمي</h3><p class="form-help mt-2">القسم هو المستوى الأعلى مثل: الفقه، الميراث، الحديث، النحو. يمكنك رفع صورة من جهازك أو وضع رابط صورة.</p></div></div>
+                    <div class="grid lg:grid-cols-[1.2fr_.8fr] gap-5 mt-5">
+                        <div class="space-y-3"><input id="cat-name" placeholder="اسم القسم: مثال الفقه" class="w-full border-2 p-3 rounded-xl font-bold"><textarea id="cat-description" placeholder="وصف مختصر للقسم..." class="w-full border-2 p-3 rounded-xl font-bold h-24"></textarea><select id="cat-access" class="w-full border-2 p-3 rounded-xl font-black bg-slate-50"><option value="free">مجاني</option><option value="subscriber">للمشتركين فقط 🔒</option><option value="hidden">مخفي مؤقتًا</option></select></div>
+                        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4"><label class="block text-xs font-black text-slate-500 mb-2">صورة القسم</label><input id="cat-image-url" dir="ltr" placeholder="رابط الصورة https://..." oninput="admin.previewImageChoice('cat-image-url','cat-image-file','cat-image-preview')" class="w-full border-2 p-3 rounded-xl font-bold text-left mb-3"><div class="text-center text-xs font-black text-slate-400 mb-2">أو</div><input id="cat-image-file" type="file" accept="image/*" onchange="admin.previewImageChoice('cat-image-url','cat-image-file','cat-image-preview')" class="w-full text-xs font-bold mb-3"><div id="cat-image-preview" class="h-32 rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden text-slate-300"><i class="fas fa-image text-3xl"></i></div></div>
+                    </div>
+                    <button onclick="admin.addCategory()" class="w-full mt-5 bg-emerald-600 text-white py-3.5 rounded-xl font-black hover:bg-emerald-700"><i class="fas fa-plus ml-2"></i>إضافة القسم</button>
                 </div>
+
+                <div class="page-card p-6 md:p-8 border-t-4 border-amber-500">
+                    <div class="panel-title"><div><h3 class="font-black text-2xl text-slate-800 dark-adapt"><i class="fas fa-book-open text-amber-600 ml-2"></i>إضافة كتاب</h3><p class="form-help mt-2">اختر القسم ثم أضف بيانات الكتاب وغلافه. بعد الحفظ يمكنك إنشاء الأبواب والدروس داخله.</p></div></div>
+                    <div class="grid lg:grid-cols-[1.2fr_.8fr] gap-5 mt-5">
+                        <div class="space-y-3"><select id="book-cat" class="w-full border-2 p-3 rounded-xl font-black bg-slate-50"></select><input id="book-title" placeholder="اسم الكتاب" class="w-full border-2 p-3 rounded-xl font-bold"><input id="book-author" placeholder="المؤلف / الشارح (اختياري)" class="w-full border-2 p-3 rounded-xl font-bold"><textarea id="book-description" placeholder="نبذة عن الكتاب..." class="w-full border-2 p-3 rounded-xl font-bold h-24"></textarea><input id="book-source-url" dir="ltr" placeholder="رابط الكتاب PDF أو المصدر (اختياري)" class="w-full border-2 p-3 rounded-xl font-bold text-left"><div class="grid sm:grid-cols-2 gap-3"><select id="book-access" class="w-full border-2 p-3 rounded-xl font-black bg-slate-50"><option value="free">مجاني</option><option value="subscriber">للمشتركين فقط 🔒</option><option value="hidden">مخفي مؤقتًا</option></select><label class="flex items-center gap-3 border-2 rounded-xl p-3 cursor-pointer"><input id="book-featured" type="checkbox" class="w-5 h-5 rounded text-amber-600"><span class="font-black text-sm">عرض في الكتب المميزة</span></label></div><input id="book-featured-order" type="number" min="1" value="1" placeholder="ترتيب الظهور" class="w-full border-2 p-3 rounded-xl font-bold"></div>
+                        <div class="bg-amber-50/40 border border-amber-100 rounded-2xl p-4"><label class="block text-xs font-black text-amber-700 mb-2">غلاف الكتاب</label><input id="book-cover-url" dir="ltr" placeholder="رابط صورة الغلاف https://..." oninput="admin.previewImageChoice('book-cover-url','book-cover-file','book-cover-preview')" class="w-full border-2 p-3 rounded-xl font-bold text-left mb-3"><div class="text-center text-xs font-black text-slate-400 mb-2">أو ارفع من جهازك</div><input id="book-cover-file" type="file" accept="image/*" onchange="admin.previewImageChoice('book-cover-url','book-cover-file','book-cover-preview')" class="w-full text-xs font-bold mb-3"><div id="book-cover-preview" class="h-60 rounded-xl border-2 border-dashed border-amber-200 flex items-center justify-center overflow-hidden text-amber-300"><i class="fas fa-book text-4xl"></i></div></div>
+                    </div>
+                    <button onclick="admin.addBook()" class="w-full mt-5 bg-amber-600 text-white py-3.5 rounded-xl font-black hover:bg-amber-700"><i class="fas fa-book-medical ml-2"></i>حفظ الكتاب</button>
+                </div>
+
+                <div class="page-card p-6 border-r-4 border-blue-500"><div class="flex gap-3 items-center mb-5"><div class="stat-icon blue !mb-0"><i class="fas fa-folder-plus"></i></div><div><h3 class="font-black text-lg text-slate-800 dark-adapt">إضافة باب / فصل داخل كتاب</h3><p class="form-help">القسم ← الكتاب ← الباب.</p></div></div><div class="grid md:grid-cols-3 gap-3"><select id="chap-cat" onchange="admin.updateBooksDropdown('chap-cat','chap-book')" class="w-full border-2 p-3 rounded-xl font-bold bg-slate-50"></select><select id="chap-book" class="w-full border-2 p-3 rounded-xl font-bold bg-slate-50"></select><input id="chap-title" placeholder="مثال: كتاب الطهارة / الباب الأول" class="w-full border-2 p-3 rounded-xl font-bold"></div><div class="grid sm:grid-cols-[1fr_auto] gap-3 mt-3"><select id="chap-access" class="w-full border-2 p-3 rounded-xl font-black bg-slate-50"><option value="free">مجاني</option><option value="subscriber">للمشتركين فقط 🔒</option><option value="hidden">مخفي مؤقتًا</option></select><button onclick="admin.addChapter()" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-black hover:bg-blue-700">إضافة الباب</button></div></div>
+
                 <div class="page-card p-6 md:p-8 border-t-4 border-indigo-500">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6"><div><h3 class="font-black text-2xl text-indigo-800 dark-adapt"><i class="fas fa-file-lines ml-2"></i>إضافة درس جديد</h3><p class="form-help mt-2">يمكنك معاينة الدرس بالشكل القريب من ظهوره للطالب قبل النشر.</p></div><button onclick="admin.previewNewLesson()" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-5 py-3 rounded-xl font-black hover:bg-indigo-100"><i class="fas fa-eye ml-2"></i>معاينة الدرس</button></div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4"><div><label class="block text-xs font-bold text-slate-500 mb-1">القسم</label><select id="les-cat" onchange="admin.updateChaptersDropdown('les-cat','les-chap')" class="w-full border-2 p-3 rounded-xl font-bold outline-none focus:border-indigo-500 bg-slate-50"></select></div><div><label class="block text-xs font-bold text-slate-500 mb-1">الباب</label><select id="les-chap" class="w-full border-2 p-3 rounded-xl font-bold outline-none focus:border-indigo-500 bg-slate-50"></select></div><div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100"><label class="block text-xs font-black text-indigo-800 mb-1">الاختبار المرتبط</label><input type="text" id="quiz-search-input" onkeyup="admin.filterQuizzes('quiz-search-input','les-quiz')" placeholder="ابحث عن اختبار..." class="w-full border-2 p-2 rounded-lg text-sm font-bold mb-2 outline-none focus:border-indigo-500"><select id="les-quiz" class="w-full border-2 p-2 rounded-lg font-bold outline-none focus:border-indigo-500 bg-white" size="3"></select></div></div>
-                    <div class="mb-4"><label class="block text-xs font-black text-slate-500 mb-1">نوع إتاحة الدرس</label><select id="les-access" class="w-full border-2 p-3 rounded-xl font-black bg-slate-50"><option value="free">مجاني</option><option value="subscriber">للمشتركين فقط 🔒</option><option value="hidden">مخفي مؤقتًا</option></select></div><input id="les-title" placeholder="عنوان الدرس" class="w-full border-2 p-3 rounded-xl font-bold text-lg mb-4 outline-none focus:border-indigo-500"><div class="grid md:grid-cols-2 gap-3 mb-4"><div><label class="block text-xs font-black text-slate-500 mb-1">رابط الفيديو (YouTube / TikTok / Facebook)</label><input id="les-video-url" dir="ltr" placeholder="https://..." class="w-full border-2 p-3 rounded-xl font-bold text-left"><div class="media-help mt-1">اتركه فارغًا لو الدرس بدون فيديو.</div></div><div><label class="block text-xs font-black text-slate-500 mb-1">مكان الفيديو</label><select id="les-video-position" class="w-full border-2 p-3 rounded-xl font-black bg-slate-50"><option value="top">فوق الشرح</option><option value="bottom">تحت الشرح</option></select></div><div><label class="block text-xs font-black text-slate-500 mb-1">رابط الكتاب / الملف</label><input id="les-book-url" dir="ltr" placeholder="https://..." class="w-full border-2 p-3 rounded-xl font-bold text-left"></div><div><label class="block text-xs font-black text-slate-500 mb-1">اسم الكتاب الظاهر للطالب</label><input id="les-book-title" placeholder="مثال: تحميل كتاب الفقه" class="w-full border-2 p-3 rounded-xl font-bold"></div></div><div class="mb-4 bg-sky-50 border border-sky-100 p-4 rounded-2xl"><label class="block text-xs font-black text-sky-800 mb-1"><i class="fas fa-calendar-clock ml-1"></i>موعد النشر الاختياري</label><input id="les-publish-at" type="datetime-local" class="w-full border-2 p-3 rounded-xl font-bold bg-white"><p class="text-[11px] font-bold text-sky-600 mt-2">اتركه فارغًا للنشر فورًا. المحتوى المجدول لن يظهر قبل الموعد.</p></div><textarea id="les-content" placeholder="اكتب محتوى الشرح هنا..." class="w-full border-2 p-4 rounded-xl font-bold h-72 mb-3 outline-none focus:border-indigo-500 leading-loose"></textarea><div class="form-help mb-4">يدعم التنسيقات الحالية مثل: {نص قرآني}، [تنبيه]...[/تنبيه]، [ازرق]...[/ازرق]، **خط عريض**.</div><div class="grid sm:grid-cols-2 gap-3"><button onclick="admin.previewNewLesson()" class="border-2 border-indigo-200 text-indigo-700 py-4 rounded-xl font-black hover:bg-indigo-50"><i class="fas fa-eye ml-2"></i>معاينة قبل النشر</button><button onclick="admin.addLesson()" class="bg-indigo-600 text-white py-4 rounded-xl font-black hover:bg-indigo-700 text-lg"><i class="fas fa-paper-plane ml-2"></i>نشر الدرس</button></div>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6"><div><h3 class="font-black text-2xl text-indigo-800 dark-adapt"><i class="fas fa-file-lines ml-2"></i>إضافة درس جديد</h3><p class="form-help mt-2">حدد مكان الدرس داخل الكتاب، ثم أضف الفيديو والتفريغ والاختبار.</p></div><button onclick="admin.previewNewLesson()" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-5 py-3 rounded-xl font-black hover:bg-indigo-100"><i class="fas fa-eye ml-2"></i>معاينة الدرس</button></div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4"><div><label class="block text-xs font-bold text-slate-500 mb-1">القسم</label><select id="les-cat" onchange="admin.updateBooksDropdown('les-cat','les-book');admin.updateChaptersByBook('les-book','les-chap')" class="w-full border-2 p-3 rounded-xl font-bold bg-slate-50"></select></div><div><label class="block text-xs font-bold text-slate-500 mb-1">الكتاب</label><select id="les-book" onchange="admin.updateChaptersByBook('les-book','les-chap')" class="w-full border-2 p-3 rounded-xl font-bold bg-slate-50"></select></div><div><label class="block text-xs font-bold text-slate-500 mb-1">الباب</label><select id="les-chap" class="w-full border-2 p-3 rounded-xl font-bold bg-slate-50"></select></div><div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100"><label class="block text-xs font-black text-indigo-800 mb-1">اختبار تثبيت الدرس</label><input type="text" id="quiz-search-input" onkeyup="admin.filterQuizzes('quiz-search-input','les-quiz')" placeholder="ابحث عن اختبار..." class="w-full border-2 p-2 rounded-lg text-sm font-bold mb-2"><select id="les-quiz" class="w-full border-2 p-2 rounded-lg font-bold bg-white" size="3"></select></div></div>
+                    <div class="mb-4"><label class="block text-xs font-black text-slate-500 mb-1">نوع إتاحة الدرس</label><select id="les-access" class="w-full border-2 p-3 rounded-xl font-black bg-slate-50"><option value="free">مجاني</option><option value="subscriber">للمشتركين فقط 🔒</option><option value="hidden">مخفي مؤقتًا</option></select></div><input id="les-title" placeholder="عنوان الدرس" class="w-full border-2 p-3 rounded-xl font-bold text-lg mb-4"><div class="grid md:grid-cols-2 gap-3 mb-4"><div><label class="block text-xs font-black text-slate-500 mb-1">رابط الفيديو (YouTube / TikTok / Facebook)</label><input id="les-video-url" dir="ltr" placeholder="https://..." class="w-full border-2 p-3 rounded-xl font-bold text-left"><div class="media-help mt-1">يمكن تقسيم الحلقة الواحدة إلى أكثر من درس ووضع الرابط نفسه مع التفريغ الخاص بكل جزء.</div></div><div><label class="block text-xs font-black text-slate-500 mb-1">مكان الفيديو</label><select id="les-video-position" class="w-full border-2 p-3 rounded-xl font-black bg-slate-50"><option value="top">فوق الشرح</option><option value="bottom">تحت الشرح</option></select></div><div><label class="block text-xs font-black text-slate-500 mb-1">رابط مرجع / ملف إضافي</label><input id="les-book-url" dir="ltr" placeholder="https://..." class="w-full border-2 p-3 rounded-xl font-bold text-left"></div><div><label class="block text-xs font-black text-slate-500 mb-1">اسم المرجع الظاهر</label><input id="les-book-title" placeholder="مثال: نسخة PDF من الكتاب" class="w-full border-2 p-3 rounded-xl font-bold"></div></div><div class="mb-4 bg-sky-50 border border-sky-100 p-4 rounded-2xl"><label class="block text-xs font-black text-sky-800 mb-1"><i class="fas fa-calendar-clock ml-1"></i>موعد النشر الاختياري</label><input id="les-publish-at" type="datetime-local" class="w-full border-2 p-3 rounded-xl font-bold bg-white"><p class="text-[11px] font-bold text-sky-600 mt-2">اتركه فارغًا للنشر فورًا.</p></div><textarea id="les-content" placeholder="اكتب الشرح أو تفريغ الجزء من الفيديو هنا..." class="w-full border-2 p-4 rounded-xl font-bold h-72 mb-3 leading-loose"></textarea><div class="form-help mb-4">يدعم التنسيقات الحالية مثل: {نص قرآني}، [تنبيه]...[/تنبيه]، [ازرق]...[/ازرق]، **خط عريض**.</div><div class="grid sm:grid-cols-2 gap-3"><button onclick="admin.previewNewLesson()" class="border-2 border-indigo-200 text-indigo-700 py-4 rounded-xl font-black hover:bg-indigo-50"><i class="fas fa-eye ml-2"></i>معاينة قبل النشر</button><button onclick="admin.addLesson()" class="bg-indigo-600 text-white py-4 rounded-xl font-black hover:bg-indigo-700 text-lg"><i class="fas fa-paper-plane ml-2"></i>نشر الدرس</button></div>
                 </div>
             </section>
 
@@ -253,6 +270,7 @@
 
             <section id="tab-settings" class="adm-tab space-y-6">
                 <div class="page-card p-6 md:p-8 border-t-4 border-emerald-500"><div class="panel-title"><div><h3 class="font-black text-2xl text-slate-800 dark-adapt"><i class="fas fa-palette text-emerald-600 ml-2"></i>هوية المنصة وروابط التواصل</h3><p class="form-help mt-2">غيّر الاسم والوصف وروابط السوشيال بدون تعديل الكود.</p></div><button onclick="admin.saveBrandingSettings()" class="bg-emerald-600 text-white px-6 py-3 rounded-xl font-black">حفظ الهوية</button></div><div class="grid md:grid-cols-2 gap-4 mt-5"><div><label class="block text-xs font-black text-slate-500 mb-1">اسم المنصة</label><input id="brand-name" class="w-full border-2 p-3 rounded-xl font-bold"></div><div><label class="block text-xs font-black text-slate-500 mb-1">وصف قصير</label><input id="brand-description" class="w-full border-2 p-3 rounded-xl font-bold"></div><div class="md:col-span-2"><label class="block text-xs font-black text-slate-500 mb-1">عنوان الواجهة الرئيسية</label><input id="brand-hero-title" class="w-full border-2 p-3 rounded-xl font-bold"></div><div class="md:col-span-2"><label class="block text-xs font-black text-slate-500 mb-1">وصف الواجهة الرئيسية</label><textarea id="brand-hero-description" class="w-full border-2 p-3 rounded-xl font-bold h-24"></textarea></div></div><div class="social-grid mt-5"><input id="brand-facebook" dir="ltr" placeholder="Facebook URL" class="border-2 p-3 rounded-xl font-bold text-left"><input id="brand-youtube" dir="ltr" placeholder="YouTube URL" class="border-2 p-3 rounded-xl font-bold text-left"><input id="brand-tiktok" dir="ltr" placeholder="TikTok URL" class="border-2 p-3 rounded-xl font-bold text-left"><input id="brand-whatsapp" dir="ltr" placeholder="WhatsApp URL أو رقم" class="border-2 p-3 rounded-xl font-bold text-left"></div></div>
+                <div class="page-card p-6 md:p-8 border-t-4 border-amber-500"><div class="panel-title"><div><h3 class="font-black text-2xl text-slate-800 dark-adapt"><i class="fas fa-images text-amber-600 ml-2"></i>سلايدر الكتب المميزة</h3><p class="form-help mt-2">يعرض 5 كتب على الكمبيوتر ويتحرك كتابًا بكتاب بشكل دائري، مع السحب اليدوي على الهاتف والأسهم.</p></div><button onclick="admin.saveCarouselSettings()" class="bg-amber-600 text-white px-6 py-3 rounded-xl font-black">حفظ إعدادات السلايدر</button></div><div class="grid md:grid-cols-3 gap-4 mt-5"><div><label class="block text-xs font-black text-slate-500 mb-1">عنوان القسم</label><input id="carousel-title" placeholder="كتب مميزة" class="w-full border-2 p-3 rounded-xl font-bold"></div><div><label class="block text-xs font-black text-slate-500 mb-1">التحريك كل (ثانية)</label><input id="carousel-interval" type="number" min="4" value="10" class="w-full border-2 p-3 rounded-xl font-bold"></div><label class="flex items-center gap-3 border-2 rounded-xl p-3 cursor-pointer"><input id="carousel-autoplay" type="checkbox" checked class="w-5 h-5 rounded text-amber-600"><span class="font-black">الحركة التلقائية</span></label></div><div class="mt-5"><h4 class="font-black text-slate-800 dark-adapt mb-3">الكتب المثبتة في السلايدر</h4><div id="featured-books-admin-list" class="grid md:grid-cols-2 xl:grid-cols-3 gap-3"></div></div></div>
                 <div class="page-card p-6 security-card"><div class="flex flex-col md:flex-row md:items-center justify-between gap-4"><div><h3 class="font-black text-xl text-emerald-900"><i class="fas fa-lock ml-2"></i>حماية المحتوى المدفوع</h3><p class="text-sm font-bold text-emerald-800/70 mt-2 leading-7">ينقل نص الدروس وأسئلة الاختبارات وروابط الفيديو والكتب الخاصة بالمشتركين إلى مسار محمي في Firebase.</p></div><button onclick="admin.syncProtectedContent(false)" class="bg-emerald-700 text-white px-6 py-3 rounded-xl font-black"><i class="fas fa-shield-halved ml-2"></i>فحص وتأمين الآن</button></div></div>
                 <div class="page-card p-6 md:p-8 border-t-4 border-amber-500"><h3 class="font-black text-2xl mb-6 text-emerald-800 dark-adapt"><i class="fas fa-kaaba ml-2"></i>إدارة الأذكار التلقائية</h3><div class="mb-7 p-5 bg-amber-50 rounded-2xl border border-amber-200"><label class="block font-black text-amber-900 mb-2">زمن ظهور الذكر على شاشة الطالب</label><div class="flex flex-wrap items-center gap-3"><span class="font-bold text-slate-600">يظهر ذكر جديد كل</span><input type="number" id="dhikr-interval" value="2" class="w-24 border-2 p-2 rounded-xl font-bold text-center"><span class="font-bold text-slate-600">دقيقة</span><button onclick="admin.saveDhikrInterval()" class="bg-amber-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-amber-700 sm:mr-auto">حفظ التوقيت</button></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-7"><div><h4 class="font-black text-lg text-slate-800 dark-adapt mb-3">إضافة ذكر جديد</h4><textarea id="new-dhikr-text" placeholder="اكتب الذكر هنا..." class="w-full border-2 p-4 rounded-xl font-bold h-32 mb-3 bg-slate-50"></textarea><button onclick="admin.addDhikr()" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-black hover:bg-emerald-700">إضافة الذكر للقائمة</button></div><div><h4 class="font-black text-lg text-slate-800 dark-adapt mb-3">الأذكار الحالية</h4><div id="dhikr-list" class="space-y-3 max-h-72 overflow-y-auto pr-2"></div></div></div></div>
                 <div class="page-card p-6"><div class="flex flex-col md:flex-row md:items-center justify-between gap-4"><div><h3 class="font-black text-xl text-slate-800 dark-adapt"><i class="fas fa-shield-halved text-emerald-600 ml-2"></i>نسخة احتياطية</h3><p class="form-help mt-2">نزّل نسخة JSON من بيانات المنصة الحالية قبل التعديلات الكبيرة.</p></div><button onclick="admin.exportBackup()" class="bg-slate-900 text-white px-6 py-3 rounded-xl font-black hover:bg-black"><i class="fas fa-download ml-2"></i>تنزيل نسخة الآن</button></div></div>
@@ -274,8 +292,10 @@
             <input type="hidden" id="mc-les-id">
             
             <label class="block text-sm font-bold text-slate-600 mb-1">اختر القسم الجديد:</label>
-            <select id="mc-cat" onchange="admin.mcUpdateChapters()" class="w-full border-2 p-3 rounded-xl font-bold mb-4 bg-slate-50 outline-none focus:border-purple-500"></select>
+            <select id="mc-cat" onchange="admin.mcUpdateBooks()" class="w-full border-2 p-3 rounded-xl font-bold mb-4 bg-slate-50 outline-none focus:border-purple-500"></select>
             
+            <label class="block text-sm font-bold text-slate-600 mb-1">اختر الكتاب الجديد:</label>
+            <select id="mc-book" onchange="admin.mcUpdateChapters()" class="w-full border-2 p-3 rounded-xl font-bold mb-4 bg-slate-50 outline-none focus:border-purple-500"></select>
             <label class="block text-sm font-bold text-slate-600 mb-1">اختر الباب الجديد:</label>
             <select id="mc-chap" class="w-full border-2 p-3 rounded-xl font-bold mb-8 bg-slate-50 outline-none focus:border-purple-500"></select>
             
@@ -297,13 +317,11 @@
     </div>
     
     <div id="edit-cat-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8 shadow-2xl relative">
-            <button onclick="admin.closeModal('edit-cat-modal')" class="absolute top-4 left-4 text-slate-400 hover:text-red-500"><i class="fas fa-times"></i></button>
-            <h3 class="text-lg font-black text-islamic-800 mb-4 text-center">تغيير اسم القسم</h3>
-            <input type="hidden" id="edit-cat-id">
-            <input id="edit-cat-name" class="w-full border-2 p-3 rounded-xl font-bold mb-6 text-center outline-none focus:border-islamic-500">
-            <button onclick="admin.saveCatEdit()" class="w-full bg-islamic-600 text-white py-3 rounded-xl font-black hover:bg-islamic-700">تحديث الاسم</button>
-        </div>
+        <div class="bg-white w-full max-w-xl rounded-[2rem] p-7 shadow-2xl relative max-h-[92vh] overflow-y-auto"><button onclick="admin.closeModal('edit-cat-modal')" class="absolute top-4 left-4 text-slate-400 hover:text-red-500"><i class="fas fa-times"></i></button><h3 class="text-xl font-black text-emerald-800 mb-5 text-center">تعديل القسم</h3><input type="hidden" id="edit-cat-id"><input id="edit-cat-name" placeholder="اسم القسم" class="w-full border-2 p-3 rounded-xl font-bold mb-3"><textarea id="edit-cat-description" placeholder="وصف القسم" class="w-full border-2 p-3 rounded-xl font-bold h-24 mb-3"></textarea><input id="edit-cat-image-url" dir="ltr" placeholder="رابط الصورة" oninput="admin.previewImageChoice('edit-cat-image-url','edit-cat-image-file','edit-cat-image-preview')" class="w-full border-2 p-3 rounded-xl font-bold text-left mb-3"><input id="edit-cat-image-file" type="file" accept="image/*" onchange="admin.previewImageChoice('edit-cat-image-url','edit-cat-image-file','edit-cat-image-preview')" class="w-full text-xs font-bold mb-3"><div id="edit-cat-image-preview" class="h-36 rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden mb-4 text-slate-300"><i class="fas fa-image text-3xl"></i></div><button onclick="admin.saveCatEdit()" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-black">حفظ التعديلات</button></div>
+    </div>
+
+    <div id="edit-book-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[105] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-[2rem] p-7 shadow-2xl relative max-h-[92vh] overflow-y-auto"><button onclick="admin.closeModal('edit-book-modal')" class="absolute top-4 left-4 text-slate-400 hover:text-red-500"><i class="fas fa-times"></i></button><h3 class="text-xl font-black text-amber-800 mb-5 text-center">تعديل الكتاب</h3><input type="hidden" id="edit-book-id"><div class="grid md:grid-cols-2 gap-3"><select id="edit-book-cat" class="border-2 p-3 rounded-xl font-black bg-slate-50"></select><input id="edit-book-title" placeholder="اسم الكتاب" class="border-2 p-3 rounded-xl font-bold"><input id="edit-book-author" placeholder="المؤلف / الشارح" class="border-2 p-3 rounded-xl font-bold"><input id="edit-book-source-url" dir="ltr" placeholder="رابط PDF / المصدر" class="border-2 p-3 rounded-xl font-bold text-left"><textarea id="edit-book-description" placeholder="نبذة عن الكتاب" class="md:col-span-2 border-2 p-3 rounded-xl font-bold h-24"></textarea><select id="edit-book-access" class="border-2 p-3 rounded-xl font-black bg-slate-50"><option value="free">مجاني</option><option value="subscriber">مشترك 🔒</option><option value="hidden">مخفي</option></select><div class="flex gap-3"><label class="flex-1 flex items-center gap-2 border-2 rounded-xl p-3"><input id="edit-book-featured" type="checkbox" class="w-5 h-5"><span class="font-black text-sm">مميز</span></label><input id="edit-book-featured-order" type="number" min="1" class="w-24 border-2 p-3 rounded-xl font-bold" title="الترتيب"></div><input id="edit-book-cover-url" dir="ltr" placeholder="رابط الغلاف" oninput="admin.previewImageChoice('edit-book-cover-url','edit-book-cover-file','edit-book-cover-preview')" class="md:col-span-2 border-2 p-3 rounded-xl font-bold text-left"><input id="edit-book-cover-file" type="file" accept="image/*" onchange="admin.previewImageChoice('edit-book-cover-url','edit-book-cover-file','edit-book-cover-preview')" class="md:col-span-2 text-xs font-bold"></div><div id="edit-book-cover-preview" class="h-56 rounded-xl border-2 border-dashed border-amber-200 flex items-center justify-center overflow-hidden my-4 text-amber-300"><i class="fas fa-book text-4xl"></i></div><button onclick="admin.saveBookEdit()" class="w-full bg-amber-600 text-white py-3 rounded-xl font-black">حفظ الكتاب</button></div>
     </div>
 
     <div id="edit-chap-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
@@ -311,6 +329,8 @@
             <button onclick="admin.closeModal('edit-chap-modal')" class="absolute top-4 left-4 text-slate-400 hover:text-red-500"><i class="fas fa-times"></i></button>
             <h3 class="text-lg font-black text-blue-800 mb-4 text-center">تغيير اسم الباب</h3>
             <input type="hidden" id="edit-chap-id">
+            <select id="edit-chap-cat" onchange="admin.updateBooksDropdown('edit-chap-cat','edit-chap-book')" class="w-full border-2 p-3 rounded-xl font-bold mb-3 bg-slate-50"></select>
+            <select id="edit-chap-book" class="w-full border-2 p-3 rounded-xl font-bold mb-3 bg-slate-50"></select>
             <input id="edit-chap-title" class="w-full border-2 p-3 rounded-xl font-bold mb-6 text-center outline-none focus:border-blue-500">
             <button onclick="admin.saveChapEdit()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black hover:bg-blue-700">تحديث الاسم</button>
         </div>
@@ -388,9 +408,9 @@
 
         let codesData = {};
         let auditData = {};
-        let publicDbData = { categories: {}, chapters: {}, lessons: {}, quizzes: {}, settings: {}, stats: {} };
+        let publicDbData = { categories: {}, books: {}, chapters: {}, lessons: {}, quizzes: {}, settings: {}, stats: {} };
         let protectedData = { lessons: {}, quizzes: {} };
-        let dbData = { categories: {}, chapters: {}, lessons: {}, quizzes: {}, settings: {}, stats: {} };
+        let dbData = { categories: {}, books: {}, chapters: {}, lessons: {}, quizzes: {}, settings: {}, stats: {} };
         let usersData = {};
         let publicLoaded = false, protectedLoaded = false, securityMigrationRunning = false;
         let adminDataStarted = false;
@@ -445,11 +465,11 @@
                     admin.renderDhikrList();
                     admin.renderDashboard();
                     admin.renderAnnouncementSettings();
-                    admin.renderBrandingSettings();
+                    admin.renderBrandingSettings(); admin.renderCarouselSettings();
                     admin.renderPlans(); admin.renderCodes(); admin.renderAnalytics(); admin.renderAuditLog();
                     if(publicLoaded && protectedLoaded) admin.ensureSecurityMigration();
                 };
-                dbRef.on('value', snap => { publicDbData = snap.val() || { categories:{},chapters:{},lessons:{},quizzes:{},settings:{},stats:{} }; publicLoaded = true; refresh(); });
+                dbRef.on('value', snap => { publicDbData = snap.val() || { categories:{},books:{},chapters:{},lessons:{},quizzes:{},settings:{},stats:{} }; publicLoaded = true; refresh(); });
                 protectedRef.on('value', snap => { protectedData = snap.val() || {lessons:{},quizzes:{}}; protectedLoaded = true; refresh(); });
                 usersRef.on('value', snap => {
                     usersData = snap.val() || {};
@@ -462,7 +482,7 @@
             rebuildDbData: () => {
                 const clone = v => JSON.parse(JSON.stringify(v || {}));
                 dbData = clone(publicDbData);
-                dbData.categories ||= {}; dbData.chapters ||= {}; dbData.lessons ||= {}; dbData.quizzes ||= {}; dbData.settings ||= {}; dbData.stats ||= {};
+                dbData.categories ||= {}; dbData.books ||= {}; dbData.chapters ||= {}; dbData.lessons ||= {}; dbData.quizzes ||= {}; dbData.settings ||= {}; dbData.stats ||= {};
                 Object.entries(protectedData.lessons || {}).forEach(([id,payload]) => {
                     if(dbData.lessons[id]) Object.assign(dbData.lessons[id], payload || {});
                 });
@@ -471,11 +491,11 @@
                 });
             },
             ensureSecurityMigration: async () => {
-                if(securityMigrationRunning || dbData.settings?.securityV7MigratedAt) return;
+                if(securityMigrationRunning || dbData.settings?.securityV8LibraryMigratedAt) return;
                 securityMigrationRunning = true;
                 try {
                     await admin.syncProtectedContent(true);
-                    await dbRef.child('settings/securityV7MigratedAt').set(Date.now());
+                    await dbRef.child('settings/securityV8LibraryMigratedAt').set(Date.now());
                     admin.notify('تم تأمين المحتوى المدفوع تلقائيًا');
                 } catch(e) { console.warn('security migration',e); }
                 finally { securityMigrationRunning = false; }
@@ -500,8 +520,8 @@
                 if(targetBtn) targetBtn.classList.add('active');
                 const labels = {
                     dashboard: ['نظرة عامة', 'ملخص سريع عن محتوى المنصة ونشاطها'],
-                    'manage-content': ['إدارة المحتوى', 'بحث وتعديل الأقسام والأبواب والدروس والاختبارات'],
-                    'add-content': ['إضافة محتوى', 'إنشاء أقسام وأبواب ودروس جديدة'],
+                    'manage-content': ['إدارة المكتبة', 'بحث وتعديل الأقسام والكتب والأبواب والدروس والاختبارات'],
+                    'add-content': ['إضافة محتوى علمي', 'إنشاء أقسام وكتب وأبواب ودروس جديدة'],
                     'add-quizzes': ['إدارة الاختبارات', 'إنشاء الاختبارات وإضافة الأسئلة يدويًا أو دفعة واحدة'],
                     students: ['الطلاب والحسابات', 'متابعة حسابات الطلاب وتقدمهم ونتائجهم'],
                     subscriptions: ['الباقات وأكواد الاشتراك', 'إدارة الخطط وإنشاء أكواد تفعيل ذاتية للطلاب'],
@@ -544,6 +564,7 @@
             },
             renderDashboard: () => {
                 const cats = Object.values(dbData.categories || {});
+                const books = Object.values(dbData.books || {});
                 const chaps = Object.values(dbData.chapters || {});
                 const lessons = Object.values(dbData.lessons || {});
                 const quizzes = Object.values(dbData.quizzes || {});
@@ -551,7 +572,7 @@
                 const visits = dbData.stats?.visitors || 0;
                 const users = Object.values(usersData || {});
                 const stats = {
-                    'dash-categories': cats.length, 'dash-chapters': chaps.length,
+                    'dash-categories': cats.length, 'dash-books': books.length, 'dash-chapters': chaps.length,
                     'dash-lessons': lessons.length, 'dash-quizzes': quizzes.length,
                     'dash-questions': questions, 'dash-students': users.length
                 };
@@ -566,6 +587,7 @@
                 const recent = [
                     ...lessons.map(x => ({...x, type:'درس', label:x.title, icon:'fa-file-lines', tint:'indigo'})),
                     ...quizzes.map(x => ({...x, type:'اختبار', label:x.name, icon:'fa-clipboard-question', tint:'rose'})),
+                    ...books.map(x => ({...x, type:'كتاب', label:x.title, icon:'fa-book-open', tint:'amber'})),
                     ...chaps.map(x => ({...x, type:'باب', label:x.title, icon:'fa-folder-open', tint:'blue'})),
                     ...cats.map(x => ({...x, type:'قسم', label:x.name, icon:'fa-layer-group', tint:'emerald'}))
                 ].sort((a,b) => admin.idTimestamp(b.id)-admin.idTimestamp(a.id)).slice(0,6);
@@ -627,7 +649,7 @@
                 admin.notify(`تم تمديد الاشتراك ${days} يومًا`);
             },
             setContentAccess: async (type,id,access) => {
-                const map={category:'categories',chapter:'chapters',lesson:'lessons',quiz:'quizzes'}; if(!map[type]) return;
+                const map={category:'categories',book:'books',chapter:'chapters',lesson:'lessons',quiz:'quizzes'}; if(!map[type]) return;
                 await dbRef.child(`${map[type]}/${id}/access`).set(access); await admin.syncProtectedContent(true);
                 admin.notify(access==='free'?'تم جعله مجانيًا':access==='subscriber'?'تم قفله وتأمينه للمشتركين':'تم إخفاء وتأمين المحتوى');
             },
@@ -640,11 +662,18 @@
                 if(!/^https?:\/\//i.test(v)) v='https://'+v;
                 try { const u=new URL(v); return ['http:','https:'].includes(u.protocol)?u.href:''; } catch(e){ return ''; }
             },
+            previewImageChoice: (urlId,fileId,previewId) => { const box=document.getElementById(previewId),file=document.getElementById(fileId)?.files?.[0],url=(document.getElementById(urlId)?.value||'').trim(); if(!box)return; const render=src=>box.innerHTML=src?`<img src="${admin.escapeHtml(src)}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<i class=&quot;fas fa-image text-3xl text-slate-300&quot;></i>'">`:'<i class="fas fa-image text-3xl text-slate-300"></i>'; if(file){const r=new FileReader();r.onload=e=>render(e.target.result);r.readAsDataURL(file);}else render(url); },
+            compressImageFile: (file,maxW=1100,maxH=800) => new Promise((resolve,reject)=>{if(!file)return resolve('');if(!file.type.startsWith('image/'))return reject(new Error('الملف ليس صورة'));const r=new FileReader();r.onerror=()=>reject(new Error('تعذر قراءة الصورة'));r.onload=e=>{const img=new Image();img.onerror=()=>reject(new Error('تعذر فتح الصورة'));img.onload=()=>{let w=img.width,h=img.height,scale=Math.min(1,maxW/w,maxH/h);w=Math.max(1,Math.round(w*scale));h=Math.max(1,Math.round(h*scale));const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);let out='';try{out=c.toDataURL('image/webp',.78);}catch(_){out=c.toDataURL('image/jpeg',.72);}if(out.length>700000){out=c.toDataURL('image/jpeg',.58);}if(out.length>900000)return reject(new Error('الصورة كبيرة جدًا بعد الضغط، اختر صورة أصغر'));resolve(out);};img.src=e.target.result;};r.readAsDataURL(file);}),
+            resolveImageValue: async (urlId,fileId,kind='category') => { const file=document.getElementById(fileId)?.files?.[0]; if(file)return await admin.compressImageFile(file,kind==='book'?850:1200,kind==='book'?1250:800); const raw=(document.getElementById(urlId)?.value||'').trim(); return raw?admin.normalizeSocialUrl(raw):''; },
+            renderCarouselSettings: () => { const cfg=dbData.settings?.featuredCarousel||{},title=document.getElementById('carousel-title'),interval=document.getElementById('carousel-interval'),autoplay=document.getElementById('carousel-autoplay');if(title)title.value=cfg.title||'كتب مميزة';if(interval)interval.value=Math.max(4,Number(cfg.intervalSeconds)||10);if(autoplay)autoplay.checked=cfg.autoplay!==false;const box=document.getElementById('featured-books-admin-list');if(!box)return;const books=Object.values(dbData.books||{}).sort((a,b)=>(Number(a.featuredOrder)||9999)-(Number(b.featuredOrder)||9999)||(a.title||'').localeCompare(b.title||'','ar'));box.innerHTML=books.length?books.map(b=>`<div class="border border-slate-200 rounded-2xl p-3 bg-white flex items-center gap-3"><div class="w-12 h-16 rounded-lg bg-amber-50 overflow-hidden shrink-0">${(b.coverImage||b.coverUrl)?`<img src="${admin.escapeHtml(b.coverImage||b.coverUrl)}" class="w-full h-full object-cover">`:'<div class="w-full h-full flex items-center justify-center text-amber-500"><i class="fas fa-book"></i></div>'}</div><div class="min-w-0 flex-1"><div class="font-black text-sm truncate">${admin.escapeHtml(b.title||'كتاب')}</div><div class="flex items-center gap-2 mt-2"><label class="text-xs font-black"><input type="checkbox" ${b.featured?'checked':''} onchange="admin.quickFeatured('${b.id}',this.checked)"> مميز</label><input type="number" min="1" value="${Number(b.featuredOrder)||1}" onchange="admin.quickFeaturedOrder('${b.id}',this.value)" class="w-20 border rounded-lg px-2 py-1 text-xs font-bold"></div></div></div>`).join(''):'<div class="col-span-full text-center text-slate-400 font-bold py-6">أضف كتبًا أولًا ثم اختر ما يظهر في السلايدر.</div>'; },
+            saveCarouselSettings: async () => { const title=(document.getElementById('carousel-title')?.value||'كتب مميزة').trim()||'كتب مميزة',intervalSeconds=Math.max(4,parseInt(document.getElementById('carousel-interval')?.value||10)),autoplay=!!document.getElementById('carousel-autoplay')?.checked;await dbRef.child('settings/featuredCarousel').set({title,intervalSeconds,autoplay,visibleDesktop:5,updatedAt:Date.now()});admin.notify('تم حفظ إعدادات السلايدر'); },
+            quickFeatured: async (id,v) => { await dbRef.child(`books/${id}/featured`).set(!!v);admin.notify(v?'تم تثبيت الكتاب في السلايدر':'تم إلغاء تثبيت الكتاب'); },
+            quickFeaturedOrder: async (id,v) => { await dbRef.child(`books/${id}/featuredOrder`).set(Math.max(1,parseInt(v||1))); },
             renderBrandingSettings: () => {
                 const b=dbData.settings?.branding||{};
                 const set=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v||''};
-                set('brand-name',b.name||'منصة أستاذ أحمد عيد'); set('brand-description',b.description||'تعلم • اختبر نفسك • تابع تقدمك');
-                set('brand-hero-title',b.heroTitle||'تعلّم بهدوء، راجع بذكاء، واختبر فهمك باستمرار.'); set('brand-hero-description',b.heroDescription||'الدروس والاختبارات مرتبة حسب الأقسام والأبواب.');
+                set('brand-name',b.name||'منصة العلم'); set('brand-description',b.description||'كتب • دروس • اختبارات تثبيت • متابعة التقدم');
+                set('brand-hero-title',b.heroTitle||'رحلة في طلب العلم… كتابًا بعد كتاب، ودرسًا بعد درس.'); set('brand-hero-description',b.heroDescription||'الكتب والدروس مرتبة داخل أقسام علمية، مع اختبارات قصيرة لتثبيت المعلومة.');
                 set('brand-facebook',b.facebook); set('brand-youtube',b.youtube); set('brand-tiktok',b.tiktok); set('brand-whatsapp',b.whatsapp);
             },
             saveBrandingSettings: async () => {
@@ -653,34 +682,18 @@
                 await dbRef.child('settings/branding').set(branding); admin.notify('تم حفظ هوية المنصة وروابط التواصل');
             },
             contentRank: a => a==='hidden'?2:a==='subscriber'?1:0,
-            lessonEffectiveAccess: (lesson, source=publicDbData) => {
-                if(!lesson) return 'hidden'; const ch=source.chapters?.[lesson.chapterId]; const cat=ch?source.categories?.[ch.categoryId]:null;
-                const levels=[cat?.access||'free',ch?.access||'free',lesson.access||'free'];
-                return levels.sort((a,b)=>admin.contentRank(b)-admin.contentRank(a))[0]||'free';
-            },
-            quizEffectiveAccess: (quiz, source=publicDbData) => {
-                if(!quiz) return 'hidden';
-                const levels=[quiz.access||'free'];
-                Object.values(source.lessons||{}).filter(l=>l.quizId===quiz.id).forEach(l=>levels.push(admin.lessonEffectiveAccess(l,source)));
-                return levels.sort((a,b)=>admin.contentRank(b)-admin.contentRank(a))[0]||'free';
-            },
+            maxAccess: levels => (levels||['free']).sort((a,b)=>admin.contentRank(b)-admin.contentRank(a))[0]||'free',
+            bookEffectiveAccess: (book, source=publicDbData) => { if(!book)return 'hidden'; const cat=source.categories?.[book.categoryId]; return admin.maxAccess([cat?.access||'free',book.access||'free']); },
+            chapterEffectiveAccess: (ch, source=publicDbData) => { if(!ch)return 'hidden'; const cat=source.categories?.[ch.categoryId],book=ch.bookId?source.books?.[ch.bookId]:null; return admin.maxAccess([cat?.access||'free',book?admin.bookEffectiveAccess(book,source):'free',ch.access||'free']); },
+            lessonEffectiveAccess: (lesson, source=publicDbData) => { if(!lesson)return 'hidden'; const ch=source.chapters?.[lesson.chapterId]; return admin.maxAccess([ch?admin.chapterEffectiveAccess(ch,source):'free',lesson.access||'free']); },
+            quizEffectiveAccess: (quiz, source=publicDbData) => { if(!quiz)return 'hidden'; const levels=[quiz.access||'free']; Object.values(source.lessons||{}).filter(l=>l.quizId===quiz.id).forEach(l=>levels.push(admin.lessonEffectiveAccess(l,source))); return admin.maxAccess(levels); },
             syncProtectedContent: async (silent=false) => {
-                const pubSnap=await dbRef.once('value'), protSnap=await protectedRef.once('value');
-                const pub=pubSnap.val()||{}, prot=protSnap.val()||{}; pub.lessons||={}; pub.quizzes||={}; pub.categories||={}; pub.chapters||={};
-                const publicUpdates={}, protectedUpdates={};
-                Object.entries(pub.lessons).forEach(([id,l])=>{
-                    const effective=admin.lessonEffectiveAccess(l,pub); publicUpdates[`lessons/${id}/effectiveAccess`]=effective;
-                    const old=prot.lessons?.[id]||{}; const payload={content:l.content ?? old.content ?? '',videoUrl:l.videoUrl ?? old.videoUrl ?? '',bookUrl:l.bookUrl ?? old.bookUrl ?? ''};
-                    const scheduled=Number(l.publishAt||0)>Date.now(); if(effective==='free'&&!scheduled) { publicUpdates[`lessons/${id}/content`]=payload.content; publicUpdates[`lessons/${id}/videoUrl`]=payload.videoUrl||null; publicUpdates[`lessons/${id}/bookUrl`]=payload.bookUrl||null; protectedUpdates[`lessons/${id}`]=null; }
-                    else { protectedUpdates[`lessons/${id}`]=payload; publicUpdates[`lessons/${id}/content`]=null; publicUpdates[`lessons/${id}/videoUrl`]=null; publicUpdates[`lessons/${id}/bookUrl`]=null; }
-                });
-                Object.entries(pub.quizzes).forEach(([id,q])=>{
-                    const effective=admin.quizEffectiveAccess(q,pub); publicUpdates[`quizzes/${id}/effectiveAccess`]=effective; const old=prot.quizzes?.[id]||{}; const questions=q.questions ?? old.questions ?? [];
-                    const scheduled=Number(q.publishAt||0)>Date.now(); if(effective==='free'&&!scheduled) { publicUpdates[`quizzes/${id}/questions`]=questions; protectedUpdates[`quizzes/${id}`]=null; }
-                    else { protectedUpdates[`quizzes/${id}/questions`]=questions; publicUpdates[`quizzes/${id}/questions`]=null; }
-                });
-                await protectedRef.update(protectedUpdates); await dbRef.update(publicUpdates);
-                if(!silent) admin.notify('تم فحص وتأمين المحتوى بنجاح');
+                const pubSnap=await dbRef.once('value'),protSnap=await protectedRef.once('value'); const pub=pubSnap.val()||{},prot=protSnap.val()||{}; pub.lessons||={};pub.quizzes||={};pub.categories||={};pub.books||={};pub.chapters||={}; const publicUpdates={},protectedUpdates={};
+                Object.entries(pub.books).forEach(([id,b])=>publicUpdates[`books/${id}/effectiveAccess`]=admin.bookEffectiveAccess(b,pub));
+                Object.entries(pub.chapters).forEach(([id,ch])=>publicUpdates[`chapters/${id}/effectiveAccess`]=admin.chapterEffectiveAccess(ch,pub));
+                Object.entries(pub.lessons).forEach(([id,l])=>{const effective=admin.lessonEffectiveAccess(l,pub);publicUpdates[`lessons/${id}/effectiveAccess`]=effective;const old=prot.lessons?.[id]||{};const payload={content:l.content??old.content??'',videoUrl:l.videoUrl??old.videoUrl??'',bookUrl:l.bookUrl??old.bookUrl??''};const scheduled=Number(l.publishAt||0)>Date.now();if(effective==='free'&&!scheduled){publicUpdates[`lessons/${id}/content`]=payload.content;publicUpdates[`lessons/${id}/videoUrl`]=payload.videoUrl||null;publicUpdates[`lessons/${id}/bookUrl`]=payload.bookUrl||null;protectedUpdates[`lessons/${id}`]=null;}else{protectedUpdates[`lessons/${id}`]=payload;publicUpdates[`lessons/${id}/content`]=null;publicUpdates[`lessons/${id}/videoUrl`]=null;publicUpdates[`lessons/${id}/bookUrl`]=null;}});
+                Object.entries(pub.quizzes).forEach(([id,q])=>{const effective=admin.quizEffectiveAccess(q,pub);publicUpdates[`quizzes/${id}/effectiveAccess`]=effective;const old=prot.quizzes?.[id]||{};const questions=q.questions??old.questions??[];const scheduled=Number(q.publishAt||0)>Date.now();if(effective==='free'&&!scheduled){publicUpdates[`quizzes/${id}/questions`]=questions;protectedUpdates[`quizzes/${id}`]=null;}else{protectedUpdates[`quizzes/${id}/questions`]=questions;publicUpdates[`quizzes/${id}/questions`]=null;}});
+                await protectedRef.update(protectedUpdates);await dbRef.update(publicUpdates);if(!silent)admin.notify('تم فحص وتأمين المحتوى بنجاح');
             },
             renderAnnouncementSettings: () => {
                 const a = dbData.settings?.announcement || {};
@@ -732,7 +745,7 @@
                 document.getElementById('lesson-preview-modal').classList.remove('hidden');
             },
             exportBackup: async () => {
-                const payload = JSON.stringify({format:'sharia-platform-content-backup',version:7,exportedAt:Date.now(),public:publicDbData,protected:protectedData}, null, 2); const blob=new Blob([payload],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a'),d=new Date(); a.href=url;a.download=`sharia-platform-content-${d.toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);admin.notify('تم تجهيز نسخة المحتوى');admin.logAction('تنزيل نسخة محتوى','بدون بيانات الطلاب');
+                const payload = JSON.stringify({format:'sharia-platform-content-backup',version:8,exportedAt:Date.now(),public:publicDbData,protected:protectedData}, null, 2); const blob=new Blob([payload],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a'),d=new Date(); a.href=url;a.download=`sharia-platform-content-${d.toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);admin.notify('تم تجهيز نسخة المحتوى');admin.logAction('تنزيل نسخة محتوى','بدون بيانات الطلاب');
             },
 
             // إدارة الأذكار
@@ -760,26 +773,13 @@
             },
 
             // القوائم المنسدلة
-            updateDropdowns: () => { 
-                const cats = Object.values(dbData.categories || {}); 
-                const quizzes = Object.values(dbData.quizzes || {}); 
-                const catOpts = cats.length ? cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('') : '<option value="">لا توجد أقسام</option>'; 
-                document.getElementById('chap-cat').innerHTML = catOpts; 
-                document.getElementById('les-cat').innerHTML = catOpts; 
-                
-                const qzOpts = quizzes.length ? quizzes.map(q => `<option value="${q.id}">${q.name}</option>`).join('') : '<option value="">لا يوجد اختبارات</option>'; 
-                document.getElementById('q-target-quiz').innerHTML = qzOpts; 
-                document.getElementById('bulk-target-quiz').innerHTML = qzOpts; 
-                
-                admin.updateChaptersDropdown('les-cat', 'les-chap'); 
-                admin.filterQuizzes('quiz-search-input', 'les-quiz'); 
-                admin.filterQuizzes('edit-quiz-search-input', 'edit-les-quiz'); 
+            updateDropdowns: () => {
+                const cats=Object.values(dbData.categories||{}),quizzes=Object.values(dbData.quizzes||{});const catOpts=cats.length?cats.map(c=>`<option value="${c.id}">${admin.escapeHtml(c.name)}</option>`).join(''):'<option value="">لا توجد أقسام</option>';
+                ['chap-cat','les-cat','book-cat'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML=catOpts;});const editCat=document.getElementById('edit-book-cat');if(editCat)editCat.innerHTML=catOpts;const qzOpts=quizzes.length?quizzes.map(q=>`<option value="${q.id}">${admin.escapeHtml(q.name)}</option>`).join(''):'<option value="">لا يوجد اختبارات</option>';['q-target-quiz','bulk-target-quiz'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML=qzOpts;});admin.updateBooksDropdown('chap-cat','chap-book');admin.updateBooksDropdown('les-cat','les-book');admin.updateChaptersByBook('les-book','les-chap');admin.filterQuizzes('quiz-search-input','les-quiz');admin.filterQuizzes('edit-quiz-search-input','edit-les-quiz');
             },
-            updateChaptersDropdown: (cId, chId) => { 
-                const catId = document.getElementById(cId).value; 
-                const chaps = Object.values(dbData.chapters || {}).filter(c => c.categoryId === catId); 
-                document.getElementById(chId).innerHTML = chaps.length ? chaps.map(c => `<option value="${c.id}">${c.title}</option>`).join('') : '<option value="">الرجاء إضافة باب أولاً</option>'; 
-            },
+            updateBooksDropdown: (catSelectId,bookSelectId,pre=null) => { const catId=document.getElementById(catSelectId)?.value||'';const books=Object.values(dbData.books||{}).filter(b=>b.categoryId===catId);const e=document.getElementById(bookSelectId);if(!e)return;e.innerHTML=books.length?books.sort((a,b)=>(a.title||'').localeCompare(b.title||'','ar')).map(b=>`<option value="${b.id}" ${b.id===pre?'selected':''}>${admin.escapeHtml(b.title)}</option>`).join(''):'<option value="">لا توجد كتب في هذا القسم</option>'; },
+            updateChaptersByBook: (bookSelectId,chapSelectId,pre=null) => { const bookId=document.getElementById(bookSelectId)?.value||'';const chaps=Object.values(dbData.chapters||{}).filter(c=>c.bookId===bookId);const e=document.getElementById(chapSelectId);if(!e)return;e.innerHTML=chaps.length?chaps.map(c=>`<option value="${c.id}" ${c.id===pre?'selected':''}>${admin.escapeHtml(c.title)}</option>`).join(''):'<option value="">الرجاء إضافة باب للكتاب أولًا</option>'; },
+            updateChaptersDropdown: (cId,chId) => { const catId=document.getElementById(cId)?.value||'';const chaps=Object.values(dbData.chapters||{}).filter(c=>c.categoryId===catId);const e=document.getElementById(chId);if(e)e.innerHTML=chaps.length?chaps.map(c=>`<option value="${c.id}">${admin.escapeHtml(c.title)}</option>`).join(''):'<option value="">لا توجد أبواب</option>'; },
             filterQuizzes: (inId, selId, pre = null) => { 
                 const t = (document.getElementById(inId)?.value || '').toLowerCase(); 
                 let h = '<option value="">-- بدون اختبار (شرح فقط) --</option>'; 
@@ -792,19 +792,9 @@
             quizQuestionsRef: (qId) => { const q=dbData.quizzes?.[qId]||{}; const secure=(q.effectiveAccess||q.access||'free')!=='free'||Number(q.publishAt||0)>Date.now(); return secure?protectedRef.child(`quizzes/${qId}/questions`):dbRef.child(`quizzes/${qId}/questions`); },
 
             // إضافة المحتوى
-            addCategory: () => { 
-                const n = document.getElementById('cat-name').value.trim(); 
-                if(!n) return admin.notify('يجب كتابة اسم القسم', 'error'); 
-                const id = 'cat_' + Date.now(); 
-                dbRef.child(`categories/${id}`).set({ id, name: n, access: 'free' }).then(() => { admin.notify('تمت الإضافة'); document.getElementById('cat-name').value = ''; }); 
-            },
-            addChapter: () => { 
-                const c = document.getElementById('chap-cat').value; 
-                const t = document.getElementById('chap-title').value.trim(); 
-                if(!c || !t) return admin.notify('يجب اختيار القسم وكتابة اسم الباب', 'error'); 
-                const id = 'chap_' + Date.now(); 
-                dbRef.child(`chapters/${id}`).set({ id, categoryId: c, title: t, access: 'free' }).then(() => { admin.notify('تمت الإضافة'); document.getElementById('chap-title').value = ''; }); 
-            },
+            addCategory: async () => { const name=(document.getElementById('cat-name')?.value||'').trim(),description=(document.getElementById('cat-description')?.value||'').trim(),access=document.getElementById('cat-access')?.value||'free';if(!name)return admin.notify('اكتب اسم القسم','error');try{const image=await admin.resolveImageValue('cat-image-url','cat-image-file','category'),id='cat_'+Date.now();await dbRef.child(`categories/${id}`).set({id,name,description,image:image||'',access,createdAt:Date.now()});admin.notify('تم إضافة القسم');['cat-name','cat-description','cat-image-url'].forEach(x=>{const e=document.getElementById(x);if(e)e.value=''});const f=document.getElementById('cat-image-file');if(f)f.value='';admin.previewImageChoice('cat-image-url','cat-image-file','cat-image-preview');}catch(e){admin.notify(e.message||'تعذر حفظ الصورة','error');} },
+            addBook: async () => { const categoryId=document.getElementById('book-cat')?.value,title=(document.getElementById('book-title')?.value||'').trim(),author=(document.getElementById('book-author')?.value||'').trim(),description=(document.getElementById('book-description')?.value||'').trim(),sourceUrl=admin.normalizeSocialUrl(document.getElementById('book-source-url')?.value),access=document.getElementById('book-access')?.value||'free',featured=!!document.getElementById('book-featured')?.checked,featuredOrder=Math.max(1,parseInt(document.getElementById('book-featured-order')?.value||1));if(!categoryId||!title)return admin.notify('اختر القسم واكتب اسم الكتاب','error');try{const cover=await admin.resolveImageValue('book-cover-url','book-cover-file','book'),id='book_'+Date.now();await dbRef.child(`books/${id}`).set({id,categoryId,title,author,description,coverImage:cover.startsWith('data:')?cover:'',coverUrl:cover&&!cover.startsWith('data:')?cover:'',sourceUrl,access,effectiveAccess:access,featured,featuredOrder,createdAt:Date.now()});await admin.syncProtectedContent(true);admin.notify('تم إضافة الكتاب');['book-title','book-author','book-description','book-source-url','book-cover-url'].forEach(x=>{const e=document.getElementById(x);if(e)e.value=''});const f=document.getElementById('book-cover-file');if(f)f.value='';admin.previewImageChoice('book-cover-url','book-cover-file','book-cover-preview');}catch(e){admin.notify(e.message||'تعذر حفظ الكتاب','error');} },
+            addChapter: async () => { const categoryId=document.getElementById('chap-cat')?.value,bookId=document.getElementById('chap-book')?.value,title=(document.getElementById('chap-title')?.value||'').trim(),access=document.getElementById('chap-access')?.value||'free';if(!categoryId||!bookId||!title)return admin.notify('اختر القسم والكتاب واكتب اسم الباب','error');const id='chap_'+Date.now();await dbRef.child(`chapters/${id}`).set({id,categoryId,bookId,title,access,createdAt:Date.now()});await admin.syncProtectedContent(true);admin.notify('تم إضافة الباب داخل الكتاب');document.getElementById('chap-title').value=''; },
             addLesson: async () => { 
                 const c=document.getElementById('les-chap').value,t=document.getElementById('les-title').value.trim(),text=document.getElementById('les-content').value.trim(),qId=document.getElementById('les-quiz').value,access=document.getElementById('les-access')?.value||'free'; const publishValue=document.getElementById('les-publish-at')?.value||''; const publishAt=publishValue?new Date(publishValue).getTime():null;
                 const videoUrl=admin.normalizeSocialUrl(document.getElementById('les-video-url')?.value),videoPosition=document.getElementById('les-video-position')?.value||'top',bookUrl=admin.normalizeSocialUrl(document.getElementById('les-book-url')?.value),bookTitle=(document.getElementById('les-book-title')?.value||'').trim();
@@ -844,49 +834,15 @@
             },
 
             // --- الحذف المتسلسل للأقسام ---
-            deleteCategory: (catId) => {
-                if(confirm('تنبيه هام جداً: هل أنت متأكد من حذف هذا القسم؟ سيتم حذف جميع الأبواب والدروس التابعة له نهائياً ولا يمكن التراجع عن ذلك!')) {
-                    const updates = {};
-                    updates[`categories/${catId}`] = null; // حذف القسم نفسه
-                    
-                    Object.values(dbData.chapters || {}).forEach(chap => {
-                        if (chap.categoryId === catId) {
-                            updates[`chapters/${chap.id}`] = null; // حذف الباب التابع
-                            
-                            Object.values(dbData.lessons || {}).forEach(les => {
-                                if (les.chapterId === chap.id) {
-                                    updates[`lessons/${les.id}`] = null; // حذف الدرس التابع
-                                }
-                            });
-                        }
-                    });
-                    
-                    const protectedUpdates={}; Object.values(dbData.chapters||{}).filter(ch=>ch.categoryId===catId).forEach(ch=>Object.values(dbData.lessons||{}).filter(l=>l.chapterId===ch.id).forEach(l=>protectedUpdates[`lessons/${l.id}`]=null));
-                    Promise.all([dbRef.update(updates),protectedRef.update(protectedUpdates)]).then(() => { admin.notify('تم حذف القسم وجميع ملحقاته بنجاح'); }).catch(err => { admin.notify('حدث خطأ أثناء الحذف', 'error'); });
-                }
-            },
+            deleteCategory: async (catId) => { if(!confirm('سيتم حذف القسم وكل الكتب والأبواب والدروس التابعة له. هل أنت متأكد؟'))return;const updates={},pupdates={};updates[`categories/${catId}`]=null;const bookIds=new Set(Object.values(dbData.books||{}).filter(b=>b.categoryId===catId).map(b=>b.id));bookIds.forEach(id=>updates[`books/${id}`]=null);const chapIds=new Set(Object.values(dbData.chapters||{}).filter(ch=>ch.categoryId===catId||bookIds.has(ch.bookId)).map(ch=>ch.id));chapIds.forEach(id=>updates[`chapters/${id}`]=null);Object.values(dbData.lessons||{}).filter(l=>chapIds.has(l.chapterId)).forEach(l=>{updates[`lessons/${l.id}`]=null;pupdates[`lessons/${l.id}`]=null;});await Promise.all([dbRef.update(updates),protectedRef.update(pupdates)]);admin.notify('تم حذف القسم ومحتوياته'); },
+            deleteBook: async (bookId) => { const b=dbData.books?.[bookId];if(!b||!confirm(`حذف كتاب «${b.title}» وكل أبوابه ودروسه؟`))return;const updates={[`books/${bookId}`]:null},pupdates={};const chapIds=new Set(Object.values(dbData.chapters||{}).filter(ch=>ch.bookId===bookId).map(ch=>ch.id));chapIds.forEach(id=>updates[`chapters/${id}`]=null);Object.values(dbData.lessons||{}).filter(l=>chapIds.has(l.chapterId)).forEach(l=>{updates[`lessons/${l.id}`]=null;pupdates[`lessons/${l.id}`]=null;});await Promise.all([dbRef.update(updates),protectedRef.update(pupdates)]);admin.notify('تم حذف الكتاب ومحتوياته'); },
+            deleteChapter: async (chapId) => { const ch=dbData.chapters?.[chapId];if(!ch||!confirm(`حذف الباب «${ch.title}» ودروسه؟`))return;const updates={[`chapters/${chapId}`]:null},pupdates={};Object.values(dbData.lessons||{}).filter(l=>l.chapterId===chapId).forEach(l=>{updates[`lessons/${l.id}`]=null;pupdates[`lessons/${l.id}`]=null;});await Promise.all([dbRef.update(updates),protectedRef.update(pupdates)]);admin.notify('تم حذف الباب ودروسه'); },
 
             // --- دوال نقل ونسخ الدرس الجديدة ---
-            openMoveCopyModal: (lesId) => {
-                document.getElementById('mc-les-id').value = lesId;
-                const cats = Object.values(dbData.categories || {});
-                document.getElementById('mc-cat').innerHTML = cats.length ? cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('') : '<option value="">لا توجد أقسام</option>';
-                admin.mcUpdateChapters(); 
-                document.getElementById('move-copy-modal').classList.remove('hidden');
-            },
-            
-            mcUpdateChapters: () => {
-                const catId = document.getElementById('mc-cat').value;
-                const chaps = Object.values(dbData.chapters || {}).filter(c => c.categoryId === catId);
-                document.getElementById('mc-chap').innerHTML = chaps.length ? chaps.map(c => `<option value="${c.id}">${c.title}</option>`).join('') : '<option value="">عفواً، لا يوجد أبواب في هذا القسم</option>';
-            },
-
-            executeMoveCopy: async (action) => {
-                const lesId=document.getElementById('mc-les-id').value,newChapId=document.getElementById('mc-chap').value;if(!newChapId)return admin.notify('يجب اختيار الباب المستهدف أولاً!','error');
-                if(action==='move'){await dbRef.child(`lessons/${lesId}/chapterId`).set(newChapId);await admin.syncProtectedContent(true);admin.notify('تم نقل الدرس وتأمينه حسب الباب الجديد');admin.closeModal('move-copy-modal');return;}
-                const oldLes=dbData.lessons[lesId];if(!oldLes)return;const newLesId='les_'+Date.now();const payload={content:oldLes.content||'',videoUrl:oldLes.videoUrl||'',bookUrl:oldLes.bookUrl||''};const meta={...oldLes,id:newLesId,chapterId:newChapId,title:oldLes.title+' (نسخة)'};delete meta.content;delete meta.videoUrl;delete meta.bookUrl;delete meta.effectiveAccess;
-                await dbRef.child(`lessons/${newLesId}`).set(meta);await protectedRef.child(`lessons/${newLesId}`).set(payload);await admin.syncProtectedContent(true);admin.notify('تم نسخ الدرس بأمان إلى الباب الجديد');admin.closeModal('move-copy-modal');
-            },
+            openMoveCopyModal: (lesId) => { document.getElementById('mc-les-id').value=lesId;const cats=Object.values(dbData.categories||{});document.getElementById('mc-cat').innerHTML=cats.length?cats.map(c=>`<option value="${c.id}">${admin.escapeHtml(c.name)}</option>`).join(''):'<option value="">لا توجد أقسام</option>';admin.mcUpdateBooks();document.getElementById('move-copy-modal').classList.remove('hidden'); },
+            mcUpdateBooks: () => { const catId=document.getElementById('mc-cat')?.value||'',books=Object.values(dbData.books||{}).filter(b=>b.categoryId===catId);document.getElementById('mc-book').innerHTML=books.length?books.map(b=>`<option value="${b.id}">${admin.escapeHtml(b.title)}</option>`).join(''):'<option value="">لا توجد كتب</option>';admin.mcUpdateChapters(); },
+            mcUpdateChapters: () => { const bookId=document.getElementById('mc-book')?.value||'',chaps=Object.values(dbData.chapters||{}).filter(c=>c.bookId===bookId);document.getElementById('mc-chap').innerHTML=chaps.length?chaps.map(c=>`<option value="${c.id}">${admin.escapeHtml(c.title)}</option>`).join(''):'<option value="">لا توجد أبواب</option>'; },
+            executeMoveCopy: async (action) => { const lesId=document.getElementById('mc-les-id').value,newChapId=document.getElementById('mc-chap').value;if(!newChapId)return admin.notify('اختر الباب المستهدف','error');if(action==='move'){await dbRef.child(`lessons/${lesId}/chapterId`).set(newChapId);await admin.syncProtectedContent(true);admin.notify('تم نقل الدرس');admin.closeModal('move-copy-modal');return;}const oldLes=dbData.lessons[lesId];if(!oldLes)return;const newLesId='les_'+Date.now(),payload={content:oldLes.content||'',videoUrl:oldLes.videoUrl||'',bookUrl:oldLes.bookUrl||''},meta={...oldLes,id:newLesId,chapterId:newChapId,title:oldLes.title+' (نسخة)'};['content','videoUrl','bookUrl','effectiveAccess'].forEach(k=>delete meta[k]);await dbRef.child(`lessons/${newLesId}`).set(meta);await protectedRef.child(`lessons/${newLesId}`).set(payload);await admin.syncProtectedContent(true);admin.notify('تم نسخ الدرس');admin.closeModal('move-copy-modal'); },
 
             // --- دوال البحث وتوليد شجرة الإدارة ---
             globalSearch: () => {
@@ -895,117 +851,17 @@
             },
 
             renderManagementTree: (searchQuery = '') => {
-                const tree = document.getElementById('management-tree');
-                let html = '';
-                const q = searchQuery;
-
-                // القسم الأول: الأقسام والأبواب والدروس
-                html += `<h4 class="font-black text-2xl mb-4 text-islamic-800 border-b pb-2"><i class="fas fa-layer-group"></i> الأقسام والمحتوى العلمي</h4>`;
-                
-                Object.values(dbData.categories || {}).forEach(cat => {
-                    let catMatch = cat.name.toLowerCase().includes(q);
-                    let chaps = Object.values(dbData.chapters || {}).filter(c => c.categoryId === cat.id);
-                    
-                    let validChaps = chaps.filter(chap => {
-                        let chapMatch = chap.title.toLowerCase().includes(q);
-                        let validLessons = Object.values(dbData.lessons || {}).filter(l => l.chapterId === chap.id && l.title.toLowerCase().includes(q));
-                        return (q && !catMatch && !chapMatch && validLessons.length === 0) ? false : true;
-                    });
-
-                    if(q && !catMatch && validChaps.length === 0) return; 
-
-                    html += `<details ${q ? 'open' : ''}><summary><div class="flex items-center gap-2"><i class="fas fa-book text-islamic-600"></i> ${cat.name}</div><div class="flex items-center gap-2">
-                        ${admin.accessSelect('category',cat.id,cat.access)}<button onclick="event.preventDefault(); admin.openEditCat('${cat.id}')" class="text-xs text-blue-500 hover:text-blue-700 mx-1" title="تعديل اسم القسم"><i class="fas fa-pen"></i></button>
-                        <button onclick="event.preventDefault(); admin.deleteCategory('${cat.id}')" class="text-xs text-red-500 hover:text-red-700 mx-1" title="حذف القسم ومحتوياته بالكامل"><i class="fas fa-trash"></i></button>
-                        <i class="fas fa-chevron-down arrow-icon text-slate-400"></i></div></summary><div class="content space-y-3 bg-slate-50">`;
-                    
-                    validChaps.forEach(chap => {
-                        let chapMatch = chap.title.toLowerCase().includes(q);
-                        let lessons = Object.values(dbData.lessons || {}).filter(l => l.chapterId === chap.id);
-                        let validLessons = lessons.filter(l => !q || catMatch || chapMatch || l.title.toLowerCase().includes(q));
-
-                        html += `<details ${q ? 'open' : ''} class="ml-4 border-r-4 border-blue-400"><summary class="bg-white"><div class="flex items-center gap-2 text-blue-800"><i class="fas fa-folder"></i> ${chap.title}</div><div class="flex items-center gap-2">${admin.accessSelect('chapter',chap.id,chap.access)}<button onclick="event.preventDefault(); admin.openEditChap('${chap.id}')" class="text-xs text-blue-500 hover:text-blue-700 mx-2" title="تعديل اسم الباب"><i class="fas fa-pen"></i></button><i class="fas fa-chevron-down arrow-icon text-slate-400"></i></div></summary><div class="content bg-white space-y-2">`;
-                        
-                        if(validLessons.length === 0) html += `<p class="text-xs text-slate-400 text-center">لا يوجد محتوى في هذا الباب</p>`;
-                        validLessons.forEach(les => {
-                            const isChecked = selLessons.has(les.id) ? 'checked' : '';
-                            html += `<div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-200">
-                                <div class="flex items-center gap-3">
-                                    <input type="checkbox" ${isChecked} class="w-4 h-4 text-red-600 rounded cursor-pointer" onchange="admin.toggleSelection('lesson', '${les.id}', this.checked)">
-                                    <span class="font-bold text-sm text-slate-700">${les.title}</span>${admin.accessSelect('lesson',les.id,les.access)}
-                                </div>
-                                <div class="flex gap-2">
-                                    <button onclick="admin.openMoveCopyModal('${les.id}')" class="text-xs text-purple-600 bg-purple-50 px-3 py-1 rounded-lg hover:bg-purple-100 font-bold transition-colors shadow-sm border border-purple-100" title="نقل أو نسخ إلى باب آخر"><i class="fas fa-exchange-alt"></i> نقل/نسخ</button>
-                                    <button onclick="admin.openEditLesson('${les.id}')" class="text-xs text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg hover:bg-indigo-100 font-bold transition-colors shadow-sm border border-indigo-100" title="تعديل محتوى الدرس وارتباطاته"><i class="fas fa-edit"></i> تعديل</button>
-                                </div>
-                            </div>`;
-                        });
-                        html += `</div></details>`;
-                    });
-                    html += `</div></details>`;
+                const tree=document.getElementById('management-tree');if(!tree)return;const q=(searchQuery||'').toLowerCase();let html=`<h4 class="font-black text-2xl mb-4 text-emerald-900 border-b pb-2"><i class="fas fa-book-open ml-2"></i>المكتبة العلمية: الأقسام ← الكتب ← الأبواب ← الدروس</h4>`;
+                const lessonsAll=Object.values(dbData.lessons||{}),chapsAll=Object.values(dbData.chapters||{}),booksAll=Object.values(dbData.books||{});
+                Object.values(dbData.categories||{}).forEach(cat=>{const books=booksAll.filter(b=>b.categoryId===cat.id),legacy=chapsAll.filter(ch=>ch.categoryId===cat.id&&!ch.bookId);const catText=`${cat.name||''} ${cat.description||''}`.toLowerCase();const descendantMatch=books.some(b=>`${b.title||''} ${b.author||''}`.toLowerCase().includes(q)||chapsAll.some(ch=>ch.bookId===b.id&&((ch.title||'').toLowerCase().includes(q)||lessonsAll.some(l=>l.chapterId===ch.id&&(l.title||'').toLowerCase().includes(q)))))||legacy.some(ch=>(ch.title||'').toLowerCase().includes(q)||lessonsAll.some(l=>l.chapterId===ch.id&&(l.title||'').toLowerCase().includes(q)));if(q&&!catText.includes(q)&&!descendantMatch)return;
+                    html+=`<details ${q?'open':''} class="border border-emerald-200 rounded-2xl overflow-hidden"><summary class="bg-emerald-50 p-4"><div class="flex items-center gap-3 min-w-0"><span class="w-10 h-10 rounded-xl bg-white overflow-hidden flex items-center justify-center text-emerald-600 shrink-0">${cat.image?`<img src="${admin.escapeHtml(cat.image)}" class="w-full h-full object-cover">`:'<i class="fas fa-layer-group"></i>'}</span><div><div class="font-black text-emerald-950">${admin.escapeHtml(cat.name||'قسم')}</div><div class="text-[10px] text-slate-400 font-bold">${books.length} كتاب • ${legacy.length?'يوجد محتوى قديم':''}</div></div></div><div class="flex items-center gap-2">${admin.accessSelect('category',cat.id,cat.access)}<button onclick="event.preventDefault();admin.openEditCat('${cat.id}')" class="text-blue-600"><i class="fas fa-pen"></i></button><button onclick="event.preventDefault();admin.deleteCategory('${cat.id}')" class="text-red-500"><i class="fas fa-trash"></i></button><i class="fas fa-chevron-down arrow-icon"></i></div></summary><div class="content space-y-3 bg-slate-50">`;
+                    books.sort((a,b)=>(a.title||'').localeCompare(b.title||'','ar')).forEach(book=>{const chaps=chapsAll.filter(ch=>ch.bookId===book.id);const bmatch=!q||`${book.title||''} ${book.author||''}`.toLowerCase().includes(q)||chaps.some(ch=>(ch.title||'').toLowerCase().includes(q)||lessonsAll.some(l=>l.chapterId===ch.id&&(l.title||'').toLowerCase().includes(q)));if(!bmatch)return;html+=`<details ${q?'open':''} class="border-r-4 border-amber-400 bg-white rounded-xl overflow-hidden"><summary class="bg-amber-50"><div class="flex items-center gap-3"><span class="w-9 h-12 rounded bg-white overflow-hidden flex items-center justify-center text-amber-600">${(book.coverImage||book.coverUrl)?`<img src="${admin.escapeHtml(book.coverImage||book.coverUrl)}" class="w-full h-full object-cover">`:'<i class="fas fa-book"></i>'}</span><div><div class="font-black text-amber-900">${admin.escapeHtml(book.title||'كتاب')}</div><div class="text-[10px] font-bold text-slate-400">${admin.escapeHtml(book.author||'')} • ${chaps.length} باب ${book.featured?'• ⭐ مميز':''}</div></div></div><div class="flex items-center gap-2">${admin.accessSelect('book',book.id,book.access)}<button onclick="event.preventDefault();admin.openEditBook('${book.id}')" class="text-blue-600"><i class="fas fa-pen"></i></button><button onclick="event.preventDefault();admin.deleteBook('${book.id}')" class="text-red-500"><i class="fas fa-trash"></i></button><i class="fas fa-chevron-down arrow-icon"></i></div></summary><div class="content space-y-2">`;
+                        chaps.forEach(ch=>{const lessons=lessonsAll.filter(l=>l.chapterId===ch.id);if(q&&!(ch.title||'').toLowerCase().includes(q)&&!lessons.some(l=>(l.title||'').toLowerCase().includes(q)))return;html+=`<details ${q?'open':''} class="border-r-4 border-blue-400 rounded-xl"><summary class="bg-blue-50"><div class="font-black text-blue-900"><i class="fas fa-folder ml-2"></i>${admin.escapeHtml(ch.title||'باب')}</div><div class="flex items-center gap-2">${admin.accessSelect('chapter',ch.id,ch.access)}<button onclick="event.preventDefault();admin.openEditChap('${ch.id}')" class="text-blue-600"><i class="fas fa-pen"></i></button><button onclick="event.preventDefault();admin.deleteChapter('${ch.id}')" class="text-red-500"><i class="fas fa-trash"></i></button><i class="fas fa-chevron-down arrow-icon"></i></div></summary><div class="content space-y-2 bg-white">`;const valid=lessons.filter(l=>!q||(l.title||'').toLowerCase().includes(q)||(ch.title||'').toLowerCase().includes(q)||(book.title||'').toLowerCase().includes(q));if(!valid.length)html+='<p class="text-xs text-slate-400 text-center py-2">لا توجد دروس</p>';valid.forEach(les=>{html+=`<div class="flex flex-col md:flex-row md:items-center gap-3 justify-between bg-slate-50 p-3 rounded-xl border"><div class="flex items-center gap-3"><input type="checkbox" ${selLessons.has(les.id)?'checked':''} onchange="admin.toggleSelection('lesson','${les.id}',this.checked)"><div><div class="font-black text-sm">${admin.escapeHtml(les.title||'درس')}</div><div class="text-[10px] text-slate-400 font-bold">${les.quizId?'اختبار مرتبط':'بدون اختبار'}</div></div></div><div class="flex flex-wrap gap-2">${admin.accessSelect('lesson',les.id,les.access)}<button onclick="admin.openMoveCopyModal('${les.id}')" class="text-xs bg-purple-50 text-purple-700 px-3 py-1 rounded-lg font-bold"><i class="fas fa-exchange-alt"></i> نقل/نسخ</button><button onclick="admin.openEditLesson('${les.id}')" class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg font-bold"><i class="fas fa-edit"></i> تعديل</button></div></div>`;});html+='</div></details>';});html+='</div></details>';});
+                    if(legacy.length){html+='<div class="mt-3 p-3 rounded-xl border border-dashed border-slate-300 bg-white"><div class="font-black text-slate-600 mb-2">محتوى قديم غير مربوط بكتاب</div>';legacy.forEach(ch=>html+=`<button onclick="admin.openEditChap('${ch.id}')" class="block w-full text-right text-sm font-bold p-2 hover:bg-slate-50 rounded">${admin.escapeHtml(ch.title||'باب')} — اربطه بكتاب من التعديل</button>`);html+='</div>';}
+                    html+='</div></details>';
                 });
-
-                // القسم الثاني: بنك الاختبارات والأسئلة
-                html += `
-                <details ${q ? 'open' : ''} class="mt-10 border-rose-300 shadow-sm bg-white rounded-2xl overflow-hidden">
-                    <summary class="bg-rose-100 text-rose-900 text-xl font-black p-4 hover:bg-rose-200 transition-colors">
-                        <div class="flex items-center gap-2"><i class="fas fa-clipboard-list text-rose-600 text-2xl"></i> بنك الاختبارات والأسئلة (اضغط للفتح)</div>
-                        <i class="fas fa-chevron-down arrow-icon text-rose-500"></i>
-                    </summary>
-                    <div class="content p-4 space-y-3 bg-rose-50/50">`;
-
-                const quizzes = Object.values(dbData.quizzes || {});
-                let quizCount = 0;
-                
-                quizzes.forEach(quiz => {
-                    let qs = quiz.questions || [];
-                    let quizMatch = quiz.name.toLowerCase().includes(q);
-                    
-                    let validQs = qs.map((question, idx) => ({question, idx})).filter(item => {
-                        if(!item.question) return false;
-                        return !q || quizMatch || item.question.text.toLowerCase().includes(q);
-                    });
-
-                    if(q && !quizMatch && validQs.length === 0) return;
-
-                    quizCount++;
-                    const isChecked = selQuizzes.has(quiz.id) ? 'checked' : '';
-                    
-                    html += `
-                    <details ${q ? 'open' : ''} class="border-rose-200 bg-white shadow-sm">
-                        <summary class="bg-rose-50 text-rose-900 border-b border-rose-100">
-                            <div class="flex items-center gap-4">
-                                <input type="checkbox" ${isChecked} class="w-5 h-5 text-red-600 rounded cursor-pointer" onchange="admin.toggleSelection('quiz', '${quiz.id}', this.checked)">
-                                <span class="font-bold">${quiz.name} <span class="text-xs bg-white px-2 py-0.5 rounded-full ml-2 shadow-sm">${qs.length} سؤال</span></span>
-                                ${admin.accessSelect('quiz',quiz.id,quiz.access)}<button onclick="event.preventDefault(); admin.openBulkEditQuiz('${quiz.id}')" class="text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-3 py-1 rounded-lg mx-2 font-black shadow-sm transition border border-emerald-200" title="تعديل الأسئلة بالكود البرمجي"><i class="fas fa-file-code"></i> تعديل (JSON)</button>
-                                <button onclick="event.preventDefault(); admin.openEditQuiz('${quiz.id}')" class="text-xs text-blue-500 hover:text-blue-700 mx-2" title="تغيير اسم الاختبار"><i class="fas fa-pen"></i> الاسم</button>
-                            </div>
-                            <i class="fas fa-chevron-down arrow-icon text-rose-400"></i>
-                        </summary>
-                        <div class="content space-y-2 bg-white">`;
-                    
-                    if(validQs.length === 0) html += `<p class="text-xs text-slate-400 text-center">لا توجد أسئلة في هذا الاختبار</p>`;
-                    validQs.forEach(item => {
-                        const qObj = item.question; const origIdx = item.idx;
-                        html += `<div class="flex justify-between items-start bg-slate-50 p-3 rounded-lg border border-slate-100">
-                                    <div class="flex-1 pr-2">
-                                        <span class="font-bold text-sm block mb-1">${origIdx+1}. ${qObj.text}</span>
-                                        <span class="text-xs text-green-700 font-bold bg-green-100 px-2 py-0.5 rounded shadow-sm border border-green-200">الإجابة: ${qObj.options[qObj.correctIndex]}</span>
-                                    </div>
-                                    <div class="flex gap-2 shrink-0">
-                                        <button onclick="admin.openEditQuestion('${quiz.id}', ${origIdx})" class="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded hover:bg-orange-100 border border-orange-200"><i class="fas fa-edit"></i></button>
-                                        <button onclick="admin.deleteQuestion('${quiz.id}', ${origIdx})" class="text-xs text-red-600 bg-red-50 px-2 py-1 rounded hover:bg-red-100 border border-red-200"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </div>`;
-                    });
-                    html += `</div></details>`;
-                });
-
-                if(quizCount === 0) html += `<p class="text-slate-500 font-bold text-center py-4">لا توجد اختبارات مطابقة لبحثك</p>`;
-                html += `</div></details>`;
-
-                tree.innerHTML = html;
-                admin.updateBulkActionUI();
+                html+=`<details ${q?'open':''} class="mt-8 border-rose-300 bg-white rounded-2xl overflow-hidden"><summary class="bg-rose-100 text-rose-900 p-4"><div class="font-black text-xl"><i class="fas fa-clipboard-list ml-2"></i>بنك الاختبارات والأسئلة</div><i class="fas fa-chevron-down arrow-icon"></i></summary><div class="content p-4 space-y-3">`;
+                Object.values(dbData.quizzes||{}).forEach(quiz=>{const qs=quiz.questions||[],qmatch=(quiz.name||'').toLowerCase().includes(q),validQs=qs.map((question,idx)=>({question,idx})).filter(x=>x.question&&(!q||qmatch||(x.question.text||'').toLowerCase().includes(q)));if(q&&!qmatch&&!validQs.length)return;html+=`<details ${q?'open':''} class="border border-rose-200 rounded-xl"><summary class="bg-rose-50"><div class="flex items-center gap-3"><input type="checkbox" ${selQuizzes.has(quiz.id)?'checked':''} onchange="admin.toggleSelection('quiz','${quiz.id}',this.checked)"><span class="font-black">${admin.escapeHtml(quiz.name||'اختبار')} <small>${qs.length} سؤال</small></span></div><div class="flex gap-2">${admin.accessSelect('quiz',quiz.id,quiz.access)}<button onclick="event.preventDefault();admin.openBulkEditQuiz('${quiz.id}')" class="text-emerald-700"><i class="fas fa-file-code"></i></button><button onclick="event.preventDefault();admin.openEditQuiz('${quiz.id}')" class="text-blue-600"><i class="fas fa-pen"></i></button><i class="fas fa-chevron-down arrow-icon"></i></div></summary><div class="content space-y-2">`;validQs.forEach(x=>html+=`<div class="flex justify-between gap-3 p-3 bg-slate-50 rounded-lg"><div class="text-sm font-bold">${x.idx+1}. ${admin.escapeHtml(x.question.text||'')}<div class="text-xs text-green-700 mt-1">الإجابة: ${admin.escapeHtml(x.question.options?.[x.question.correctIndex]||'')}</div></div><div class="flex gap-2"><button onclick="admin.openEditQuestion('${quiz.id}',${x.idx})" class="text-orange-600"><i class="fas fa-edit"></i></button><button onclick="admin.deleteQuestion('${quiz.id}',${x.idx})" class="text-red-600"><i class="fas fa-trash"></i></button></div></div>`);html+='</div></details>';});html+='</div></details>';tree.innerHTML=html;admin.updateBulkActionUI();
             },
 
             // --- دوال التعديل والحفظ ---
@@ -1024,28 +880,14 @@
                 } catch(e) { admin.notify('خطأ في صيغة JSON المستعملة', 'error'); } 
             },
 
-            openEditCat: (id) => { 
-                document.getElementById('edit-cat-id').value = id; 
-                document.getElementById('edit-cat-name').value = dbData.categories[id].name; 
-                document.getElementById('edit-cat-modal').classList.remove('hidden'); 
-            },
-            saveCatEdit: () => { 
-                const id = document.getElementById('edit-cat-id').value; 
-                const name = document.getElementById('edit-cat-name').value.trim(); 
-                if(name) dbRef.child(`categories/${id}/name`).set(name).then(() => { admin.notify('تم تحديث اسم القسم'); admin.closeModal('edit-cat-modal'); }); 
-            },
-            
-            openEditChap: (id) => { 
-                document.getElementById('edit-chap-id').value = id; 
-                document.getElementById('edit-chap-title').value = dbData.chapters[id].title; 
-                document.getElementById('edit-chap-modal').classList.remove('hidden'); 
-            },
-            saveChapEdit: () => { 
-                const id = document.getElementById('edit-chap-id').value; 
-                const title = document.getElementById('edit-chap-title').value.trim(); 
-                if(title) dbRef.child(`chapters/${id}/title`).set(title).then(() => { admin.notify('تم تحديث اسم الباب'); admin.closeModal('edit-chap-modal'); }); 
-            },
-            
+            openEditCat: (id) => { const c=dbData.categories[id];if(!c)return;document.getElementById('edit-cat-id').value=id;document.getElementById('edit-cat-name').value=c.name||'';document.getElementById('edit-cat-description').value=c.description||'';document.getElementById('edit-cat-image-url').value=(c.image&&c.image.startsWith('http'))?c.image:'';document.getElementById('edit-cat-image-file').value='';const box=document.getElementById('edit-cat-image-preview');box.innerHTML=c.image?`<img src="${admin.escapeHtml(c.image)}" class="w-full h-full object-cover">`:'<i class="fas fa-image text-3xl text-slate-300"></i>';document.getElementById('edit-cat-modal').classList.remove('hidden'); },
+            saveCatEdit: async () => { const id=document.getElementById('edit-cat-id').value,name=document.getElementById('edit-cat-name').value.trim(),description=document.getElementById('edit-cat-description').value.trim();if(!name)return admin.notify('اكتب اسم القسم','error');try{let image=await admin.resolveImageValue('edit-cat-image-url','edit-cat-image-file','category');if(!image)image=dbData.categories[id]?.image||'';await dbRef.child(`categories/${id}`).update({name,description,image,updatedAt:Date.now()});admin.notify('تم تحديث القسم');admin.closeModal('edit-cat-modal');}catch(e){admin.notify(e.message||'تعذر حفظ الصورة','error');} },
+            openEditBook: (id) => { const b=dbData.books[id];if(!b)return;document.getElementById('edit-book-id').value=id;const cats=Object.values(dbData.categories||{});document.getElementById('edit-book-cat').innerHTML=cats.map(c=>`<option value="${c.id}" ${c.id===b.categoryId?'selected':''}>${admin.escapeHtml(c.name)}</option>`).join('');document.getElementById('edit-book-title').value=b.title||'';document.getElementById('edit-book-author').value=b.author||'';document.getElementById('edit-book-description').value=b.description||'';document.getElementById('edit-book-source-url').value=b.sourceUrl||'';document.getElementById('edit-book-access').value=b.access||'free';document.getElementById('edit-book-featured').checked=!!b.featured;document.getElementById('edit-book-featured-order').value=Number(b.featuredOrder)||1;document.getElementById('edit-book-cover-url').value=b.coverUrl||'';document.getElementById('edit-book-cover-file').value='';const box=document.getElementById('edit-book-cover-preview'),src=b.coverImage||b.coverUrl||'';box.innerHTML=src?`<img src="${admin.escapeHtml(src)}" class="w-full h-full object-cover">`:'<i class="fas fa-book text-4xl text-amber-300"></i>';document.getElementById('edit-book-modal').classList.remove('hidden'); },
+            saveBookEdit: async () => { const id=document.getElementById('edit-book-id').value,categoryId=document.getElementById('edit-book-cat').value,title=document.getElementById('edit-book-title').value.trim(),author=document.getElementById('edit-book-author').value.trim(),description=document.getElementById('edit-book-description').value.trim(),sourceUrl=admin.normalizeSocialUrl(document.getElementById('edit-book-source-url').value),access=document.getElementById('edit-book-access').value||'free',featured=!!document.getElementById('edit-book-featured').checked,featuredOrder=Math.max(1,parseInt(document.getElementById('edit-book-featured-order').value||1));if(!categoryId||!title)return admin.notify('استكمل بيانات الكتاب','error');try{let cover=await admin.resolveImageValue('edit-book-cover-url','edit-book-cover-file','book');const old=dbData.books[id]||{};if(!cover)cover=old.coverImage||old.coverUrl||'';await dbRef.child(`books/${id}`).update({categoryId,title,author,description,sourceUrl,access,featured,featuredOrder,coverImage:cover.startsWith('data:')?cover:'',coverUrl:cover&&!cover.startsWith('data:')?cover:'',updatedAt:Date.now()});Object.values(dbData.chapters||{}).filter(ch=>ch.bookId===id).forEach(ch=>dbRef.child(`chapters/${ch.id}/categoryId`).set(categoryId));await admin.syncProtectedContent(true);admin.notify('تم تحديث الكتاب');admin.closeModal('edit-book-modal');}catch(e){admin.notify(e.message||'تعذر حفظ الكتاب','error');} },
+
+            openEditChap: (id) => { const ch=dbData.chapters[id];if(!ch)return;document.getElementById('edit-chap-id').value=id;document.getElementById('edit-chap-title').value=ch.title||'';const cats=Object.values(dbData.categories||{});document.getElementById('edit-chap-cat').innerHTML=cats.map(c=>`<option value="${c.id}" ${c.id===ch.categoryId?'selected':''}>${admin.escapeHtml(c.name)}</option>`).join('');admin.updateBooksDropdown('edit-chap-cat','edit-chap-book',ch.bookId||null);document.getElementById('edit-chap-modal').classList.remove('hidden'); },
+            saveChapEdit: async () => { const id=document.getElementById('edit-chap-id').value,title=document.getElementById('edit-chap-title').value.trim(),categoryId=document.getElementById('edit-chap-cat').value,bookId=document.getElementById('edit-chap-book').value;if(!title||!categoryId)return admin.notify('استكمل بيانات الباب','error');await dbRef.child(`chapters/${id}`).update({title,categoryId,bookId:bookId||null,updatedAt:Date.now()});await admin.syncProtectedContent(true);admin.notify('تم تحديث الباب');admin.closeModal('edit-chap-modal'); },
+
             openEditLesson: (id) => { 
                 const les = dbData.lessons[id]; 
                 document.getElementById('edit-les-id').value = id; 
