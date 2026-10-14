@@ -125,6 +125,10 @@
         <button data-tab="add-quizzes" onclick="admin.switchTab('add-quizzes', this)" class="tab-btn"><i class="fas fa-clipboard-question"></i><span>بنك الاختبارات المستقلة</span></button>
         <div class="sidebar-label mt-1">الطلاب والمتابعة</div>
         <button data-tab="students" onclick="admin.switchTab('students', this)" class="tab-btn"><i class="fas fa-users"></i><span>طلاب العلم والحسابات</span></button>
+        <button data-tab="reports" onclick="admin.switchTab('reports', this)" class="tab-btn justify-between">
+            <span class="flex items-center gap-3"><i class="fas fa-flag text-rose-400"></i><span>بلاغات وملاحظات الطلاب</span></span>
+            <span id="sidebar-reports-badge" class="hidden bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">0</span>
+        </button>
         <button data-tab="analytics" onclick="admin.switchTab('analytics', this)" class="tab-btn"><i class="fas fa-chart-line"></i><span>إحصائيات الدروس والأخطاء</span></button>
         <button data-tab="announcements" onclick="admin.switchTab('announcements', this)" class="tab-btn"><i class="fas fa-bullhorn"></i><span>مركز الإعلانات</span></button>
         <button data-tab="layout-builder" onclick="admin.switchTab('layout-builder', this)" class="tab-btn"><i class="fas fa-table-columns text-amber-300"></i><span>تخطيط وترتيب واجهة الطالب</span></button>
@@ -561,6 +565,28 @@
                 </div>
             </section>
 
+            <!-- تبويب بلاغات الأخطاء المطبعية وملاحظات الطلاب -->
+            <section id="tab-reports" class="adm-tab space-y-6">
+                <div class="page-card border-t-4 border-rose-500">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <span class="text-xs font-black text-rose-700 bg-rose-50 px-3 py-1 rounded-full"><i class="fas fa-flag ml-1"></i>مساهمات طلاب العلم في تدقيق المحتوى</span>
+                            <h3 class="text-2xl font-black text-slate-900 dark-adapt mt-2">بلاغات الأخطاء المطبعية وملاحظات الدروس والاختبارات</h3>
+                            <p class="form-help mt-1">تصل هنا أي ملاحظة أو تصحيح إملائي يرسله الطلاب من داخل صفحة الدرس أو الاختبار، ويمكنك فتح الدرس أو الاختبار لتعديله بضغطة زر.</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <select id="reports-status-filter" onchange="admin.renderReports()" class="border-2 rounded-xl px-3.5 py-2 font-black text-xs bg-white">
+                                <option value="all">كل البلاغات</option>
+                                <option value="open">قيد المراجعة (جديد)</option>
+                                <option value="resolved">تمت المعالجة ✓</option>
+                            </select>
+                            <button onclick="admin.clearResolvedReports()" class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl font-black text-xs">حذف المعالجة</button>
+                        </div>
+                    </div>
+                    <div id="admin-reports-list" class="space-y-3"></div>
+                </div>
+            </section>
+
             <!-- 7. طلاب العلم والحسابات -->
             <section id="tab-students" class="adm-tab space-y-6">
                 <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
@@ -898,6 +924,7 @@
                     admin.renderAnnouncementSettings();
                     admin.renderBrandingSettings();
                     admin.renderLayoutBuilder();
+                    admin.renderReports();
                     admin.renderAnalytics();
                     admin.renderAuditLog();
                 };
@@ -909,7 +936,7 @@
 
             rebuildDbData: () => {
                 dbData = JSON.parse(JSON.stringify(publicDbData || {}));
-                dbData.categories ||= {}; dbData.books ||= {}; dbData.chapters ||= {}; dbData.lessons ||= {}; dbData.quizzes ||= {}; dbData.scholars ||= {}; dbData.settings ||= {}; dbData.stats ||= {};
+                dbData.categories ||= {}; dbData.books ||= {}; dbData.chapters ||= {}; dbData.lessons ||= {}; dbData.quizzes ||= {}; dbData.scholars ||= {}; dbData.reports ||= {}; dbData.settings ||= {}; dbData.stats ||= {};
                 Object.entries(protectedData.lessons || {}).forEach(([id, payload]) => { if (dbData.lessons[id]) Object.assign(dbData.lessons[id], payload || {}); });
                 Object.entries(protectedData.quizzes || {}).forEach(([id, payload]) => { if (dbData.quizzes[id]) Object.assign(dbData.quizzes[id], payload || {}); });
             },
@@ -926,6 +953,79 @@
                 document.getElementById('toast-msg').innerText = msg;
                 toast.className = `fixed top-5 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl text-white font-bold min-w-[300px] justify-center transition-transform show ${type === 'error' ? 'bg-red-600' : 'bg-islamic-800'}`;
                 setTimeout(() => toast.classList.remove('show'), 3000);
+            },
+
+
+            normalizeArabic: (str = '') => String(str || '')
+                .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '')
+                .replace(/\u0640/g, '')
+                .replace(/[أإآٱ]/g, 'ا')
+                .replace(/ؤ/g, 'و')
+                .replace(/ئ/g, 'ي')
+                .replace(/ة/g, 'ه')
+                .replace(/ى/g, 'ي')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .toLowerCase(),
+
+            renderReports: () => {
+                const all = Object.values(dbData.reports || {}).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                const openCount = all.filter(r => r.status !== 'resolved').length;
+                const badge = document.getElementById('sidebar-reports-badge');
+                if (badge) {
+                    badge.innerText = openCount;
+                    badge.classList.toggle('hidden', openCount === 0);
+                }
+                const box = document.getElementById('admin-reports-list');
+                if (!box) return;
+                const filter = document.getElementById('reports-status-filter')?.value || 'all';
+                const list = all.filter(r => filter === 'all' || (filter === 'open' ? r.status !== 'resolved' : r.status === 'resolved'));
+                const typeMap = {
+                    typo: { label: 'خطأ مطبعي / إملائي', cls: 'bg-amber-100 text-amber-900' },
+                    quiz_error: { label: 'ملاحظة في اختبار', cls: 'bg-rose-100 text-rose-900' },
+                    media_broken: { label: 'عطل في فيديو/ملف', cls: 'bg-purple-100 text-purple-900' },
+                    suggestion: { label: 'اقتراح / فائدة', cls: 'bg-emerald-100 text-emerald-900' }
+                };
+                box.innerHTML = list.length ? list.map(r => {
+                    const tm = typeMap[r.issueType] || typeMap.typo;
+                    const resolved = r.status === 'resolved';
+                    return `<div class="p-4 rounded-2xl border-2 ${resolved ? 'bg-slate-50 border-slate-200 opacity-70' : 'bg-white border-rose-200'} flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div class="space-y-1.5 flex-1">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="text-[11px] font-black px-2.5 py-0.5 rounded-lg ${tm.cls}">${tm.label}</span>
+                                <span class="text-xs font-black text-islamic-800">${admin.escapeHtml(r.lessonTitle || r.quizTitle || 'عام')}</span>
+                                ${r.bookTitle ? `<span class="text-xs font-bold text-slate-400">• ${admin.escapeHtml(r.bookTitle)}</span>` : ''}
+                                <span class="text-[11px] font-bold text-slate-400">• بواسطة: ${admin.escapeHtml(r.senderName || 'طالب علم')}</span>
+                            </div>
+                            <p class="text-sm font-bold text-slate-800 bg-amber-50/60 border border-amber-200/70 p-3 rounded-xl whitespace-pre-wrap">${admin.escapeHtml(r.text || '')}</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 shrink-0">
+                            ${r.lessonId && dbData.lessons?.[r.lessonId] ? `<button onclick="admin.openEditLesson('${r.lessonId}')" class="bg-indigo-50 text-indigo-700 px-3 py-2 rounded-xl font-black text-xs"><i class="fas fa-pen ml-1"></i>تعديل الدرس</button>` : ''}
+                            ${r.quizId && dbData.quizzes?.[r.quizId] ? `<button onclick="admin.openBulkEditQuiz('${r.quizId}')" class="bg-amber-50 text-amber-800 px-3 py-2 rounded-xl font-black text-xs"><i class="fas fa-file-code ml-1"></i>تعديل الاختبار</button>` : ''}
+                            <button onclick="admin.toggleReportStatus('${r.id}', '${resolved ? 'open' : 'resolved'}')" class="${resolved ? 'bg-slate-200 text-slate-700' : 'bg-emerald-600 text-white'} px-3.5 py-2 rounded-xl font-black text-xs">
+                                ${resolved ? 'إعادة فتح' : 'تمت المعالجة ✓'}
+                            </button>
+                            <button onclick="admin.deleteReport('${r.id}')" class="bg-red-50 text-red-600 px-3 py-2 rounded-xl font-black text-xs"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`;
+                }).join('') : '<div class="empty-state">لا توجد بلاغات أو ملاحظات مطابقة حالياً.</div>';
+            },
+
+            toggleReportStatus: async (id, status) => {
+                await dbRef.child(`reports/${id}/status`).set(status);
+                admin.notify(status === 'resolved' ? 'تم تعليم البلاغ كمعالج ✓' : 'تمت إعادة فتح البلاغ');
+            },
+            deleteReport: async (id) => {
+                if (!confirm('حذف هذا البلاغ؟')) return;
+                await dbRef.child(`reports/${id}`).remove();
+                admin.notify('تم حذف البلاغ');
+            },
+            clearResolvedReports: async () => {
+                const updates = {};
+                Object.values(dbData.reports || {}).filter(r => r.status === 'resolved').forEach(r => updates[`reports/${r.id}`] = null);
+                if (!Object.keys(updates).length) return admin.notify('لا توجد بلاغات معالجة لحذفها', 'error');
+                await dbRef.update(updates);
+                admin.notify('تم تنظيف البلاغات المعالجة');
             },
 
             escapeHtml: (str = '') => String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c])),
@@ -1126,10 +1226,10 @@
             },
 
             filterQuizzes: (inId, selId, pre = null) => {
-                const t = (document.getElementById(inId)?.value || '').toLowerCase();
+                const t = admin.normalizeArabic(document.getElementById(inId)?.value || '');
                 let h = '<option value="">-- بدون اختبار --</option>';
                 Object.values(dbData.quizzes || {}).forEach(q => {
-                    if ((q.name || '').toLowerCase().includes(t)) h += `<option value="${q.id}" ${q.id === pre ? 'selected' : ''}>${admin.escapeHtml(q.name)}</option>`;
+                    if (admin.normalizeArabic(q.name || '').includes(t)) h += `<option value="${q.id}" ${q.id === pre ? 'selected' : ''}>${admin.escapeHtml(q.name)}</option>`;
                 });
                 const el = document.getElementById(selId); if (el) el.innerHTML = h;
             },
@@ -1336,7 +1436,7 @@
             },
 
             globalSearch: () => {
-                const term = (document.getElementById('admin-global-search')?.value || '').trim().toLowerCase();
+                const term = admin.normalizeArabic(document.getElementById('admin-global-search')?.value || '');
                 admin.renderManagementTree(term);
             },
 
@@ -1366,7 +1466,7 @@
                     books.forEach(book => {
                         const chaps = chapsAll.filter(ch => ch.bookId === book.id);
                         const chapIds = chaps.map(ch => ch.id);
-                        if (q && !`${book.title || ''} ${book.author || ''}`.toLowerCase().includes(q) && !chaps.some(ch => lessonsAll.some(l => l.chapterId === ch.id && (l.title || '').toLowerCase().includes(q)))) return;
+                        if (q && !admin.normalizeArabic(`${book.title || ''} ${book.author || ''}`).includes(q) && !chaps.some(ch => lessonsAll.some(l => l.chapterId === ch.id && admin.normalizeArabic(`${l.title || ''} ${l.content || ''}`).includes(q)))) return;
                         html += `<details ${q ? 'open' : ''} class="border-r-4 border-amber-500 bg-white rounded-xl overflow-hidden">
                             <summary class="bg-amber-50/70">
                                 <div>
