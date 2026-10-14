@@ -127,6 +127,7 @@
         <button data-tab="students" onclick="admin.switchTab('students', this)" class="tab-btn"><i class="fas fa-users"></i><span>طلاب العلم والحسابات</span></button>
         <button data-tab="analytics" onclick="admin.switchTab('analytics', this)" class="tab-btn"><i class="fas fa-chart-line"></i><span>إحصائيات الدروس والأخطاء</span></button>
         <button data-tab="announcements" onclick="admin.switchTab('announcements', this)" class="tab-btn"><i class="fas fa-bullhorn"></i><span>مركز الإعلانات</span></button>
+        <button data-tab="layout-builder" onclick="admin.switchTab('layout-builder', this)" class="tab-btn"><i class="fas fa-table-columns text-amber-300"></i><span>تخطيط وترتيب واجهة الطالب</span></button>
         <button data-tab="settings" onclick="admin.switchTab('settings', this)" class="tab-btn"><i class="fas fa-sliders"></i><span>الهوية والأذكار</span></button>
         <button data-tab="system" onclick="admin.switchTab('system', this)" class="tab-btn"><i class="fas fa-database"></i><span>النسخ الاحتياطي والسجل</span></button>
 
@@ -193,7 +194,7 @@
                             <div class="quick-grid">
                                 <button class="quick-action" onclick="admin.switchTab('add-content')"><i class="fas fa-file-circle-plus text-indigo-600 ml-2"></i>درس + اختبار معاً</button>
                                 <button class="quick-action" onclick="admin.switchTab('smart-importer')"><i class="fas fa-bolt text-amber-600 ml-2"></i>استيراد ذكي سريع</button>
-                                <button class="quick-action" onclick="admin.switchTab('scholars')"><i class="fas fa-user-graduate text-emerald-700 ml-2"></i>إضافة شيخ / مؤلف</button>
+                                <button class="quick-action" onclick="admin.switchTab('layout-builder')"><i class="fas fa-table-columns text-emerald-700 ml-2"></i>ترتيب أقسام واجهة الطالب</button>
                                 <button class="quick-action" onclick="admin.exportFullBackup()"><i class="fas fa-download text-slate-700 ml-2"></i>نسخة احتياطية</button>
                             </div>
                         </div>
@@ -605,6 +606,71 @@
                 </div>
             </section>
 
+            <!-- تبويب التحكم الكامل في تخطيط وترتيب أماكن كل شيء في واجهة الطالب -->
+            <section id="tab-layout-builder" class="adm-tab space-y-6">
+                <div class="page-card border-t-4 border-amber-500">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-100">
+                        <div>
+                            <span class="text-xs font-black text-amber-900 bg-amber-100 px-3 py-1 rounded-full"><i class="fas fa-wand-magic-sparkles ml-1"></i>تحكم كامل ومباشر في واجهة الطالب</span>
+                            <h3 class="text-2xl font-black text-slate-900 dark-adapt mt-2">مدير تخطيط وترتيب أقسام منصة الطالب</h3>
+                            <p class="form-help mt-1">رتّب أماكن الأقسام كما تحب (الأقسام العلمية في الأعلى، أو الكتب المميزة، أو المسارات...)، وتحكّم في إظهار أو إخفاء أي قسم أو تعديل عنوانه بضغطة زر.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="admin.saveLayoutConfig()" class="bg-islamic-900 hover:bg-islamic-800 text-amber-200 px-6 py-3 rounded-xl font-black shadow-lg"><i class="fas fa-save ml-2"></i>حفظ وتطبيق الترتيب فوراً</button>
+                            <button onclick="admin.resetLayoutConfig()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-3 rounded-xl font-black text-xs"><i class="fas fa-rotate-left ml-1"></i>استعادة الافتراضي</button>
+                        </div>
+                    </div>
+
+                    <!-- قوالب ترتيب سريعة بنقرة واحدة -->
+                    <div class="bg-amber-50/70 border border-amber-200 rounded-2xl p-4 mb-6">
+                        <div class="text-xs font-black text-amber-900 mb-2.5"><i class="fas fa-bolt ml-1"></i>قوالب ترتيب جاهزة سريعة (اضغط على أي قالب لتطبيقه ثم اضغط حفظ):</div>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="admin.applyLayoutPreset('categories_top')" class="bg-white hover:bg-amber-100 text-slate-800 border border-amber-300 px-3.5 py-2 rounded-xl text-xs font-black transition">🕌 الأقسام والمواد الشرعية والعربية في الأعلى أولاً</button>
+                            <button onclick="admin.applyLayoutPreset('featured_top')" class="bg-white hover:bg-amber-100 text-slate-800 border border-amber-300 px-3.5 py-2 rounded-xl text-xs font-black transition">⭐ الكتب والدورات المميزة في الأعلى أولاً</button>
+                            <button onclick="admin.applyLayoutPreset('tracks_top')" class="bg-white hover:bg-amber-100 text-slate-800 border border-amber-300 px-3.5 py-2 rounded-xl text-xs font-black transition">🧭 بوابة المسارات الثلاثة (مواد / كتب / دورات) في الأعلى</button>
+                            <button onclick="admin.applyLayoutPreset('minimal')" class="bg-white hover:bg-amber-100 text-slate-800 border border-amber-300 px-3.5 py-2 rounded-xl text-xs font-black transition">🎯 واجهة مركزة ومختصرة للمذاكرة السريعة</button>
+                        </div>
+                    </div>
+
+                    <!-- أولاً: ترتيب أقسام الصفحة الرئيسية -->
+                    <div class="mb-8">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-black text-lg text-islamic-900 dark-adapt"><i class="fas fa-layer-group text-emerald-600 ml-2"></i>1. ترتيب وأماكن أقسام الصفحة الرئيسية (من الأعلى إلى الأسفل)</h4>
+                            <div class="flex items-center gap-2">
+                                <label class="text-xs font-black text-slate-500">عدد الكتب في الصف:</label>
+                                <select id="layout-cards-per-row" class="border-2 rounded-xl px-3 py-1.5 font-black text-xs bg-white">
+                                    <option value="4">4 بطاقات في الصف</option>
+                                    <option value="3">3 بطاقات كبيرة في الصف</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="layout-home-sections-list" class="space-y-2.5"></div>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+                        <!-- ثانياً: ترتيب أزرار الشريط العلوي -->
+                        <div>
+                            <h4 class="font-black text-lg text-islamic-900 dark-adapt mb-3"><i class="fas fa-compass text-amber-600 ml-2"></i>2. ترتيب وإظهار أزرار القائمة العلوية</h4>
+                            <div id="layout-nav-items-list" class="space-y-2"></div>
+                        </div>
+
+                        <!-- ثالثاً: ترتيب عناصر صفحة الدرس -->
+                        <div class="space-y-5">
+                            <div>
+                                <h4 class="font-black text-lg text-islamic-900 dark-adapt mb-3"><i class="fas fa-book-open-reader text-indigo-600 ml-2"></i>3. ترتيب العناصر داخل ورقة الدرس</h4>
+                                <div id="layout-lesson-inner-list" class="space-y-2"></div>
+                            </div>
+                            <div>
+                                <h4 class="font-black text-lg text-islamic-900 dark-adapt mb-3"><i class="fas fa-arrows-up-down text-rose-600 ml-2"></i>4. موقع بطاقة «ابدأ الاختبار» والملف المرفق</h4>
+                                <div id="layout-lesson-outer-list" class="space-y-2"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="admin.saveLayoutConfig()" class="w-full mt-7 bg-islamic-900 hover:bg-islamic-800 text-amber-200 py-4 rounded-2xl font-black text-lg shadow-xl"><i class="fas fa-check-circle ml-2"></i>اعتماد وحفظ تخطيط واجهة الطالب</button>
+                </div>
+            </section>
+
             <!-- 10. الإعدادات والهوية والأذكار -->
             <section id="tab-settings" class="adm-tab space-y-6">
                 <div class="page-card border-t-4 border-emerald-600">
@@ -831,6 +897,7 @@
                     admin.renderDashboard();
                     admin.renderAnnouncementSettings();
                     admin.renderBrandingSettings();
+                    admin.renderLayoutBuilder();
                     admin.renderAnalytics();
                     admin.renderAuditLog();
                 };
@@ -1589,6 +1656,257 @@
                 admin.notify('تم حفظ الإعلان');
             },
             clearAnnouncement: async () => { await dbRef.child('settings/announcement').remove(); admin.notify('تم حذف الإعلان'); },
+
+
+            // ================= مدير تخطيط وترتيب واجهة الطالب =================
+            sectionLabelsMap: {
+                announcement: { name: 'شريط الإعلانات والتنويهات العاجلة', icon: 'fa-bullhorn', hasTitle: false },
+                hero: { name: 'البانر الترحيبي الرئيسي وإحصائيات الطالب (Hero)', icon: 'fa-mosque', hasTitle: false },
+                continue_card: { name: 'بطاقة «أكمل رحلتك من حيث توقفت»', icon: 'fa-play-circle', hasTitle: false },
+                categories: { name: 'قسم الأقسام العلمية (الشريعة واللغة العربية)', icon: 'fa-sitemap', hasTitle: true },
+                tracks_hub: { name: 'بوابة المسارات الثلاثة (المواد / الكتب / الدورات)', icon: 'fa-compass', hasTitle: true },
+                featured_carousel: { name: 'سلايدر الكتب والدورات المميزة (المتحرك)', icon: 'fa-star', hasTitle: true },
+                journey_banner: { name: 'شريط خريطة المذاكرة وإحصائيات المنصة', icon: 'fa-route', hasTitle: false },
+                recent_books: { name: 'قسم أحدث الكتب والدورات المضافة', icon: 'fa-clock', hasTitle: true },
+                latest_lesson_quiz: { name: 'بطاقتا «أحدث درس مضاف + اختبار مراجعة مقترح»', icon: 'fa-bolt', hasTitle: false }
+            },
+            navLabelsMap: {
+                home: 'زر الرئيسية',
+                categories: 'زر الأقسام العلمية',
+                curriculum: 'زر المواد الشرعية والعربية',
+                book: 'زر الكتب المفرغة',
+                course: 'زر الدورات المرئية',
+                roadmap: 'زر خريطة المذاكرة',
+                quizzes: 'زر بنك المراجعة'
+            },
+            lessonInnerLabelsMap: {
+                video: 'مشغل الفيديو (إن وجد في الدرس)',
+                toc: 'فهرس عناوين الدرس السريع',
+                content: 'التفريغ النصي والشرح المكتوب',
+                notes: 'صندوق كشكول الفوائد والملاحظات الشخصية'
+            },
+            lessonOuterLabelsMap: {
+                reader_article: 'ورقة قراءة الدرس والشرح',
+                quiz_cta: 'بطاقة زر «ابدأ الاختبار الآن» (تفتح في صفحة الاختبار)',
+                resource: 'بطاقة تحميل الكتاب / ملف PDF المرفق'
+            },
+
+            defaultLayoutConfig: () => ({
+                homeSections: [
+                    { id: 'announcement', visible: true, title: '' },
+                    { id: 'hero', visible: true, title: '' },
+                    { id: 'continue_card', visible: true, title: '' },
+                    { id: 'categories', visible: true, title: 'الأقسام الشرعية والعربية' },
+                    { id: 'tracks_hub', visible: true, title: 'اختر مسار التعلم المناسب لك' },
+                    { id: 'featured_carousel', visible: true, title: 'كتب ودورات مرشحة للبدء' },
+                    { id: 'journey_banner', visible: true, title: '' },
+                    { id: 'recent_books', visible: true, title: 'أحدث الكتب والدورات في المنصة' },
+                    { id: 'latest_lesson_quiz', visible: true, title: '' }
+                ],
+                navItems: [
+                    { id: 'home', visible: true, label: 'الرئيسية' },
+                    { id: 'categories', visible: true, label: 'الأقسام العلمية' },
+                    { id: 'curriculum', visible: true, label: 'المواد الشرعية والعربية' },
+                    { id: 'book', visible: true, label: 'الكتب المفرغة' },
+                    { id: 'course', visible: true, label: 'الدورات المرئية' },
+                    { id: 'roadmap', visible: true, label: 'خريطة المذاكرة' },
+                    { id: 'quizzes', visible: true, label: 'بنك المراجعة' }
+                ],
+                lessonBlocks: [
+                    { id: 'video', visible: true },
+                    { id: 'toc', visible: true },
+                    { id: 'content', visible: true },
+                    { id: 'notes', visible: true }
+                ],
+                lessonOuterOrder: ['reader_article', 'quiz_cta', 'resource'],
+                cardsPerRow: 4
+            }),
+
+            getCurrentLayoutDraft: () => {
+                if (!admin._layoutDraft) {
+                    const saved = dbData.settings?.layoutConfig || {};
+                    const def = admin.defaultLayoutConfig();
+                    const mergedHome = Array.isArray(saved.homeSections) && saved.homeSections.length ? JSON.parse(JSON.stringify(saved.homeSections)) : def.homeSections;
+                    def.homeSections.forEach(d => { if (!mergedHome.some(x => x.id === d.id)) mergedHome.push(d); });
+                    const mergedNav = Array.isArray(saved.navItems) && saved.navItems.length ? JSON.parse(JSON.stringify(saved.navItems)) : def.navItems;
+                    def.navItems.forEach(d => { if (!mergedNav.some(x => x.id === d.id)) mergedNav.push(d); });
+                    admin._layoutDraft = {
+                        homeSections: mergedHome,
+                        navItems: mergedNav,
+                        lessonBlocks: Array.isArray(saved.lessonBlocks) && saved.lessonBlocks.length ? JSON.parse(JSON.stringify(saved.lessonBlocks)) : def.lessonBlocks,
+                        lessonOuterOrder: Array.isArray(saved.lessonOuterOrder) && saved.lessonOuterOrder.length ? [...saved.lessonOuterOrder] : def.lessonOuterOrder,
+                        cardsPerRow: Number(saved.cardsPerRow) || 4
+                    };
+                }
+                return admin._layoutDraft;
+            },
+
+            renderLayoutBuilder: () => {
+                admin._layoutDraft = null;
+                const draft = admin.getCurrentLayoutDraft();
+                admin.paintLayoutBuilderUI(draft);
+            },
+
+            paintLayoutBuilderUI: (draft) => {
+                const colSel = document.getElementById('layout-cards-per-row');
+                if (colSel) colSel.value = String(draft.cardsPerRow || 4);
+
+                const homeBox = document.getElementById('layout-home-sections-list');
+                if (homeBox) {
+                    homeBox.innerHTML = draft.homeSections.map((s, idx) => {
+                        const meta = admin.sectionLabelsMap[s.id] || { name: s.id, icon: 'fa-square', hasTitle: false };
+                        return `<div class="p-3.5 rounded-2xl border-2 ${s.visible !== false ? 'bg-white border-slate-200' : 'bg-slate-50 border-slate-200 opacity-60'} flex flex-col md:flex-row md:items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <span class="w-8 h-8 rounded-xl bg-islamic-900 text-amber-300 flex items-center justify-center font-black text-xs shrink-0">${idx + 1}</span>
+                                <i class="fas ${meta.icon} text-islamic-700 text-lg shrink-0"></i>
+                                <div class="min-w-0 flex-1">
+                                    <strong class="block font-black text-sm text-slate-800">${meta.name}</strong>
+                                    ${meta.hasTitle ? `<input type="text" value="${admin.escapeHtml(s.title || '')}" oninput="admin.updateHomeSectionTitle(${idx}, this.value)" placeholder="عنوان القسم الظاهر للطالب..." class="mt-1.5 w-full max-w-md border rounded-lg px-2.5 py-1 text-xs font-bold">` : ''}
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <label class="inline-flex items-center gap-1.5 text-xs font-black px-3 py-1.5 rounded-xl border cursor-pointer ${s.visible !== false ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-slate-100 border-slate-200 text-slate-500'}">
+                                    <input type="checkbox" ${s.visible !== false ? 'checked' : ''} onchange="admin.toggleHomeSectionVisible(${idx}, this.checked)">
+                                    <span>${s.visible !== false ? 'ظاهر' : 'مخفي'}</span>
+                                </label>
+                                <button type="button" onclick="admin.moveHomeSectionToTop(${idx})" class="px-2.5 py-1.5 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 text-xs font-black" title="نقل للأعلى تماماً">أول الصفحة ⏫</button>
+                                <button type="button" onclick="admin.moveHomeSection(${idx}, -1)" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-black" title="لأعلى">⬆️</button>
+                                <button type="button" onclick="admin.moveHomeSection(${idx}, 1)" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-black" title="لأسفل">⬇️</button>
+                            </div>
+                        </div>`;
+                    }).join('');
+                }
+
+                const navBox = document.getElementById('layout-nav-items-list');
+                if (navBox) {
+                    navBox.innerHTML = draft.navItems.map((n, idx) => `<div class="p-3 rounded-xl border bg-white flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2 flex-1">
+                            <span class="w-6 h-6 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-black text-xs">${idx + 1}</span>
+                            <input type="text" value="${admin.escapeHtml(n.label || admin.navLabelsMap[n.id] || n.id)}" oninput="admin.updateNavItemLabel(${idx}, this.value)" class="border rounded-lg px-2.5 py-1 text-xs font-black flex-1">
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <input type="checkbox" ${n.visible !== false ? 'checked' : ''} onchange="admin.toggleNavItemVisible(${idx}, this.checked)" title="إظهار/إخفاء">
+                            <button type="button" onclick="admin.moveNavItem(${idx}, -1)" class="w-7 h-7 rounded bg-slate-100 text-xs">⬆️</button>
+                            <button type="button" onclick="admin.moveNavItem(${idx}, 1)" class="w-7 h-7 rounded bg-slate-100 text-xs">⬇️</button>
+                        </div>
+                    </div>`).join('');
+                }
+
+                const innerBox = document.getElementById('layout-lesson-inner-list');
+                if (innerBox) {
+                    innerBox.innerHTML = draft.lessonBlocks.map((b, idx) => `<div class="p-3 rounded-xl border bg-white flex items-center justify-between gap-2">
+                        <span class="text-xs font-black text-slate-800">${idx + 1}. ${admin.lessonInnerLabelsMap[b.id] || b.id}</span>
+                        <div class="flex items-center gap-1">
+                            ${b.id === 'notes' ? `<label class="text-[11px] font-bold ml-2"><input type="checkbox" ${b.visible !== false ? 'checked' : ''} onchange="admin.toggleLessonInnerVisible(${idx}, this.checked)"> إظهار</label>` : ''}
+                            <button type="button" onclick="admin.moveLessonInner(${idx}, -1)" class="w-7 h-7 rounded bg-slate-100 text-xs">⬆️</button>
+                            <button type="button" onclick="admin.moveLessonInner(${idx}, 1)" class="w-7 h-7 rounded bg-slate-100 text-xs">⬇️</button>
+                        </div>
+                    </div>`).join('');
+                }
+
+                const outerBox = document.getElementById('layout-lesson-outer-list');
+                if (outerBox) {
+                    outerBox.innerHTML = draft.lessonOuterOrder.map((id, idx) => `<div class="p-3 rounded-xl border bg-white flex items-center justify-between gap-2">
+                        <span class="text-xs font-black text-slate-800">${idx + 1}. ${admin.lessonOuterLabelsMap[id] || id}</span>
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="admin.moveLessonOuter(${idx}, -1)" class="w-7 h-7 rounded bg-slate-100 text-xs">⬆️</button>
+                            <button type="button" onclick="admin.moveLessonOuter(${idx}, 1)" class="w-7 h-7 rounded bg-slate-100 text-xs">⬇️</button>
+                        </div>
+                    </div>`).join('');
+                }
+            },
+
+            moveHomeSection: (idx, dir) => {
+                const d = admin.getCurrentLayoutDraft();
+                const target = idx + dir;
+                if (target < 0 || target >= d.homeSections.length) return;
+                [d.homeSections[idx], d.homeSections[target]] = [d.homeSections[target], d.homeSections[idx]];
+                admin.paintLayoutBuilderUI(d);
+            },
+            moveHomeSectionToTop: (idx) => {
+                const d = admin.getCurrentLayoutDraft();
+                const [item] = d.homeSections.splice(idx, 1);
+                d.homeSections.unshift(item);
+                admin.paintLayoutBuilderUI(d);
+            },
+            toggleHomeSectionVisible: (idx, val) => {
+                const d = admin.getCurrentLayoutDraft();
+                d.homeSections[idx].visible = !!val;
+                admin.paintLayoutBuilderUI(d);
+            },
+            updateHomeSectionTitle: (idx, val) => {
+                const d = admin.getCurrentLayoutDraft();
+                d.homeSections[idx].title = val;
+            },
+            moveNavItem: (idx, dir) => {
+                const d = admin.getCurrentLayoutDraft();
+                const target = idx + dir;
+                if (target < 0 || target >= d.navItems.length) return;
+                [d.navItems[idx], d.navItems[target]] = [d.navItems[target], d.navItems[idx]];
+                admin.paintLayoutBuilderUI(d);
+            },
+            toggleNavItemVisible: (idx, val) => {
+                const d = admin.getCurrentLayoutDraft();
+                d.navItems[idx].visible = !!val;
+            },
+            updateNavItemLabel: (idx, val) => {
+                const d = admin.getCurrentLayoutDraft();
+                d.navItems[idx].label = val;
+            },
+            moveLessonInner: (idx, dir) => {
+                const d = admin.getCurrentLayoutDraft();
+                const target = idx + dir;
+                if (target < 0 || target >= d.lessonBlocks.length) return;
+                [d.lessonBlocks[idx], d.lessonBlocks[target]] = [d.lessonBlocks[target], d.lessonBlocks[idx]];
+                admin.paintLayoutBuilderUI(d);
+            },
+            toggleLessonInnerVisible: (idx, val) => {
+                const d = admin.getCurrentLayoutDraft();
+                d.lessonBlocks[idx].visible = !!val;
+            },
+            moveLessonOuter: (idx, dir) => {
+                const d = admin.getCurrentLayoutDraft();
+                const target = idx + dir;
+                if (target < 0 || target >= d.lessonOuterOrder.length) return;
+                [d.lessonOuterOrder[idx], d.lessonOuterOrder[target]] = [d.lessonOuterOrder[target], d.lessonOuterOrder[idx]];
+                admin.paintLayoutBuilderUI(d);
+            },
+
+            applyLayoutPreset: (preset) => {
+                const d = admin.getCurrentLayoutDraft();
+                const byId = Object.fromEntries(d.homeSections.map(s => [s.id, { ...s, visible: true }]));
+                let order = [];
+                if (preset === 'categories_top') {
+                    order = ['announcement', 'categories', 'tracks_hub', 'featured_carousel', 'continue_card', 'hero', 'journey_banner', 'recent_books', 'latest_lesson_quiz'];
+                } else if (preset === 'featured_top') {
+                    order = ['announcement', 'featured_carousel', 'categories', 'tracks_hub', 'continue_card', 'hero', 'journey_banner', 'recent_books', 'latest_lesson_quiz'];
+                } else if (preset === 'tracks_top') {
+                    order = ['announcement', 'tracks_hub', 'categories', 'featured_carousel', 'continue_card', 'hero', 'journey_banner', 'recent_books', 'latest_lesson_quiz'];
+                } else if (preset === 'minimal') {
+                    order = ['announcement', 'continue_card', 'categories', 'tracks_hub', 'featured_carousel', 'hero', 'journey_banner', 'recent_books', 'latest_lesson_quiz'];
+                    ['hero', 'journey_banner', 'recent_books', 'latest_lesson_quiz'].forEach(k => { if (byId[k]) byId[k].visible = false; });
+                }
+                d.homeSections = order.map(id => byId[id]).filter(Boolean);
+                admin.paintLayoutBuilderUI(d);
+                admin.notify('تم تطبيق القالب في المعاينة — اضغط «حفظ وتطبيق الترتيب» لاعتماده');
+            },
+
+            saveLayoutConfig: async () => {
+                const d = admin.getCurrentLayoutDraft();
+                d.cardsPerRow = Number(document.getElementById('layout-cards-per-row')?.value) || 4;
+                d.updatedAt = Date.now();
+                await dbRef.child('settings/layoutConfig').set(d);
+                admin.notify('تم حفظ وتطبيق تخطيط واجهة الطالب بنجاح!');
+            },
+
+            resetLayoutConfig: async () => {
+                if (!confirm('هل تود استعادة الترتيب الافتراضي لواجهة الطالب؟')) return;
+                const def = admin.defaultLayoutConfig();
+                admin._layoutDraft = def;
+                await dbRef.child('settings/layoutConfig').set(def);
+                admin.paintLayoutBuilderUI(def);
+                admin.notify('تمت استعادة التخطيط الافتراضي');
+            },
 
             renderBrandingSettings: () => {
                 const b = dbData.settings?.branding || {};
